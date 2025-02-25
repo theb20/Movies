@@ -76,7 +76,7 @@ export const login = async (req, res) => {
                 email: user[0].email, 
                 role: user[0].role 
             },
-            JWT,
+            reqJWT,
             { expiresIn: '1h' }
         );
         console.log('Token envoyé');
