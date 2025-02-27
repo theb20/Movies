@@ -7,7 +7,8 @@ import midlleware from './Middlewares/authMiddleware.js'
 
 import movieRoute from "./Routes/movieRoute.js";
 import catalogRoute from "./Routes/catalogRoute.js";
-import userRoute from "./Routes/userRoute.js"
+import userRoute from "./Routes/userRoute.js";
+import commentRoute from "./Routes/commentRoute.js";
 
 dotenv.config();
 
@@ -24,6 +25,7 @@ app.use(express.json());
 app.use('/api/movie', movieRoute)
 app.use('/api/user', userRoute)
 app.use('/api/catalog', catalogRoute)
+app.use('/api/comment', commentRoute)
 
 
 app.listen(PORT, IP, async () => {
