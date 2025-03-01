@@ -1,0 +1,11 @@
+@import url('../../../App.css');
+
+.form-control{
+    background-color: var(--background-input);
+}
+.form-control:focus{
+    background-color: #ff0000;
+}
+.form-control::placeholder{
+    color: var(--text-placeholder);
+}

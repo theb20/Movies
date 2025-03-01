@@ -1,0 +1,17 @@
+@import url('../../../App.css');
+
+footer{
+    position: absolute;
+    bottom: 0;
+}
+.text-gray{
+    color: var(--color-gray);
+}
+.rx-link:hover, .text-gray:hover {
+    color:var(--color-red);
+}
+@media(width < 768px) {
+    footer{
+        margin-bottom: 40px;
+    }
+}

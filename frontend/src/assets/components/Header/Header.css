@@ -1,0 +1,35 @@
+@import url('../../../App.css');
+header{
+    position: fixed;
+    z-index: 99;
+    width: 100%;
+    top: 0;
+    font-size: 0.8em;
+    background: linear-gradient(to bottom, var(--background-header-desktop), transparent);
+}
+.from-select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    outline: none;
+}
+select.form-select:focus,
+select.form-select:focus-visible {
+    border-color: transparent !important;
+    box-shadow: none !important;
+    outline: none !important; 
+}
+.nav-link-mobile{
+    width: 100%;
+}
+@media(width < 768px) {
+    header {
+        top: 85.3%;
+        border-radius: 20px;
+        margin: 10px;
+        height: 88px;
+        width: 94.5%;
+        background: none;
+        background-color: var(--background-header-mobile);
+    }
+}
