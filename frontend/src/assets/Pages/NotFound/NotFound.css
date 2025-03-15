@@ -1,0 +1,23 @@
+@import url('../../../App.css');
+.main-NotFound {
+    height: 590px;
+    
+}
+.content-image-notFound {
+    background-image: url('../../images/Background/Background.jpg');
+    width: 70%;
+    background-size:cover;
+    position: relative;
+}
+.content-image-notFound::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to bottom, transparent, var(--background) 100%)
+}
+.h1-custom {
+    font-size: 11em;
+}

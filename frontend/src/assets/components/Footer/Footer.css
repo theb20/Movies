@@ -1,9 +1,5 @@
 @import url('../../../App.css');
 
-footer{
-    position: absolute;
-    bottom: 0;
-}
 .text-gray{
     color: var(--color-gray);
 }

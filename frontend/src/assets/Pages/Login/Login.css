@@ -1,0 +1,30 @@
+@import url('../../../App.css');
+
+
+.mainLogin {
+    background: url('../../images/Background/Background.jpg');
+    background-size: cover;
+    position: relative; 
+    top:0;
+}
+
+.mainLogin::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%; 
+    height: 100%;
+    background: linear-gradient(to bottom, transparent, var(--background) 0%);
+    z-index: 1;
+    opacity: 0.9;
+}
+.bg-custom-from{
+    background-color: var(--background-from);
+}
+.w-45 {
+    width: 400px;
+}
+.fs-8 {
+    font-size: 09px;
+}

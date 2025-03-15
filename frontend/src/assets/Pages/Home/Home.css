@@ -1,0 +1,50 @@
+@import url('../../../App.css');
+
+.homeOne{
+    background: url(../../images/Background/back-section1-home.jpg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    height: 90px;
+    position: relative;
+}
+.homeOne::before {
+    content: '';
+    position: absolute;
+    background: linear-gradient(to bottom, transparent, var(--background));
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
+}
+.container-two-right {
+    background: linear-gradient(77.59deg, var(--color-darkred) 18%, var(--color-black) 100%);   
+}
+.custom-card {
+    width: 250px;
+    height: 350px;
+}
+.fs-custom {font-size: 4em;}
+.bottom-custom {bottom:318px;}
+.bg-custom {background-color:var(--background);}
+.bg-danger-custom {background-color: var(--color-red)}
+.vh-custom {height: 500px;}
+.rounded-custom{border-radius:20px 0px 20px 0px;}
+.p-custom{padding: 100px;}
+.homeFive {
+    background: url(../../images/Background/Background.jpg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    position: relative;
+}
+.homeFive::before {
+    content: '';
+    position: absolute;
+    background: linear-gradient(to bottom, transparent, var(--background));
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
+}
+.size-img-custom {height: 50px; }

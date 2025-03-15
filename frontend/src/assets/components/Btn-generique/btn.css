@@ -1,0 +1,23 @@
+@import url('../../../App.css');
+
+.p-btn, .s-btn {
+    background-color: var(--background-btn);
+    color: var(--color-white);
+}
+.p-btn {
+    border-radius: 20px;
+}
+.s-btn {
+    border-radius: 10px;
+}
+.p-btn:hover, .s-btn:hover {
+    background-color: var(--background-btn-hover);
+    color: var(--color-white);
+}
+.t-btn {
+    color: var(--color-white);
+}
+.t-btn:hover {
+    background-color: var(--background-btn-active);
+    color: var(--color-red);
+}

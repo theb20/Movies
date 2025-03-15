@@ -1,0 +1,22 @@
+@import url('../../../App.css');
+
+.wallpaper {
+    background-image: url('../../images/Background/Background.jpg');
+    width: 100%;
+    height: 200px;
+    background-size:cover;
+    position: relative;
+}
+.wallpaper::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to bottom, transparent, var(--background) 120%)
+}
+.bg-gray {background-color :var(--color-gray)}
+.profile-img{
+    bottom: 150px;
+}

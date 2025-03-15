@@ -1,0 +1,13 @@
+@import url('../../../App.css');
+
+.container-pop-up{
+    max-width: 1700px;
+    height: 500px;
+}
+.pop-up-left {
+    width: 550px;
+    height: 500px;
+}
+.pop-up-right {
+    width: 400px;
+}

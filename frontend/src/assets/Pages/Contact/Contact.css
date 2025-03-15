@@ -1,0 +1,20 @@
+@import url('../../../App.css');
+.main-contact {
+    height: 590px;
+    
+}
+.content-image-contact {
+    background-image: url('../../images/Background/Background-contact.jpg');
+    width: 100%;
+    background-size:cover;
+    position: relative;
+}
+.content-image-contact::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to bottom, transparent, var(--background) 100%)
+}
