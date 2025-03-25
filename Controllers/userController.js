@@ -1,5 +1,5 @@
 import { connectDB } from "../Config/db.js";
-
+import {mailInscription,mailConnected} from "../Config/sendMail.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv"
@@ -45,7 +45,9 @@ export const createUser = async (req, res) => {
         "INSERT INTO user (name_user, first_name, birthday, email, pwd_hach, role, inscription_date) VALUES (?, ?, ?, ?, ?, ?, NOW())",
         [name_user, first_name, birthday, email, hashedPassword, role]
       );
-      res.status(201).json({ message: "Utilisateur créé" });
+    await mailInscription (email, first_name);
+    console.log('Utilisateur créé avec succès!');
+    res.status(201).json({ message: "Utilisateur créé" });
    }catch (error){
     console.log('❌', error)
     res.status(500).json({message:'Erreur interne veuillez réessayer plus tard'})
@@ -58,33 +60,62 @@ export const login = async (req, res) => {
         const db = await connectDB();
         const { email, password } = req.body;
 
+        // Validate required fields
+        if (!email || !password) {
+            return res.status(400).json({ message: 'Email et mot de passe requis' });
+        }
+
+        // Find user by email
         const [user] = await db.query("SELECT * FROM user WHERE email = ?", [email]);
         if (!user.length) {
             console.log('Utilisateur non trouvé ❌');
-            return res.status(404).json({ message: '❌ Utilisateur impossible a trouver'})
+            return res.status(401).json({ message: '❌ Email ou mot de passe incorrect' });
         }
 
-        const isValiPassword = await bcrypt.compare(password, user[0].pwd_hach);
-        if(!isValiPassword){
-            console.log('MDP incorrect !')
-            return res.status(404).json({message:'❌ Mot de passe incorrect' })
+        // Verify password
+        const isValidPassword = await bcrypt.compare(password, user[0].pwd_hach);
+        if (!isValidPassword) {
+            console.log('MDP incorrect !');
+            return res.status(401).json({ message: '❌ Email ou mot de passe incorrect' });
         }
 
-        const reqJWT= process.env.JWT
+        // Generate JWT token
+        const jwtSecret = process.env.JWT;
+        if (!jwtSecret) {
+            throw new Error('JWT secret is not configured');
+        }
+
         const token = jwt.sign(
-            {   id_user: user[0].id_user, 
+            {   
+                id_user: user[0].id_user, 
+                name_user: user[0].name_user,
+                first_name: user[0].first_name,
+                birthday: user[0].birthday,
                 email: user[0].email, 
                 role: user[0].role 
             },
-            reqJWT,
+            jwtSecret,
             { expiresIn: '1h' }
         );
+
+        // Set secure cookie in production
+        res.cookie('token', token, {
+            httpOnly: true,
+            maxAge: 3600000, // 1 hour
+            sameSite: 'strict',
+            secure: 'production'
+        });
+
         console.log('Token envoyé');
-        res.status(200).json({ token });
+        await mailConnected (email, user[0].first_name);
+        console.log('Utilisateur créé avec succès!');
+        res.status(200).json({ 
+            message: 'Connexion réussie',
+            token 
+        });
 
-    }catch(error){
-        console.error('❌Erreur interne veuillez réessayer plus tard', error);
-        res.status(500).json({error:'❌Erreur interne veuillez réessayer plus tard'})
-
+    } catch (error) {
+        console.error('❌ Erreur lors de la connexion:', error);
+        res.status(500).json({ message: '❌ Erreur interne veuillez réessayer plus tard' });
     }
-}
+};

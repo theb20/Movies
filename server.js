@@ -1,10 +1,12 @@
 import express from "express";
+import nodeMailer from "nodemailer";
+import cors from "cors";
 import dotenv from "dotenv";
 import helmet from "helmet";
 import morgan from "morgan";
+import cookieParser from "cookie-parser";
 import { connectDB } from "./Config/db.js";
-import midlleware from './Middlewares/authMiddleware.js'
-
+import authMiddleware from './Middlewares/authMiddleware.js'
 import movieRoute from "./Routes/movieRoute.js";
 import catalogRoute from "./Routes/catalogRoute.js";
 import userRoute from "./Routes/userRoute.js";
@@ -19,14 +21,15 @@ const IP = process.env.IP ;
 // Middleware
 app.use(helmet());
 app.use(morgan("dev"));
+app.use(cors());
+app.use(cookieParser());
 app.use(express.json());
 
 //Routes
-app.use('/api/movie', movieRoute)
-app.use('/api/user', userRoute)
-app.use('/api/catalog', catalogRoute)
-app.use('/api/comment', commentRoute)
-
+app.use('/api/movie', authMiddleware, movieRoute)
+app.use('/api/user',authMiddleware, userRoute)
+app.use('/api/catalog',authMiddleware, catalogRoute)
+app.use('/api/comment',authMiddleware, commentRoute)
 
 app.listen(PORT, IP, async () => {
     console.log(`🚀 Serveur en ligne sur http://${IP}:${PORT}`);
