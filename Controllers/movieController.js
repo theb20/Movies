@@ -1,6 +1,8 @@
 import { connectDB } from "../Config/db.js";
+import upload from "../Config/uploadConfig.js";
 
-export const getIdMovie = async (req, res) => {
+
+export const getIdMovie = async (req, res) => {é
     try {
         const db = await connectDB();
         const [movie] = await db.query ("SELECT * FROM movie WHERE id_movie = ?", [req.params.id]);
@@ -14,7 +16,6 @@ export const getIdMovie = async (req, res) => {
         res.status(500).json({message:'Erreur interne veuillez réessayer plus tard'})
     }
 }
-
 export const getMovies = async (req, res) => {
     try{
         const db = await connectDB();
@@ -27,31 +28,67 @@ export const getMovies = async (req, res) => {
     }
 
 }
-
 export const addMovie = async (req, res) => {
     try {
-        console.log("📩 Données reçues :", req.body);
+        // Gérer l'upload de fichier d'abord
+        await new Promise((resolve, reject) => {
+            upload(req, res, (err) => {
+                if (err) {
+                    console.error("Erreur d'upload:", err);
+                    return reject(err);
+                }
+                resolve();
+            });
+        });
 
-        const { title, description, release_date, director, rating, video, trailer, img_presentation, img_cover, id_category } = req.body;
-
-        if (!title || !description || !release_date || !director || !rating || !video || !trailer || !img_presentation || !img_cover || !id_category) {
-            return res.status(400).json({ error: "Tous les champs sont requis" });
-        }
-
+        console.log("Fichiers reçus:", req.files);
+        
         const db = await connectDB();
-        const [result] = await db.query(
-            "INSERT INTO movie (title, description, release_date, director, rating, video, trailer, img_presentation, img_cover, id_category) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            [title, description, release_date, director, rating, video, trailer, img_presentation, img_cover, id_category]
+        
+        // Préparer les données du film
+        const movieData = {
+            title: req.body.title,
+            description: req.body.description || null,
+            release_date: req.body.release_date || null,
+            director: req.body.director || null,
+            rating: req.body.rating || null,
+            // Utiliser les chemins stockés ou construire les chemins à partir des fichiers
+            video: req.files?.["video"] ? 
+                (req.filesPaths?.video || `uploads/${req.files["video"][0].destination}/${req.files["video"][0].filename}`) : null,
+            trailer: req.files?.["trailer"] ? 
+                (req.filesPaths?.trailer || `uploads/${req.files["trailer"][0].destination}/${req.files["trailer"][0].filename}`) : null,
+            img_presentation: req.files?.["img_presentation"] ? 
+                (req.filesPaths?.img_presentation || `uploads/${req.files["img_presentation"][0].destination}/${req.files["img_presentation"][0].filename}`) : null,
+            img_cover: req.files?.["img_cover"] ? 
+                (req.filesPaths?.img_cover || `uploads/${req.files["img_cover"][0].destination}/${req.files["img_cover"][0].filename}`) : null,
+            id_category: req.body.id_category || null
+        };
+
+        console.log("Données à insérer:", movieData);
+
+        // Insérer le nouveau film
+        const [result] = await db.execute(
+            `INSERT INTO movie (title, description, release_date, director, rating, video, trailer, img_presentation, img_cover, id_category) 
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [movieData.title, movieData.description, movieData.release_date, movieData.director, 
+             movieData.rating, movieData.video, movieData.trailer, movieData.img_presentation, 
+             movieData.img_cover, movieData.id_category]
         );
 
-        console.log("✅ Film ajouté avec ID :", result.insertId);
-        res.status(201).json({ message: "Film ajouté avec succès" });
+        res.status(201).json({
+            message: "Film ajouté avec succès!",
+            movieId: result.insertId,
+            movie: movieData
+        });
+
     } catch (err) {
-        console.error("❌ Erreur de création :", err.message);
-        res.status(500).json({ error: "Erreur interne" });
+        console.error('❌ Erreur détaillée lors de l\'ajout du film:', err);
+        res.status(500).json({
+            error: "Erreur interne lors de l'ajout du film",
+            details: process.env.NODE_ENV === 'development' ? err.message : undefined
+        });
     }
 };
-
 export const putMovie = async (req, res) => {
     try {
         const db = await connectDB();
@@ -94,7 +131,6 @@ export const putMovie = async (req, res) => {
         res.status(500).json({ error: "❌ Erreur interne, veuillez réessayer plus tard." });
     }
 };
-
 export const deleteMovie = async (req, res) => {
     try {
         const db = await connectDB();

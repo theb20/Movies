@@ -1,10 +1,10 @@
-import bdd from 'mysql2/promise'
-import dotenv, { config } from 'dotenv'
+import mysql from 'mysql2/promise'
+import dotenv from 'dotenv'
 
 dotenv.config();
 export const connectDB = async() => {
     try{
-        const db = bdd.createConnection({
+        const db = await mysql.createConnection({
             host: process.env.DB_HOST,
             user: process.env.DB_USER,
             password: process.env.DB_PASSWORD,
