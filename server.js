@@ -19,11 +19,13 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT ; 
 const IP = process.env.IP ; 
-const __filename = fileURLToPath(import.meta.url);
+
+const __filename = fileURLToPath(import.meta.url); 
 const __dirname = path.dirname(__filename);
+
 // Middleware
 app.use(helmet());
-app.use(morgan("dev"));
+app.use(morgan("tiny"));
 app.use(cors());
 app.use(cookieParser());
 app.use(express.json());
