@@ -2,7 +2,7 @@ import { connectDB } from "../Config/db.js";
 
 export const getIdCatalog = async (req, res) => {
     try {
-        const db = await connectDB();
+         const db = await connectDB();
         const {id } = req.params
         const [categorie] = await db.query ("SELECT * FROM categorie WHERE id_category = ?", [id]);
         if(!categorie.length){
