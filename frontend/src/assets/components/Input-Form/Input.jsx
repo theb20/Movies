@@ -11,7 +11,7 @@ const CustomInput = ({ label, name, type, placeholder, value, onChange, error, c
         <input
           type={type}
           name={name}
-          className={`${formControl} ${classinput} ${error ? "is-invalid" : ""} ${isFocused ? "border-primary shadow-sm" : ""}`}
+          className={`textCustom ${formControl} ${classinput} ${error ? "is-invalid" : ""} ${isFocused ? "border-danger shadow-sm" : ""}`}
           placeholder={placeholder ? placeholder : "Aucun placeholder"}
           value={value}
           onChange={onChange}

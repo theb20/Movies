@@ -16,8 +16,9 @@
 }
 .t-btn {
     color: var(--color-white);
+    border: 1px solid var(--color-white);
+    border-radius:30px;
 }
 .t-btn:hover {
     background-color: var(--background-btn-active);
-    color: var(--color-red);
 }

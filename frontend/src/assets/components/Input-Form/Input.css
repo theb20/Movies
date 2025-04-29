@@ -3,13 +3,7 @@
 .form-control{
     background-color: var(--background-input);
 }
-.form-control:active{
-    background-color: #06e03d;
-}
-.form-control:focus{
-    background-color: var(--background-input);
-    outline: none;
-}
+
 .form-control::placeholder{
     color: var(--text-placeholder);
 }

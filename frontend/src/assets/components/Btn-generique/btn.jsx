@@ -7,8 +7,7 @@ const Button = ({ children, onClick, type = "", className = "", status, ...props
     <button 
       type={type} 
       className={`btn ${btncolor} ${className}`} 
-      onClick={(e) => {
-        e.preventDefault(); 
+      onClick={() => {
         if (onClick) onClick();
       }}
       {...props}

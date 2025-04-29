@@ -1,0 +1,21 @@
+@import url('../../../App.css');
+
+.img_carousel::before {
+    content: '';
+    position: absolute;
+    background: linear-gradient(to bottom, transparent, var(--background));
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 2;
+}
+.fs-title-carousel {
+    font-family: "Bebas Neue", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 120px;
+}
+.movie-card{
+    height: 260px;
+}

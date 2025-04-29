@@ -1,14 +1,11 @@
 import './Terms.css'
 import bgicon from '../../images/Background/terms-removebg-preview.png'
 import Button from '../../components/Btn-generique/btn'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 
-const Terms = () => {
-    const mainTerms='text-white'
-    const termsOne =' termsOne vh-75 px-5   d-flex justify-content-between align-items-center'
-    const termsTwo ='d-flex'
-
-    const [visible, setVisible] = useState(`section1`)
+const Terms = () => {   
+    const location = useLocation()
     const sections = {
         section1: "Bienvenue sur notre plateforme. Nous nous engageons à vous offrir un service de qualité, sécurisé   et transparent. L'utilisation de notre site est soumise aux présentes Conditions Générales d’Utilisation (CGU) et à notre Politique de Confidentialité.En accédant à notre site et en utilisant nos services, vous reconnaissez avoir lu, compris et accepté sans réserve ces conditions. Celles-ci visent à établir un cadre clair quant aux droits et responsabilités des utilisateurs ainsi que ceux de notre entreprise. Si vous n’acceptez pas ces conditions, nous vous invitons à ne pas utiliser notre plateforme.Notre priorité est de garantir une expérience fluide et agréable tout en respectant la réglementation en vigueur en matière de protection des données et de droits numériques.",
         section2: "L'utilisation de Movies est soumise aux conditions suivantes : Création d’un compte utilisateur Pour accéder à l’ensemble des fonctionnalités, vous devez créer un compte avec une adresse e-mail valide. L’abonnement est fixé à 5€ par mois.Accès aux contenus Movies vous permet de streamer du contenu légalement. Vous ne devez pas télécharger ni redistribuer nos films sans autorisation. Toute tentative de pirat Movies est disponible sur PC, tablettes, smartphones et TV con En tant qu'utilisateur, vous vous engagez à : Ne pas partager votre compte avec des tiers, Ne pas contourner les restrictions de sécurité, Respecter les droits d’auteur des œuvres diffusées.",
@@ -19,6 +16,17 @@ const Terms = () => {
         section7: " Pour toute question ou assistance, vous pouvez nous contacter via : 📧 Email : support@movies.com  📞 Téléphone : +33 1 23 45 67 89 💬 Support en ligne : Chat disponible 24/7 Nous nous engageons à répondre sous 48 heures ouvrées.",
         section8:"Découvrez nos articles sur le cinéma, les critiques de films et les tendances du streaming sur notre blog officiel : [Lien vers le blog Movies] Nos thématiques incluent : 🎬 Les coulisses des grands films, 🍿 Les meilleures recommandations, 📢 Les dernières actualités du streaming. Rejoignez notre communauté et partagez votre passion du cinéma !"
     }
+    useEffect(()=>{ 
+        const hash = location.hash.replace('#', '')
+        if (sections [hash]) setVisible(hash)
+    }, [location]) 
+
+    const mainTerms='text-white'
+    const termsOne =' termsOne vh-75 px-5   d-flex justify-content-between align-items-center'
+    const termsTwo ='d-flex'
+
+    const [visible, setVisible] = useState(`section1`)
+    
 
     return (
         <main className={mainTerms}>

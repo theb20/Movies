@@ -1,181 +1,297 @@
-import { Link } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+// React & Router
+import { Link, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import top_un from '../../images/Autres/1.jpg'
+import top_deux from '../../images/Autres/2.jpg'
+import top_trois from '../../images/Autres/3.jpg'
+import top_quatre from '../../images/Autres/4.jpg'
+import top_cinq from '../../images/Autres/5.gif'
+import top_six from '../../images/Autres/6.jpg'
+import top_sept from '../../images/Autres/7.jpg'
+import top_huit from '../../images/Autres/8.jpg'
+import top_neuf from '../../images/Autres/9.jpg'
+import top_dix from '../../images/Autres/10.jpg'
+import top_onze from '../../images/Autres/11.jpg'
+import top_douze from '../../images/Autres/12.jpg'
+
+// Icons
 import { SiInfiniti } from "react-icons/si";
+import { TbInfoHexagon } from "react-icons/tb";
+import { HiChevronDoubleRight } from "react-icons/hi";
 import { BiSupport } from "react-icons/bi";
+import { MdOutlineNavigateNext } from "react-icons/md";
+import { BiSolidMoviePlay } from "react-icons/bi";
 import { RiAdvertisementLine, RiShoppingBag4Line } from "react-icons/ri";
-import netflixL from '../../images/Logos/netflix.webp'
-import canalL from '../../images/Logos/canal.webp'
-import disneyL from '../../images/Logos/disney.webp'
-import plutottv from '../../images/Logos/plutottv.webp'
-import primeL from '../../images/Logos/primevideo.webp'
-import rakuL from '../../images/Logos/raku.webp'
-import tubiL from '../../images/Logos/tubi.webp'
 
+// Components
+import Input from "../../components/Input-Form/Input.jsx";
+import Button from "../../components/Btn-generique/btn.jsx";
 
-import './Home.css'
+// Images & Logos
+import IconPopcorn from "../../images/Icons/popcorn_time_macos_bigsur_icon_189462.ico";
+import fichierErreur1 from '../../images/Background/b22d9b8e4948c66c00e3724f1d2ef9d5.jpg';
+import netflixL from '../../images/Logos/netflix.webp';
+import canalL from '../../images/Logos/canal.webp';
+import disneyL from '../../images/Logos/disney.webp';
+import plutottv from '../../images/Logos/plutottv.webp';
+import primeL from '../../images/Logos/primevideo.webp';
+import rakuL from '../../images/Logos/raku.webp';
+import tubiL from '../../images/Logos/tubi.webp';
 
-import Input from "../../components/Input-Form/Input.jsx"
-import Button from "../../components/Btn-generique/btn.jsx"
-import IconPopcorn from "../../images/Icons/popcorn_time_macos_bigsur_icon_189462.ico"
-import fichierErreur from '../../images/Background/$_57.jpeg'
-import fichierErreur1 from '../../images/Background/b22d9b8e4948c66c00e3724f1d2ef9d5.jpg'
-
+// Styles
+import './Home.css';
 
 const Home = () => {
+    const [showText, setShowText] = useState(false);
+    const [email, setEmail] = useState('');
+    const trendingImg = [
+        top_un,
+            top_deux,
+            top_trois,
+            top_quatre,
+            top_cinq,   
+            top_six,
+            top_sept,
+            top_huit,
+            top_neuf,
+            top_dix,
+            top_onze,
+            top_douze,
+    ]
     const currentTrends = Array(12).fill(null).map((_,index) => ({
         id: index, 
-        image: fichierErreur,
+        image: trendingImg[index]
     }));
-    const size = 60
+
+
     const navigate = useNavigate();
-    const handleNavigate = () => {
-        navigate('/catalogue')
+    
+    const size = 60;
+    const popcorn = { width: '70px', height: '70px' };
+
+    const styles = {
+        mainHome: 'mainHome text-light vw-100 overflow-hidden',
+        homeOne: 'homeOne vh-100  d-flex pt-lg-0 pt-5 align-items-lg-center justify-content-center text-center',
+        homeTwo: 'homeTwo d-flex px-5 py-3 justify-content-center text-left',
+        homeThree: 'vh-custom',
+        homeFour: 'px-5',
+        homeFive: 'homeFive d-flex flex-row flex-column-md align-items-center justify-content-between p-custom bg-danger mx-2 my-4 mx-md-5',
+        homeSix: 'd-flex align-items-center justify-content-center flex-column px-4 gap-4',
+        homeSeven: 'px-5',
+        contentR: "d-flex align-items-center justify-center gap-3",
+        iconFour: 'bg-danger-custom py-1 px-3 rounded-5',
+        card_price_content: 'card-price-content d-flex flex-column  justify-content-center bg-dark rounded-4 p-3',
+        price: 'fs-2 py-1 px-3 rounded-5 price',
+        label: 'label py-1 px-3 rounded-5 label'
+    };
+
+    const partnerLogos = [netflixL, canalL, disneyL, plutottv, primeL, rakuL, tubiL];
+
+    const features = [
+        { Icon: SiInfiniti, title: "Accès illimité", description: "Profitez de milliers de contenus sans aucune restriction, disponibles 24h/24 et 7j/7." },
+        { Icon: BiSupport, title: "Support premium", description: "Accédez à une assistance rapide et dédiée pour résoudre tous vos problèmes." },
+        { Icon: RiAdvertisementLine, title: "Sans publicité", description: "Savourez vos contenus sans interruptions, pour une expérience fluide et agréable." },
+        { Icon: RiShoppingBag4Line, title: "Offre exclusive", description: "Bénéficiez d'offres et de réductions réservées uniquement aux abonnés." }
+    ];
+    const handleSubmit = (e) =>{
+        e.preventDefault();
+        navigate('/signup', {state: {email}})
     }
 
-
-    const mainHome ='mainHome text-light vw-100 overflow-hidden'
-    const homeOne = 'homeOne vh-100 d-flex align-items-center justify-content-center text-center';
-    const homeTwo ='homeTwo d-flex px-5 py-3 justify-content-center text-left';
-    const homeThree ='vh-custom';
-    const homeFour ='px-5';
-    const homeFive ='homeFive d-flex flex-row flex-column-md align-items-center justify-content-between p-custom bg-danger mx-2 my-4 mx-md-5'
-
-    const homeSix ='d-flex align-items-center justify-content-center flex-column gap-4';
-    const homeSeven ='px-5';
-    const popcorn = {width:'70px', height:'70px'};
-    const contentR ="d-flex align-items-center justify-center gap-3"
-    const iconFour= 'bg-danger-custom py-1 px-3 rounded-5'
-
     return (
-        <main className={mainHome}>
-            <section className={homeOne}>
+        <main className={styles.mainHome}>
+
+            {/* Section One */}
+            <section className={styles.homeOne}>
                 <div className="container-one w-50 text-center z-2">
-                    
-                        <h1 className="fs-1 lh-1">Films en illimité, à tout moment et ou que vous soyez</h1>
-
-                        <p>Partir de 5 €. Annulable à tout moment.
-                        Découvrez une vaste sélection de films, disponibles à tout moment. Profitez de l'expérience cinématographique ultime, où que vous soyez</p>
-
-                        <form action="" method='GET' className='d-flex mt-5 align-items-center gap-2 justify-content-center'>
-                            <Input         
-                                classlabel='d-none' 
-                                classinput='w-100 p-2 rounded-2'
-                                placeholder={'Entrez votre mail'}
-                            />
-                            <Button status='primary-btn'  children={"s'inscrire"}/>
-
-                        </form>
+                    <h1 className="display-5 ">Films en illimité, à tout moment et où que vous soyez</h1>
+                    <p>À partir de 5 €. Annulable à tout moment. Découvrez une vaste sélection de films disponibles à tout moment. Profitez de l'expérience cinématographique ultime, où que vous soyez.</p>
+                    <form className='d-flex mt-5 align-items-center gap-2 justify-content-center' onSubmit={handleSubmit}>
+                        <Input 
+                        classlabel='d-none' 
+                        classinput='bg-dark bg-opacity-50 text-white w-100 p-2 rounded-2' 
+                        placeholder={'Entrez votre mail'} 
+                        type="email"
+                        name="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        />
+                        <Button type='submit' status='primary-btn'>s'inscrire</Button>
+                    </form>
                 </div>
             </section>
-            <section className={homeTwo}>
-                
-                    <div className="container-two d-flex align-items-center">
-                        <img src={IconPopcorn} alt="icon popcorn" style={popcorn} />
 
-                        <div className="container-two-right lh-0 m-0 px-2 py-1 rounded">
-                            <h5 className=' mb-0'>Vos films préférés pour seulement 5 €.</h5>
-                            <p className=' mb-0'>Découvrez notre offre sans publicité, la plus avantageuse.</p>
-                            <Link className='border-bottom border-1 mb-0' to={'/'}>
-                                En savoir plus
-                            </Link>
-                        </div>
+            {/* Section Two */}
+            <section className={styles.homeTwo}>
+                <div className="container-two d-flex align-items-center">
+                    <img src={IconPopcorn} alt="icon popcorn" style={popcorn} />
+                    <div className="container-two-right lh-0 m-0 px-2 py-1 rounded">
+                        <h5 className='mb-0'>Vos films préférés pour seulement 5 €.</h5>
+                        <p className='mb-0'>Découvrez notre offre sans publicité, la plus avantageuse.</p>
+                        <Link className='border-bottom border-1 mb-0' onClick={(e) => {e.preventDefault(); setShowText(!showText);}} to={'#'}>En savoir plus {' '} <TbInfoHexagon />
+                        </Link>
+                        {showText && <p className='info-container-two position-absolute bg-white text-black p-2 rounded'>Cette offre sera disponible après la version beta, veuillez profiter de l'offre gratuite.</p>}
+                        
                     </div>
+                </div>
             </section>
-            <section className={homeThree}>
+
+            {/* Section Three */}
+            <section className={styles.homeThree}>
                 <div className="container-three overflow-visible">
                     <div className="container-three-title px-5 d-flex justify-content-between align-items-center">
                         <h5 className="fs-bold lh-1 m-0">Top 10</h5>
-                        <Button onClick={handleNavigate} status='primary-btn' children={'Tout voir'}/>
+                        <Button onClick={() => navigate('/catalogue')} status='primary-btn'>Tout voir</Button>
                     </div>
-                    <div className="container-card bg-custom px-5 py-5 d-flex gap-3 position-absolute z-2 overflow-auto flex-nowrap w-100">
-                        {currentTrends.map((trends) => (
-                        <Link to="/" key={trends.id}>
-                            <div className="card custom-card bg-dark align-items-center justify-content-center"
-                                style={{ minWidth: "200px" }}>
+                    <div className="container-card bg-custom p-5 d-flex gap-3 position-absolute z-2 overflow-auto flex-nowrap w-100">
+                    {currentTrends.map((trends) => (
+                        <Link to="/catalogue" key={trends.id}>
+                            <div className="card custom-card bg-transparent align-items-center justify-content-center">
                             <span className="text-light fs-custom position-absolute bottom-custom text-white-50 fw-bold z-1 start-0">
                                 {trends.id}
                             </span>
-                            <img src={trends.image} alt="image" className="card-img-top" />
+                            <img src={trends.image} alt="image" className="card-img" />
                             </div>
                         </Link>
                         ))}
                     </div>
                 </div>
             </section>
-            <section className={homeFour}>
+
+            {/* Section Four */}
+            <section className={styles.homeFour}>
                 <div className="container-four">
-
-                    <div className="container-four-title  d-flex justify-content-between align-items-center mb-5">
-                            <h5 className="fs-bold lh-1 m-0">Encore plus de raison de vous abonner</h5>
+                    <div className="container-four-title d-flex justify-content-between align-items-center mb-5">
+                        <h5 className="fs-bold lh-1 m-0">Encore plus de raisons de vous abonner</h5>
                     </div>
-
                     <div className="container-four-content d-flex flex-wrap justify-content-around gap-3">
                         <div className="container-four-content-left overflow-auto rounded-5" style={{ height: '400px', width: '400px' }}>
                             <span className='position-absolute bg-danger-custom rounded-custom px-3'>En ce moment</span>
-                            <img src={fichierErreur1} className="w-100 h-100 object-fit-cover rounded-5" alt="film le mieux noté" />
+                            <img src={fichierErreur1} className="w-100 h-100 object-fit-cover rounded-5" alt="film du moment" />
                         </div>
                         <div className="container-four-content-right d-flex flex-column gap-4 justify-content-center">
-                                <div className={contentR}>
-                                    <SiInfiniti size={size} className={iconFour}/>
+                            {features.map(({ Icon, title, description }, i) => (
+                                <div className={styles.contentR} key={i}>
+                                    <Icon size={size} className={styles.iconFour} />
                                     <div className="c-r-right">
-                                        <h6>Accès illimité</h6>
-                                        <p>Profitez de milliers de contenus sans aucune restriction, disponibles 24h/24 et 7j/7.</p>
+                                        <h6>{title}</h6>
+                                        <p>{description}</p>
                                     </div>
                                 </div>
-                                <div className={contentR}>
-                                    <BiSupport size={size} className={iconFour}/>
-                                    <div className="c-r-right">
-                                        <h6>Support premium</h6>
-                                        <p>Accédez à une assistance rapide et dédiée pour résoudre tous vos problèmes.</p>
-                                    </div>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="d-flex flex-wrap align-items-center justify-content-center w-lg-50 w-100">
+                        <div className="d-flex flex-column col-12 col-lg-6">
+                            <h5 className="fw-bold fs-custom text-center col-12 col-lg-6 text-lg-start">Plan Tarifaire</h5>
+                            
+                                <div className="col-12 col-lg-5">
+                                    <p className="descriptionPlan text-center text-lg-start">
+                                        Choisissez l'abonnement qui vous correspond et profitez d'un accès illimité à notre catalogue de films. Nos formules sont simples, flexibles et sans engagement, pour une expérience cinéma sur mesure à prix doux.
+                                    </p>
                                 </div>
-                                <div className={contentR}>
-                                    <RiAdvertisementLine size={size} className={iconFour}/>
-                                    <div className="c-r-right">
-                                        <h6>Sans publicité</h6>
-                                        <p>Savourez vos contenus sans interruptions, pour une expérience fluide et agréable.</p>
-                                    </div>
-                                </div>
-                                <div className={contentR}>
-                                    <RiShoppingBag4Line size={size} className={iconFour}/>
-                                    <div className="c-r-right">
-                                        <h6>Offre exclusive</h6>
-                                        <p>Bénéficiez d&apos;offres et de réductions réservées uniquement aux abonnés.</p>
-                                    </div>
-                                </div>
+                        </div>      
+                        <div className="ticket-container mt-4 ticket-one d-flex align-items-center ">
+                            <div className="ticket">
+                                <div className="ticket-top p-3 p-lg-5 rounded-top-4" 
+                                    style={{background: 'linear-gradient(77.59deg, var(--color-darkred) 18%, var(--color-black) 100%)', height:'190px'}}>
 
+                                    <h6 className="text-uppercase mb-3 text-center">Abonnement decouverte</h6>
+                                    <div className="position-relative">
+                                        <div className="d-flex align-items-center mt-2">
+                                            <HiChevronDoubleRight className='position-absolute start-0'/>
+                                            <span className="price position-absolute" style={{fontSize:'7em', height:'90px'}}>0</span>
+                                        </div>
+                                        <div className="position-absolute top-0 end-0 text-start">
+                                            <BiSolidMoviePlay size={30}/>
+                                            <p className="mb-1 small fw-bold">/ Mois x1</p>
+                                            <p className="small fw-bold">/ Ans x12</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div className="ticket-bottom bg-white rounded-bottom-4">
+                                    <div className="flight-details px-3 px-lg-5 py-3">
+                                        <div className="d-flex flex-column flex-lg-row justify-content-between mb-4">
+                                            <p className="mb-2 mb-lg-0 text-black text-center text-lg-start">
+                                                <span className="d-block">Qualité incluse</span>
+                                                Standard (SD)
+                                            </p>
+                                            <p className="mb-0 text-black text-center text-lg-start">
+                                                <span className="d-block">Engagement</span>
+                                                None
+                                            </p>
+                                        </div>
+                                        
+                                        <div className="d-flex flex-column flex-lg-row justify-content-between mb-4">
+                                            <p className="mb-2 mb-lg-0 text-black text-center text-lg-start">
+                                                <span className="d-block">Interface Intuitive</span>
+                                                Selection rapide
+                                            </p>
+                                            <p className="mb-0 text-black text-center text-lg-start">
+                                                <span className="d-block">Exclusivité</span>
+                                                1 fois / mois
+                                            </p>
+                                        </div>
+                                        
+                                        <div className="d-flex flex-column flex-lg-row justify-content-between mb-4">
+                                            <Link to='/terms#section6' className="mb-2 mb-lg-0 text-black text-center text-lg-start">
+                                                <span className="d-block">Confidentialité</span>
+                                                continuer vers <MdOutlineNavigateNext />
+                                            </Link>
+                                            <Link to='/terms#section7' className="mb-0 text-black text-center text-lg-start">
+                                                <span className="d-block">Contact</span>
+                                                <i className='text-'>Infos</i> <MdOutlineNavigateNext />
+                                            </Link>
+                                        </div>
+                                    </div>
+                                    <div className="coupure"><div className="dashed-line"></div></div>
+                                    <div className="p-3 d-flex flex-column flex-lg-row align-items-center justify-content-between gap-3">
+                                        <div className="barcode m-2"></div>
+                                        <Button children={'Choisir ce plan'} onClick={() => navigate('/signup')} className='p-btn w-100 w-lg-auto'/>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
+                    
             </section>
-            <section className={homeFive}>
-                <h5 className='fw-bold fs-1 z-2'>FAQ</h5> <Button children={'voir+'} className='p-btn px-5 z-2 rounded-5' onClick={''}/>
-            </section>
-            <section className={homeSix}> 
-                        <p className='text-center'>Prêt à regarder Movies ? Saisissez votre adresse e-mail pour vous abonner ou réactiver votre abonnement.</p>
-                        <form action="" method='GET' className='d-flex align-items-center gap-2 justify-content-center'>
-                            <Input         
-                                classlabel='d-none' 
-                                classinput='w-100 p-2 rounded-2'
-                                placeholder={'Entrez votre mail'}
-                            />
-                            <Button status='primary-btn'  children={"s'inscrire"}/>
 
-                        </form>
+            {/* Section Five */}
+            <section className={styles.homeFive}>
+                <h5 className='fw-bold fs-1 z-2'>FAQ</h5>
+                <Button onClick={()=> navigate('/terms')} className='p-btn px-5 z-2 rounded-5'>voir+</Button>
             </section>
-            <section className={homeSeven}>
+
+            {/* Section Six */}
+            <section className={styles.homeSix}>
+                <p className='text-center'>Prêt à regarder Movies ? Saisissez votre adresse e-mail pour vous abonner ou réactiver votre abonnement.</p>
+                <form className='d-flex align-items-center gap-2 justify-content-center' onSubmit={handleSubmit}>
+                    <Input 
+                        classlabel='d-none' 
+                        classinput='bg-dark bg-opacity-50 text-white w-100 p-2 rounded-2'   
+                        placeholder={'Entrez votre mail'}
+                        type="email"
+                        name="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
+                    <Button type='submit' status='primary-btn'>s'inscrire</Button>
+                </form>
+            </section>
+
+            {/* Section Seven */}
+            <section className={styles.homeSeven}>
                 <h5 className='text-center mb-5 mt-5'>Nos partenaires</h5>
                 <div className="container-logos d-flex flex-wrap justify-content-between mb-5">
-                    <img src={netflixL} className='size-img-custom'  alt="partenaires" />
-                    <img src={canalL} className='size-img-custom'  alt="partenaires" />
-                    <img src={disneyL} className='size-img-custom'  alt="partenaires" />
-                    <img src={plutottv} className='size-img-custom'  alt="partenaires" />
-                    <img src={primeL} className='size-img-custom'  alt="partenaires" />
-                    <img src={rakuL} className='size-img-custom'  alt="partenaires" />
-                    <img src={tubiL} className='size-img-custom'  alt="partenaires" />
+                    {partnerLogos.map((logo, i) => (
+                        <img src={logo} key={i} className='size-img-custom' alt="partenaire" />
+                    ))}
                 </div>
             </section>
         </main>
-    )
-}
+    );
+};
+
 export default Home;

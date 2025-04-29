@@ -1,100 +1,137 @@
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+// Header.jsx
+
+import { Link, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { RiMovie2Line } from "react-icons/ri";
 import { TbCategoryPlus } from "react-icons/tb";
 import { SiSteelseries } from "react-icons/si";
 import { BsClockHistory } from "react-icons/bs";
-
 import logoD from "../../images/Logos/Logo_movies_ft.svg";
 import logoM from "../../images/Logos/Logo_M.svg";
 import logoU from "../../images/Icons/user.png";
 import logoR from "../../images/Icons/rechercher.png";
 import Button from "../Btn-generique/btn.jsx";
+import useAuth from '../../../contexts/useAuth';
 import "./Header.css";
 
 const Header = () => {
-    const navigate = useNavigate();
-    const redirection = () =>{
-      navigate("/profile");
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
+
+
+  const isHome = location.pathname === '/';
+  const isLogin = location.pathname === '/login';
+  const isRegister = location.pathname === '/signup';
+  const isTerms = location.pathname === '/terms';
+  const handleLogin = () => navigate('/login');
+  const handleRegister = () => navigate('/signup');
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/');
+    } catch (error) {
+      console.error('Erreur de déconnexion:', error);
     }
-    const logo_D = {width:"130px"}
-    const logo_M = {width:"60px", backgroundColor: 'var(--background-gray'}
-    const navUl = "d-flex gap-2 p-0 m-0 align-items-center "
-    const navLinkMobile = 'd-flex align-items-center flex-column'
-    const size = 20
-    
+  };
+
+  const logo_D = { width: "130px" };
+  const logo_M = { width: "60px", backgroundColor: 'var(--background-gray)' };
+  const navUl = "d-flex gap-2 p-0 m-0 align-items-center";
+  const navLinkMobile = 'd-flex align-items-center flex-column';
+  const size = 20;
+
+
   return (
     <header className="d-flex justify-content-between flex-column align-items-center z-3 py-3 px-5 text-light">
+      
+      {/* === DESKTOP === */}
       <div className="desktop d-none d-md-flex justify-content-between w-100">
-          <div className="h-left d-flex align-items-center">
-            <div className="logos">
-              <Link to={'/'}><img style={logo_D} className='logoD' src={logoD} alt="logo desktop"  /></Link>
-            </div>
+        <div className="h-left d-flex gap-2 align-items-center">
+          <div className="logos">
+            <Link to={'/'}><img style={logo_D} className='logoD' src={logoD} alt="logo desktop" /></Link>
+          </div>
+            {!isHome && !isTerms && !isLogin &&!isRegister &&( 
+              <nav>
+                <ul className="nav d-flex gap-3">
+                  <li><Link className="nav-link text-light" to="/catalogue">Tous les films</Link></li>
+                  <li><Link className="nav-link text-light" to="/catalogue">Catégorie</Link></li>
+                  <li><Link className="nav-link text-light" to="/catalogue">Séries</Link></li>
+                  <li><Link className="nav-link text-light" to="/catalogue">Mieux Notés</Link></li>
+                  <li><Link className="nav-link text-light" to="/historique">Historique</Link></li>
+                </ul>
+              </nav>
+            )}
+          
+        </div>
 
-            <nav>
-              <ul className="nav">
-                <li className="nav-item"><Link className="nav-link text-light" to="/*">Tous les films</Link></li>
-                <li className="nav-item"><Link className="nav-link text-light" to="/categories">Catégorie</Link></li>
-                <li className="nav-item"><Link className="nav-link text-light" to="/series">Séries</Link></li>
-                <li className="nav-item"><Link className="nav-link text-light" to="/top-rated">Mieux Notés</Link></li>
-                <li className="nav-item"><Link className="nav-link text-light" to="/historique">Historique</Link></li>
+        <div className="btnPlusProfil d-flex align-items-center">
+          <Button className="bg-transparent border-0 p-0" onClick={() => alert("Recherche")}>
+            <img src={logoR} alt="recherche" />
+          </Button>
+          <Button className="bg-transparent border-0 p-0">
+        <select 
+          className="form-select text-light bg-transparent border-0 w-auto" 
+          style={{ fontSize: "1em" }}
+        >
+          <option value="fr">Français</option>
+          <option value="en">English</option>
+        </select>
+      </Button>
+
+          {user ? (
+            <div className="dropdown text-center">
+              <Button className="bg-transparent text-light d-flex align-items-center justify-content-center w-100" type="button" data-bs-toggle="dropdown">
+                <span className="me-2">{user.first_name}</span>
+                <img src={user.picture_user || logoU} alt="user" width="30" />
+              </Button>
+              <ul className="dropdown-menu dropdown-menu-dark p-3 text-center" style={{ minWidth: '200px' }}>
+                <li><Link className="dropdown-item text-center" to="/profile">Voir le profil</Link></li>
+                <li><Button onClick={handleLogout} className="s-btn dropdown-item text-center w-100">Déconnexion</Button></li>
               </ul>
-            </nav>
-          </div>
-          <div className="btnPlusProfil w-0 d-flex align-items-center">
-            <Button className="bg-transparent border-0 p-0" onClick={() => alert("Action bouton")}>
-                <img src={logoR} alt="recherche"/>
-            </Button>
-
-            <Button className="bg-transparent border-0 p-0">
-              <select
-                defaultValue="fr"
-                id="langue"
-                className="form-select text-light bg-transparent border-0 w-auto"
-                style={{ fontSize:"1em" }}
-              >
-                <option value="fr">Français</option>
-                <option value="en">Anglais</option>
-              </select>
-            </Button>
-
-            <Button onClick={redirection} className="bg-transparent text-light border-0 p-0">
-              Name User <img src={logoU} alt="user logo" className="ms-2" width="30" />
-            </Button>
-          </div>
+            </div>
+          ) : (
+            <div className="d-flex gap-2">
+              <Button onClick={handleLogin} className="t-btn" type="button">Se connecter</Button>
+              <Button onClick={handleRegister} className="p-btn" type="button">S'inscrire</Button>
+            </div>
+          )}
+        </div>
       </div>
-      <div className="mobile d-flex gap-3 justify-content-between align-items-center d-md-none px-3">
-  
-  {/* Navigation gauche */}
-  <nav className="navbar p-0">
-    <ul className={`${navUl} list-unstyled d-flex gap-3 align-items-center`}>
-      <li><Link className={`${navLinkMobile} text-center d-flex flex-column align-items-center`}>
-        <RiMovie2Line size={size} /><span>Films</span>
-      </Link></li>
-      <li><Link className={`${navLinkMobile} text-center d-flex flex-column align-items-center`}>
-        <TbCategoryPlus size={size} /><span>Catégorie</span>
-      </Link></li>
-    </ul>
-  </nav>
 
-  {/* Logo au centre */}
-  <div className="d-flex flex-column gap-2 justify-content-center align-items-center">
-    <img style={logo_M} className="logoM rounded-5 p-2" src={logoM} alt="logo mobile" />
-  </div>
+      {/* === MOBILE === */}
+        <div className="mobile d-flex gap-3 justify-content-between align-items-center d-md-none px-3">
+          <nav className="navbar p-0">
+            <ul className={`${navUl} list-unstyled d-flex gap-3 align-items-center`}>
+              <li>
+                <Link className={`${navLinkMobile} text-center`} to="/films">
+                  <RiMovie2Line size={size} /><span>Films</span>
+                </Link>
+              </li>
+              <li>
+                <Link className={`${navLinkMobile} text-center`} to="/categories">
+                  <TbCategoryPlus size={size} /><span>Catégorie</span>
+                </Link>
+              </li>
+            </ul>
+          </nav>
 
-  {/* Navigation droite */}
-  <nav className="navbar p-0">
-    <ul className={`${navUl} list-unstyled d-flex gap-3 align-items-center`}>
-      <li><Link className={`${navLinkMobile} text-center d-flex flex-column align-items-center`}>
-        <SiSteelseries size={size} /><span>Séries</span>
-      </Link></li>
-      <li><Link className={`${navLinkMobile} text-center d-flex flex-column align-items-center`}>
-        <BsClockHistory size={size} /><span>Historique</span>
-      </Link></li>
-    </ul>
-  </nav>
+          <div className="d-flex flex-column gap-2 align-items-center">
+            <img style={logo_M} className="logoM rounded-5 p-2" src={logoM} alt="logo mobile" />
+          </div>
 
-      </div>
+          <nav className="navbar p-0">
+            <ul className={`${navUl} list-unstyled d-flex gap-3 align-items-center`}>
+              <li><Link className={`${navLinkMobile} text-center`} to="/series">
+                <SiSteelseries size={size} /><span>Séries</span>
+              </Link></li>
+              <li><Link className={`${navLinkMobile} text-center`} to="/historique">
+                <BsClockHistory size={size} /><span>Historique</span>
+              </Link></li>
+            </ul>
+          </nav>
+        </div>
+      
     </header>
   );
 };
