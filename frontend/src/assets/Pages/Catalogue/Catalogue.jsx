@@ -52,7 +52,7 @@ const Catalogue = () => {
                 alt={movie.title}
               />
             </div>
-            <Carousel.Caption className='position-absolute text-start d-flex flex-column gap-4 bottom-0 start-0 z-3' style={{ paddingLeft:'04%'}}>
+            <Carousel.Caption className='position-absolute text-start d-flex flex-column gap-4 bottom-0 start-0' style={{ paddingLeft:'04%', zIndex:'10'}}>
               <h3 className=' fs-title-carousel'>{movie.title}</h3>
 
               <div className="d-flex align-itmes-center justify-content-start gap-3">

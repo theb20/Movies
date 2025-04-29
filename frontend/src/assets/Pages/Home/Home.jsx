@@ -128,8 +128,10 @@ const Home = () => {
                     <div className="container-two-right lh-0 m-0 px-2 py-1 rounded">
                         <h5 className='mb-0'>Vos films préférés pour seulement 5 €.</h5>
                         <p className='mb-0'>Découvrez notre offre sans publicité, la plus avantageuse.</p>
+
                         <Link className='border-bottom border-1 mb-0' onClick={(e) => {e.preventDefault(); setShowText(!showText);}} to={'#'}>En savoir plus {' '} <TbInfoHexagon />
                         </Link>
+                        
                         {showText && <p className='info-container-two position-absolute bg-white text-black p-2 rounded'>Cette offre sera disponible après la version beta, veuillez profiter de l'offre gratuite.</p>}
                         
                     </div>

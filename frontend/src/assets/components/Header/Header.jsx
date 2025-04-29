@@ -1,6 +1,8 @@
 // Header.jsx
 
 import { Link, useNavigate } from "react-router-dom";
+import Input from "../Input-Form/Input.jsx";
+import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { RiMovie2Line } from "react-icons/ri";
 import { TbCategoryPlus } from "react-icons/tb";
@@ -15,6 +17,8 @@ import useAuth from '../../../contexts/useAuth';
 import "./Header.css";
 
 const Header = () => {
+  const [showSearch, setShowSearch] = useState(false);
+  const [searchValue, setSearchValue] = useState('');
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
@@ -66,9 +70,32 @@ const Header = () => {
         </div>
 
         <div className="btnPlusProfil d-flex align-items-center">
-          <Button className="bg-transparent border-0 p-0" onClick={() => alert("Recherche")}>
-            <img src={logoR} alt="recherche" />
-          </Button>
+
+         
+              <Button 
+                variant="link" 
+                className="p-0 border-0" 
+                onClick={() => setShowSearch(!showSearch)}
+              >
+                <img src={logoR} alt="recherche" style={{ width: '24px' }} />
+              </Button>
+
+              {showSearch && (
+                <div 
+                  className="position-absolute top-0 start-50 translate-middle-x mt-2 p-2 bg-danger"
+                  style={{ width: '100%', height: '550px' }}
+                >
+                  <Input 
+                    type="text" 
+                    className="form-control" 
+                    placeholder="Rechercher un film..." 
+                    value={searchValue}
+                    onChange={(e) => setSearchValue(e.target.value)}
+                  />
+                </div>
+              )}
+          
+
           <Button className="bg-transparent border-0 p-0">
         <select 
           className="form-select text-light bg-transparent border-0 w-auto" 

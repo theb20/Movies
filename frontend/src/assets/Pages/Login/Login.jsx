@@ -34,7 +34,7 @@ const Login = () => {
       // Vérification plus détaillée de la réponse
       if (res && (res.token || res.id_user)) {
         console.log('Authentification réussie');
-        navigate('/profile');
+        navigate('/catalogue');
       } else {
         console.log('Réponse invalide:', res);
         throw new Error('Données d\'authentification invalides');
