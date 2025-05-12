@@ -4,7 +4,7 @@ export const getIdCatalog = async (req, res) => {
     try {
          const db = await connectDB();
         const {id } = req.params
-        const [categorie] = await db.query ("SELECT * FROM categorie WHERE id_category = ?", [id]);
+        const [categorie] = await db.query ("SELECT * FROM category WHERE id_category = ?", [id]);
         if(!categorie.length){
             return res.status(404).json({message: '❌ Categorie impossible a trouver'})
         }
@@ -19,7 +19,7 @@ export const getIdCatalog = async (req, res) => {
 export const getCatalog = async (req, res) => {
     try{
         const db = await connectDB();
-        const [categorie] = await db.query("SELECT * FROM categorie");
+        const [categorie] = await db.query("SELECT * FROM category");
         res.status(200).json(categorie);
         console.log("+1 req save !⏺️")
     }catch(err){
@@ -41,7 +41,7 @@ export const addCategorie = async (req, res) => {
 
         const db = await connectDB();
         const [result] = await db.query(
-            "INSERT INTO categorie (category_name, slug) VALUES (?, ?)",
+            "INSERT INTO category (category_name, slug) VALUES (?, ?)",
             [category_name, slug]
         );
 
@@ -59,7 +59,7 @@ export const putCategorie = async (req, res) => {
         const { id } = req.params; 
         const newData = req.body;
 
-        const [existingCategorie] = await db.query("SELECT * FROM categorie WHERE id_category = ?", [id]);
+        const [existingCategorie] = await db.query("SELECT * FROM category WHERE id_category = ?", [id]);
 
         if (existingCategorie.length === 0) {
             console.log("❌ Cette categorie n'existe pas.");
@@ -95,7 +95,7 @@ export const deleteCategorie = async (req, res) => {
         const { id } = req.params;
 
         // Exécute la suppression
-        const [deleteResult] = await db.query("DELETE FROM categorie WHERE id_category = ?", [id]);
+        const [deleteResult] = await db.query("DELETE FROM category WHERE id_category = ?", [id]);
 
         // Vérifie si une ligne a été affectée
         if (deleteResult.affectedRows === 0) {

@@ -1,8 +1,11 @@
 import { connectDB } from "../Config/db.js";
 import upload from "../Config/uploadConfig.js";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 
-const BASE_URL = 'http://localhost:5001';
+const BASE_URL = process.env.BASE_URL;
 
 // Fonction pour ajouter un film
 export const addMovie = (req, res) => {
@@ -98,7 +101,7 @@ export const getAllMovies = async (req, res) => {
             ...movie,
             img_presentation: `${BASE_URL}/${movie.img_presentation}`,
             img_cover: `${BASE_URL}/${movie.img_cover}`,
-            trailer: movie.trailer.startsWith('http') ? movie.trailer : `${BASE_URL}/${movie.trailer}`,
+            trailer: `${BASE_URL}/${movie.trailer}`,
             video: `${BASE_URL}/${movie.video}`
         }));
 
@@ -121,13 +124,13 @@ export const getMovieById = async (req, res) => {
             ...movie[0],
             img_presentation: `${BASE_URL}/uploads/images/presentation/${movie[0].img_presentation}`,
             img_cover: `${BASE_URL}/uploads/images/cover/${movie[0].img_cover}`,
-            trailer: movie[0].trailer.startsWith('http') ? movie[0].trailer : `${BASE_URL}/uploads/video/trailer/${movie[0].trailer}`,
+            trailer: `${BASE_URL}/uploads/video/trailer/${movie[0].trailer}`,
             video: `${BASE_URL}/uploads/video/content/${movie[0].video}`
         };
 
         res.json(movieWithUrls);
     } catch (error) {
-        console.error('Error fetching movie:', error);
+        console.error('❌ Erreur server:', error);
         res.status(500).json({ message: 'Error fetching movie' });
     }
 };

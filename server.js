@@ -28,14 +28,24 @@ const __dirname = path.dirname(__filename);
 // cors permet de gérer les requêtes cross-origin, c'est à dire les requêtes qui ne viennent pas du même domaine que le serveur.
 // cookieParser permet de parser les cookies en format json au front-end
 //express.json() permet de créer des objets json à partir des requêtes HTTP
-app.use(helmet());
+app.use(helmet({ 
+    crossOriginResourcePolicy: {
+        policy: "cross-origin"
+    }}
+));
 app.use(morgan("dev"));
-app.use(cors());
+app.use(cors({
+    origin: ['http://localhost:3000', 'http://192.168.1.31:3000'],  // Modifié pour correspondre à l'origine exacte
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],  // Ajout de 'OPTIONS'
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+}));
 app.use(cookieParser());
 app.use(express.json());
 
 // Routes
-app.use('/api', authMiddleware, movieRoute, userRoute, catalogRoute, commentRoute);
+app.use('/api', userRoute);
+app.use('/api', authMiddleware, movieRoute, catalogRoute, commentRoute);
 app.use('/Uploads', express.static(path.join(__dirname, 'Uploads')));// permet de reccupérer les fichier dans le dossier uploads
 
 // Démarrage du serveur avec gestion d'erreurs

@@ -101,10 +101,10 @@ export const login = async (req, res) => {
         // Set secure cookie in production
         res.cookie('token', token, {
             httpOnly: true,
-            maxAge: 3600000, // 1 hour
-            sameSite: 'strict',
-            secure: 'production'
-        });
+            maxAge: 3600000,
+            sameSite: 'lax',
+            secure: false,
+          });          
 
         console.log('Token envoyé');
         await mailConnected (email, user[0].first_name);
@@ -119,3 +119,24 @@ export const login = async (req, res) => {
         res.status(500).json({ message: '❌ Erreur interne veuillez réessayer plus tard' });
     }
 };
+
+export const getMe = async (req, res) => {
+    try {
+        const db = await connectDB();
+        const [user] = await db.query("SELECT * FROM user WHERE id_user = ?", [req.user.id_user]);
+        
+        if (!user.length) {
+            return res.status(404).json({ message: "Utilisateur non trouvé" });
+        }
+
+        res.status(200).json(user[0]);
+    } catch (err) {  // Changez 'error' en 'err' ici
+        console.error('erreur dans getMe:', err);
+        res.status(500).json({ message: "Erreur interne du serveur" });
+    }
+};
+
+export const logout = (req, res) => {
+    res.clearCookie('token'); // Supprime le cookie 'token'
+    res.status(200).json({ message: 'Déconnexion réussie' });
+}
