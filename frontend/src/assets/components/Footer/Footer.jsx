@@ -1,11 +1,13 @@
 import '../Footer/Footer.css';
 import { Link } from 'react-router-dom';
+import useAuth from '../../../contexts/useAuth';
 import { FaFacebook, FaInstagram, FaTwitter, FaYoutube } from "react-icons/fa";
 
 const Footer = () => {
   const lCustom = "text-secondary";
   const rxCustom = "rx-link";
   const size = 25;
+  const {user} = useAuth();
 
   return (
     <footer className='d-flex flex-column align-items-center vw-100 p-5'>
@@ -29,8 +31,13 @@ const Footer = () => {
       <div className="f-bottom gap-5 mb-5 d-flex">
         <Link to='/terms' className={lCustom}>Blog</Link>
         <Link to='/contact' className={lCustom}>Contact</Link>
+        {user ? (
+        <>
         <Link to='/profile' className={lCustom}>Profil</Link>
         <Link to='/galerie' className={lCustom}>Galerie</Link>
+        </>):(
+          <Link to='/login' className={lCustom}>Se connecter</Link>
+        )}
       </div>
     </footer>
   );

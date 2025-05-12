@@ -8,6 +8,7 @@ import ProtectedRoute from './seccure_route/ProtectedRoute.jsx';
 // Layout Components
 import Header from './assets/components/Header/Header';
 import Footer from './assets/components/Footer/Footer';
+import Search from './assets/components/Search/Search.jsx';
 import Newsletter from './assets/components/Newsletter/Newsletter.jsx'; // Assure-toi que c'est bien une fonction exportée
 import Cookies from './assets/components/Cookie/cookie.jsx';
 // Pages
@@ -40,6 +41,7 @@ function App() {
           } />
           <Route path="/terms" element={<Terms />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path='/search' element={<Search />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Register />} />
           <Route path="/reset" element={<Reset />} />
@@ -67,9 +69,7 @@ function App() {
 
         <Footer />
 
-        <div className="cookie" style={{bottom:'70px', left: '40px', width:'550px'}}>
-          <Cookies />
-        </div>
+        
       </div> 
     </AuthProvider>
   );

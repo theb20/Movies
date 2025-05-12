@@ -1,0 +1,8 @@
+.search-top{
+    background: url('../../images/Background/background-search.jpg');
+    height: 300px;
+    object-fit: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}

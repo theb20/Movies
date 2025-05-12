@@ -44,7 +44,7 @@ const Catalogue = () => {
     <div className="catalogue-container">
       <Carousel controls={false} activeIndex={currentIndex} indicators={false} onSelect={handleSelect}>
         {movies.map((movie) => (
-          <Carousel.Item  key={movie.id} className='position-relative' style={{ width: '100%', height: '50vh' }}>
+          <Carousel.Item  key={movie.id} className='position-relative' style={{width: '100%', height: '73vh' }}>
             <div className="img_carousel w-100 h-100">
               <img
                 className='w-100 h-100 object-fit-cover'
@@ -69,15 +69,15 @@ const Catalogue = () => {
 
               <p className='fs-4' style={{width:'55%'}}>{movie.description}</p>
               <div className="btns d-flex gap-3">
-                  <Button className='s-btn rounded-1 d-flex gap-2 align-items-center justify-content-center' style={{width:'130px'}}children={<>Play <FaPlay/></>} onClick={''}/>
-                  <Button className='t-btn rounded-1 d-flex gap-2 align-items-center justify-content-center' style={{width:'130px'}} children={<><FaPlus/>Infos</>} onClick={()=>navigate('/')}/>
+                  <Button className='s-btn rounded-5 d-flex gap-2 align-items-center justify-content-center' style={{width:'130px'}}children={<>Play <FaPlay/></>} onClick={''}/>
+                  <Button className='t-btn rounded-5 d-flex gap-2 align-items-center justify-content-center' style={{width:'130px'}} children={<><FaPlus/>Infos</>} onClick={()=>navigate('/')}/>
               </div>
             </Carousel.Caption>
           </Carousel.Item>
         ))}
       </Carousel>
         <div className="container-movies " style={{padding:'0 4%'}}>
-          <div className="Tendance_actuelle">
+          <div id='cat' className="Tendance_actuelle">
             <h2 className="title fs-1 text-white mt-5 mb-5">Tendance actuelle</h2>
 
             <div className="carousel d-flex gap-4 overflow-x-scroll">

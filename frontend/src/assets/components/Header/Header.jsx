@@ -1,13 +1,14 @@
 // Header.jsx
 
 import { Link, useNavigate } from "react-router-dom";
+import { IoMdClose } from "react-icons/io";
+import { FaSearch } from "react-icons/fa";
 import Input from "../Input-Form/Input.jsx";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { RiMovie2Line } from "react-icons/ri";
+import { SiGooglemessages } from "react-icons/si";
 import { TbCategoryPlus } from "react-icons/tb";
-import { SiSteelseries } from "react-icons/si";
-import { BsClockHistory } from "react-icons/bs";
+import { IoPersonCircle } from "react-icons/io5";
 import logoD from "../../images/Logos/Logo_movies_ft.svg";
 import logoM from "../../images/Logos/Logo_M.svg";
 import logoU from "../../images/Icons/user.png";
@@ -15,9 +16,11 @@ import logoR from "../../images/Icons/rechercher.png";
 import Button from "../Btn-generique/btn.jsx";
 import useAuth from '../../../contexts/useAuth';
 import "./Header.css";
+import movieService from "../../../services/movieService.js";
 
 const Header = () => {
   const [showSearch, setShowSearch] = useState(false);
+  const [allMovies, setAllMovies] = useState([]);
   const [searchValue, setSearchValue] = useState('');
   const location = useLocation();
   const navigate = useNavigate();
@@ -41,10 +44,22 @@ const Header = () => {
 
   const logo_D = { width: "130px" };
   const logo_M = { width: "60px", backgroundColor: 'var(--background-gray)' };
-  const navUl = "d-flex gap-2 p-0 m-0 align-items-center";
-  const navLinkMobile = 'd-flex align-items-center flex-column';
   const size = 20;
-
+  useEffect(() =>{
+    const fetchMovies = async () =>{
+      try{
+        const movies =await movieService.getAllMovies();
+        setAllMovies(movies);
+      }catch(error){
+        console.error('Erreur lors de la récu. des films:', error);
+      }
+    }
+    fetchMovies();
+  }, [])
+  
+  const filteredMovies = allMovies.filter(movie =>
+    movie.title.toLowerCase().includes(searchValue.toLowerCase())
+  )
 
   return (
     <header className="d-flex justify-content-between flex-column align-items-center z-3 py-3 px-5 text-light">
@@ -79,21 +94,6 @@ const Header = () => {
               >
                 <img src={logoR} alt="recherche" style={{ width: '24px' }} />
               </Button>
-
-              {showSearch && (
-                <div 
-                  className="position-absolute top-0 start-50 translate-middle-x mt-2 p-2 bg-danger"
-                  style={{ width: '100%', height: '550px' }}
-                >
-                  <Input 
-                    type="text" 
-                    className="form-control" 
-                    placeholder="Rechercher un film..." 
-                    value={searchValue}
-                    onChange={(e) => setSearchValue(e.target.value)}
-                  />
-                </div>
-              )}
           
 
           <Button className="bg-transparent border-0 p-0">
@@ -127,37 +127,98 @@ const Header = () => {
       </div>
 
       {/* === MOBILE === */}
-        <div className="mobile d-flex gap-3 justify-content-between align-items-center d-md-none px-3">
-          <nav className="navbar p-0">
-            <ul className={`${navUl} list-unstyled d-flex gap-3 align-items-center`}>
-              <li>
-                <Link className={`${navLinkMobile} text-center`} to="/films">
-                  <RiMovie2Line size={size} /><span>Films</span>
-                </Link>
-              </li>
-              <li>
-                <Link className={`${navLinkMobile} text-center`} to="/categories">
-                  <TbCategoryPlus size={size} /><span>Catégorie</span>
-                </Link>
-              </li>
-            </ul>
-          </nav>
-
-          <div className="d-flex flex-column gap-2 align-items-center">
-            <img style={logo_M} className="logoM rounded-5 p-2" src={logoM} alt="logo mobile" />
+      <div className="mobile d-md-none position-absolute fixed-bottom p-3">
+        <div className="container-fluid">
+          <div className="row align-items-center justify-content-center">
+            <nav className="col-4">
+              <ul className="list-unstyled d-flex justify-content-between mb-0">
+                <li>
+                  <Link to="/catalogue" className="d-flex flex-column align-items-center text-light text-decoration-none">
+                    <TbCategoryPlus size={size} />
+                    <span className="small mt-1">Film</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/contact" className="d-flex flex-column align-items-center text-light text-decoration-none">
+                    <SiGooglemessages size={size} />
+                    <span className="small mt-1">Contact</span>
+                  </Link>
+                </li>
+              </ul>
+            </nav>
+      
+            <div className="col-4 text-center">
+              <Link to="/" className="d-inline-block">
+                <img style={logo_M} className="rounded-5 p-2" src={logoM} alt="logo mobile" />
+              </Link>
+            </div>
+      
+            <nav className="col-4">
+              <ul className="list-unstyled d-flex justify-content-between mb-0">
+                <li>
+                  <Link to="/login" className="d-flex flex-column align-items-center text-light text-decoration-none">
+                    <IoPersonCircle size={size} />
+                    <span className="small mt-1">Connexion</span>
+                  </Link>
+                </li>
+                <li>
+                  <Button 
+                    onClick={() => setShowSearch(!showSearch)}
+                    className="d-flex flex-column align-items-center text-light text-decoration-none bg-transparent border-0"
+                  >
+                    <FaSearch size={size} />
+                    <span className="small mt-1">Recherche</span>
+                  </Button>
+                </li>
+              </ul>
+            </nav>
           </div>
-
-          <nav className="navbar p-0">
-            <ul className={`${navUl} list-unstyled d-flex gap-3 align-items-center`}>
-              <li><Link className={`${navLinkMobile} text-center`} to="/series">
-                <SiSteelseries size={size} /><span>Séries</span>
-              </Link></li>
-              <li><Link className={`${navLinkMobile} text-center`} to="/historique">
-                <BsClockHistory size={size} /><span>Historique</span>
-              </Link></li>
-            </ul>
-          </nav>
         </div>
+      </div>
+
+
+      {showSearch && (
+        <div className="search-overlay position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center z-3" style={{ zIndex: 9999 }}>
+          <div className="search-container w-100 px-4 py-5 position-relative">
+            <form onSubmit={(e) => e.preventDefault()}>
+              <h1 className="text-center mb-4">
+                Découvrez le film parfait
+                <br />
+                <span className="fs-5 text-secondary">Recherche intelligente</span>
+              </h1>
+              <div className="mx-auto" style={{ maxWidth: '600px' }}>
+                <Input 
+                  type="text" 
+                  classlabel="d-none"
+                  className="form-control form-control-lg" 
+                  placeholder="Rechercher un film..." 
+                  value={searchValue}
+                  onChange={(e) => setSearchValue(e.target.value)}
+                />
+              </div>
+            </form>
+
+            <div className="search-results mt-4 mx-auto" style={{ maxWidth: '600px', maxHeight: '50vh', overflowY: 'auto' }}>
+              {filteredMovies.length > 0 ? (
+                filteredMovies.map((movie) => (
+                  <div key={movie.id} className="p-2">
+                    <Link to={`/catalogue/${movie.id}`} className="text-light text-decoration-none" onClick={() => setShowSearch(false)}>
+                      {movie.title}
+                    </Link>
+                  </div>
+                ))
+              ) : (
+                <p className="text-center text-light">Aucun résultat trouvé</p>
+              )}
+            </div>
+
+            <Button className="position-absolute top-0 end-0 m-3 bg-transparent border-0" onClick={() => setShowSearch(false)}>
+              <IoMdClose size={24} className="text-light" />
+            </Button>
+          </div>
+        </div>
+      )}
+
       
     </header>
   );
