@@ -10,6 +10,7 @@ import movieRoute from "./Routes/movieRoute.js";
 import catalogRoute from "./Routes/catalogRoute.js";
 import userRoute from "./Routes/userRoute.js";
 import commentRoute from "./Routes/commentRoute.js";
+import searchRoute from "./Routes/searchRoute.js";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -45,7 +46,7 @@ app.use(express.json());
 
 // Routes
 app.use('/api', userRoute);
-app.use('/api', authMiddleware, movieRoute, catalogRoute, commentRoute);
+app.use('/api', authMiddleware, movieRoute, catalogRoute, commentRoute, searchRoute);
 app.use('/Uploads', express.static(path.join(__dirname, 'Uploads')));// permet de reccupérer les fichier dans le dossier uploads
 
 // Démarrage du serveur avec gestion d'erreurs

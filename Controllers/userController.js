@@ -55,6 +55,26 @@ export const createUser = async (req, res) => {
 
 };
 
+export const updateUser = async (req, res) => {
+    try {
+        const db = await connectDB();
+        const { name_user, first_name, birthday, email, password, role } = req.body;
+        const { id } = req.params;
+        if (!name_user ||!first_name ||!birthday ||!email ||!password ||!role) {
+            return res.status(400).json({ error: "Tous les champs sont requis" });  
+        }
+        const [result] = await db.query(
+            "UPDATE user SET name_user =?, first_name =?, birthday =?, email =?, pwd_hach =?, role =? WHERE id_user =?",
+            [name_user, first_name, birthday, email, password, role, id]
+        )
+        if (result.affectedRows === 0) return res.status(404).json({ error: "❌ Utilisateur non trouvé" });
+        res.status(200).json({ message: "✅ Utilisateur modifié avec succès!" });
+    } catch (error) {
+        console.error('❌ Erreur lors de la modification:', error);
+        res.status(500).json({ error: "Erreur interne" });
+    }
+}
+
 export const login = async (req, res) => {
     try {
         const db = await connectDB();
