@@ -1,8 +1,16 @@
-.search-top{
-    background: url('../../images/Background/background-search.jpg');
-    height: 300px;
-    object-fit: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+@import url('../../../App.css');
+.search-bar-container {
+    background: url("../../images/Background/bd-search.jpg");
     background-size: cover;
+    background-position: center;
+    height: 30vh;
+}
+.search-bar-container::before {
+    content: '';
+    position: absolute;
+    background: linear-gradient(to bottom, transparent, var(--background));
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
 }

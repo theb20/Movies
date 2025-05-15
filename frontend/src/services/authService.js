@@ -40,9 +40,7 @@ const authService = {
   // User information
   getCurrentUser: async () => {
     try {
-      console.log('Récupération des données utilisateur...');
       const response = await api.get('/user/me');
-      console.log('Données utilisateur:', response.data);
       return response.data;
     } catch (error) {
       console.error('Erreur getCurrentUser:', error.response?.data || error.message);

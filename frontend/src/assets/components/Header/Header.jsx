@@ -1,10 +1,7 @@
 // Header.jsx
 
 import { Link, useNavigate } from "react-router-dom";
-import { IoMdClose } from "react-icons/io";
 import { FaSearch } from "react-icons/fa";
-import Input from "../Input-Form/Input.jsx";
-import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { SiGooglemessages } from "react-icons/si";
 import { TbCategoryPlus } from "react-icons/tb";
@@ -16,12 +13,8 @@ import logoR from "../../images/Icons/rechercher.png";
 import Button from "../Btn-generique/btn.jsx";
 import useAuth from '../../../contexts/useAuth';
 import "./Header.css";
-import movieService from "../../../services/movieService.js";
 
 const Header = () => {
-  const [showSearch, setShowSearch] = useState(false);
-  const [allMovies, setAllMovies] = useState([]);
-  const [searchValue, setSearchValue] = useState('');
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
@@ -45,21 +38,9 @@ const Header = () => {
   const logo_D = { width: "130px" };
   const logo_M = { width: "60px", backgroundColor: 'var(--background-gray)' };
   const size = 20;
-  useEffect(() =>{
-    const fetchMovies = async () =>{
-      try{
-        const movies =await movieService.getAllMovies();
-        setAllMovies(movies);
-      }catch(error){
-        console.error('Erreur lors de la récu. des films:', error);
-      }
-    }
-    fetchMovies();
-  }, [])
   
-  const filteredMovies = allMovies.filter(movie =>
-    movie.title.toLowerCase().includes(searchValue.toLowerCase())
-  )
+  
+  
 
   return (
     <header className="d-flex justify-content-between flex-column align-items-center z-3 py-3 px-5 text-light">
@@ -87,13 +68,11 @@ const Header = () => {
         <div className="btnPlusProfil d-flex align-items-center">
 
          
-              <Button 
-                variant="link" 
-                className="p-0 border-0" 
-                onClick={() => setShowSearch(!showSearch)}
+              <Link
+                to="/search"
               >
                 <img src={logoR} alt="recherche" style={{ width: '24px' }} />
-              </Button>
+              </Link>
           
 
           <Button className="bg-transparent border-0 p-0">
@@ -162,13 +141,12 @@ const Header = () => {
                   </Link>
                 </li>
                 <li>
-                  <Button 
-                    onClick={() => setShowSearch(!showSearch)}
+                  <Link to="/search"
                     className="d-flex flex-column align-items-center text-light text-decoration-none bg-transparent border-0"
                   >
                     <FaSearch size={size} />
                     <span className="small mt-1">Recherche</span>
-                  </Button>
+                  </Link>
                 </li>
               </ul>
             </nav>
@@ -177,47 +155,7 @@ const Header = () => {
       </div>
 
 
-      {showSearch && (
-        <div className="search-overlay position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center z-3" style={{ zIndex: 9999 }}>
-          <div className="search-container w-100 px-4 py-5 position-relative">
-            <form onSubmit={(e) => e.preventDefault()}>
-              <h1 className="text-center mb-4">
-                Découvrez le film parfait
-                <br />
-                <span className="fs-5 text-secondary">Recherche intelligente</span>
-              </h1>
-              <div className="mx-auto" style={{ maxWidth: '600px' }}>
-                <Input 
-                  type="text" 
-                  classlabel="d-none"
-                  className="form-control form-control-lg" 
-                  placeholder="Rechercher un film..." 
-                  value={searchValue}
-                  onChange={(e) => setSearchValue(e.target.value)}
-                />
-              </div>
-            </form>
-
-            <div className="search-results mt-4 mx-auto" style={{ maxWidth: '600px', maxHeight: '50vh', overflowY: 'auto' }}>
-              {filteredMovies.length > 0 ? (
-                filteredMovies.map((movie) => (
-                  <div key={movie.id} className="p-2">
-                    <Link to={`/catalogue/${movie.id}`} className="text-light text-decoration-none" onClick={() => setShowSearch(false)}>
-                      {movie.title}
-                    </Link>
-                  </div>
-                ))
-              ) : (
-                <p className="text-center text-light">Aucun résultat trouvé</p>
-              )}
-            </div>
-
-            <Button className="position-absolute top-0 end-0 m-3 bg-transparent border-0" onClick={() => setShowSearch(false)}>
-              <IoMdClose size={24} className="text-light" />
-            </Button>
-          </div>
-        </div>
-      )}
+      
 
       
     </header>

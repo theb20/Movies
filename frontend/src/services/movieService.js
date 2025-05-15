@@ -55,20 +55,22 @@ const movieService = {
   },
 
   // Opérations de recherche
-  getUserSearch: async () => {
-    const response = await api.get('/search/user/:id_user');
-    return response.data;
-  },
-
-  createSearch: async (searchData) => {
-    const response = await api.post('/search/', searchData);
+  getAllSearch: async () => {
+    const response = await api.get('/search/popular');
     return response.data;
   },
 
   deleteSearch: async (id) => {
     const response = await api.delete(`/search/${id}`);
     return response.data;
+  },
+   // Recherche de films
+   searchMovies: async (query, userId) => {
+    const response = await api.get(`/search/movies?q=${encodeURIComponent(query)}&userId=${userId}
+`);
+    return response.data;
   }
 };
+
 
 export default movieService;

@@ -29,7 +29,6 @@ const Login = () => {
 
     try {
       const res = await login(formData);
-      console.log('Réponse login:', res);
       
       // Vérification plus détaillée de la réponse
       if (res && (res.token || res.id_user)) {

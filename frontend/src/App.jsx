@@ -41,12 +41,16 @@ function App() {
           } />
           <Route path="/terms" element={<Terms />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path='/search' element={<Search />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Register />} />
           <Route path="/reset" element={<Reset />} />
 
           {/* Routes protégées */}
+          <Route path="/search" element={
+            <ProtectedRoute>
+              <Search />
+            </ProtectedRoute>
+          } />
           <Route path="/galerie" element={
             <ProtectedRoute>
               <Galerie />
