@@ -51,6 +51,27 @@ export const addComment = async (req, res) => {
     }
 };
 
+export const putComment = async (req, res) => {
+    try {
+        const db = await connectDB();
+        const { id } = req.params;
+        const { content, comment_date, id_movie, id_user } = req.body;
+        if (!content ||!comment_date ||!id_movie ||!id_user) {
+            return res.status(400).json({ error: "champs requi" });
+        }
+        const [updateResult] = await db.query(
+            "UPDATE comment SET content =?, comment_date =?, id_movie =?, id_user =? WHERE id_comment =?",
+            [content, comment_date, id_movie, id_user, id]
+        )
+        if (updateResult.affectedRows === 0) {
+            return res.status(404).json({ error: "❌ Commentaire non trouvé" });
+        }
+        res.status(200).json({ message: "✅ Commentaire modifié avec succès!" });
+    } catch (err) {
+        console.error("❌ Erreur de modification :", err.message);
+        res.status(500).json({ error: "Erreur interne" });
+    }
+}
 export const deleteComment = async (req, res) => {
     try {
         const db = await connectDB();
