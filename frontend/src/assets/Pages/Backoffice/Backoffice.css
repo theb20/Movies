@@ -1,0 +1,15 @@
+@import url('../../../App.css');
+.menu li a {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: rgba(0, 0, 0, 0.668);
+  font-weight: 100;
+}
+.menu li a:hover {
+  background-color: var(--background-dark);
+  color: var(--color-white);
+}
+.active-nav-main {
+  color: var(--color-red);
+}

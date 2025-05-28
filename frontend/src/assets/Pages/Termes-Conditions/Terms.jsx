@@ -21,7 +21,7 @@ const Terms = () => {
         if (sections [hash]) setVisible(hash)
     }, [location]) 
 
-    const mainTerms='text-white'
+    const mainTerms='text-white '
     const termsOne =' termsOne vh-75 px-5   d-flex justify-content-between align-items-center'
     const termsTwo ='d-flex'
 
@@ -30,42 +30,75 @@ const Terms = () => {
 
     return (
         <main className={mainTerms}>
-            <section className={termsOne}>
+            <section style={{height:'300px'}} className={termsOne}>
                 <div className="container-terms-left z-2">
-                    <h1>Termes & Conditions</h1>
-                    <p>
+                    <h1 className='text-white text-center text-lg-start'>Termes & Conditions</h1>
+                    <p className='text-center text-lg-start'>
                     Cette page décrit les règles d&apos;utilisation de notre plateforme pour vous garantir une expérience sécurisée et de qualité. <br/> En l&apos;acceptant, vous utilisez notre service en toute confiance.
                     </p>
                 </div>
-                <div className="container-terms-right z-2">
+                <div className="container-terms-right d-none d-lg-block z-2">
                     <img src={bgicon} className='' alt="" />
                 </div>
             </section>
             <section className={termsTwo}>
-                <div className="sidebar ">
-                <nav className='bg-transparent p-5'>
-                    <h2 className='px-5'>Architecture</h2>
-                    <ul className="list-group list-group-numbered py-5 width-custom" style={{ borderRight: "2px solid var(--color-red)" }}>
-
-                        {Object.keys(sections).map((section, index) => (
-                            <li key={index} className={`list-group-item text-light bg-transparent border-0 py-2 ${visible === section ? "active" : ""}`}>
-                                <Button 
-                                    children={[
-                                        "Introduction", "Utilisation de nos services", "Protection des données", "Droits et responsabilités", "Limitations et mises à jour", "Confidentialité", "Contact", "Blog"][index]
-                                    } 
-                                    onClick={() => setVisible(section)}
-                                    className='t-btn'
-                                />
-                            </li>
-                        ))}
-                    </ul>
-                </nav>
-
-                </div>
-                <div className="content-termsTwo p-5">
-                    <p className="py-5 fs-6" style={{textAlign: 'justify', lineHeight:'4em'}}>{sections[visible]}</p>
-                </div>
-                .
+                <section className="d-flex flex-column flex-lg-row">
+                    <div className="sidebar">
+                        <nav className='bg-transparent p-3 p-lg-5'>
+                            <h2 className='px-3 px-lg-5 mb-3 text-center '>Architecture</h2>
+                            <div className="dropdown d-lg-none mb-4">
+                                <Button className="btn btn-dark dropdown-toggle w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Menu
+                                </Button>
+                                <ul className="dropdown-menu dropdown-menu-dark w-100">
+                                    {Object.keys(sections).map((section, index) => (
+                                        <li key={index}>
+                                            <button 
+                                                className={`dropdown-item ${visible === section ? "active" : ""}`}
+                                                onClick={() => setVisible(section)}
+                                            >
+                                                {["Introduction", "Utilisation de nos services", "Protection des données", 
+                                                  "Droits et responsabilités", "Limitations et mises à jour", 
+                                                  "Confidentialité", "Contact", "Blog"][index]}
+                                            </button>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                            <ul className="list-group list-group-numbered py-3 py-lg-5 width-custom d-none d-lg-block" 
+                                style={{ borderRight: "2px solid var(--color-red)" }}>
+                                {Object.keys(sections).map((section, index) => (
+                                    <li key={index} 
+                                        className={`list-group-item text-light bg-transparent border-0 py-2 
+                                        ${visible === section ? "active" : ""}`}>
+                                        <Button 
+                                            children={["Introduction", "Utilisation de nos services", 
+                                                     "Protection des données", "Droits et responsabilités", 
+                                                     "Limitations et mises à jour", "Confidentialité", 
+                                                     "Contact", "Blog"][index]
+                                            } 
+                                            onClick={() => setVisible(section)}
+                                            className='t-btn'
+                                        />
+                                    </li>
+                                ))}
+                            </ul>
+                        </nav>
+                    </div>
+                    <div className="content-termsTwo p-3 p-lg-5">
+                        <p className="py-3 py-lg-5 fs-6" 
+                           style={{
+                               textAlign: 'justify',
+                               lineHeight: { 
+                                 base: '2em',  // Pour mobile
+                                 lg: '4em'     // Pour grand écran
+                               }
+                           }}>
+                            {sections[visible]}
+                        </p>
+                    </div>
+                </section>
+                
             </section>
 
         </main>

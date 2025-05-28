@@ -52,9 +52,9 @@ const Login = () => {
 
   return (
     <main className="mainLogin d-flex justify-content-center align-items-center vh-100">
-      <div className="container-login z-2 d-flex justify-content-center align-items-center flex-column text-light">
-        <h1 className="fs-1">Déverrouillez un monde de divertissement sans fin</h1>
-        <p className="fs-5">Connectez-vous ou Inscrivez-vous pour découvrir, diffuser et profiter !</p>
+      <div className="container-login z-2 d-flex justify-content-center align-items-center flex-column text-light p-2">
+        <h1 className="fs-1 text-center">Déverrouillez un monde de divertissement sans fin</h1>
+        <p className="fs-5 text-center">Connectez-vous ou Inscrivez-vous pour découvrir, diffuser et profiter !</p>
 
         {error && <div className="alert alert-danger w-100 mt-2">{error}</div>}
 

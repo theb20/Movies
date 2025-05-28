@@ -1,0 +1,49 @@
+@import url('../../../../../App.css');
+.menu {
+  align-items: center;
+  flex-direction: column;
+}
+.sidebar:hover .menu {
+  align-items: start;
+  padding: 0 3.5rem;
+}
+.menu li a {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--color-black);
+  font-size: 1.1rem;
+  padding: 1rem 0.5rem;
+  transition: all 0.1s ease;
+}
+
+.menu li a:hover {
+  background-color: var(--background-gray-2);
+  padding: 1rem;
+  border-radius: 50px 0 0 50px;
+}
+.sidebar:hover .icon-sidebar {
+  color: rgb(0, 0, 0);
+}
+.icon-sidebar {
+  color: rgba(0, 0, 0, 0.782);
+}
+.desactivated {
+  display: none;
+}
+
+.sidebar:hover .desactivated {
+  display: flex;
+}
+.sidebar:hover .activation {
+  display: none;
+}
+
+.sidebar {
+  width: 120px;
+  transition: width 0.3s ease;
+}
+
+.sidebar:hover {
+  width: 360px;
+}

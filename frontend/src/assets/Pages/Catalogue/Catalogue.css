@@ -10,12 +10,48 @@
     right: 0;
     z-index: 2;
 }
+
 .fs-title-carousel {
     font-family: "Bebas Neue", sans-serif;
     font-weight: 400;
     font-style: normal;
     font-size: 120px;
 }
-.movie-card{
+
+.movie-card {
     height: 260px;
+    position: relative;
+}
+
+.movie-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+    z-index: 1;
+    border-radius: 0.5rem;
+    pointer-events: none;
+}
+
+.content-movie {
+    position: absolute !important;
+    bottom: 0 !important;
+    top: auto !important;
+}
+
+@media (width < 768px) {
+    .fs-title-carousel {
+        font-size: 3em;
+    }
+    
+    .content-movie {
+        padding-bottom: 2rem;
+    }
+
+    .movie-card::after {
+        display: none;
+    }
 }

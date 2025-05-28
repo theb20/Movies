@@ -21,60 +21,92 @@ import Login from './assets/Pages/Login/Login.jsx';
 import Register from './assets/Pages/SignUp/Sign_up.jsx';
 import Reset from './assets/components/Forget-password/ResetPassword.jsx';
 import Profile from './assets/Pages/Profil/Profile.jsx';
+import Detail from './assets/Pages/Detail/Detail.jsx';
 import Catalogue from './assets/Pages/Catalogue/Catalogue.jsx';
+import Stream from '../src/assets/components/VideoPlayer/VideoPLayer.jsx';
+import Backoffice from '../src/assets/Pages/Backoffice/index.jsx';
 
 function App() {
   return (
     <AuthProvider>
-      <div className='position-relative'>
+      <div className="position-relative">
         <Header />
 
         <Routes>
           {/* Routes publiques */}
-          <Route index element={
-            <> 
-              <Home />
-              <div className="newsletter position-fixed z-2 top-0">
-                <Newsletter />
-              </div>
-            </>
-          } />
+          <Route
+            index
+            element={
+              <>
+                <Home />
+                <div className="newsletter position-fixed z-2 top-0">
+                  <Newsletter />
+                </div>
+              </>
+            }
+          />
           <Route path="/terms" element={<Terms />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Register />} />
           <Route path="/reset" element={<Reset />} />
+          <Route path="/dashboard" element={<Backoffice />} />
 
           {/* Routes protégées */}
-          <Route path="/search" element={
-            <ProtectedRoute>
-              <Search />
-            </ProtectedRoute>
-          } />
-          <Route path="/galerie" element={
-            <ProtectedRoute>
-              <Galerie />
-            </ProtectedRoute>
-          } />
-          <Route path="/profile" element={
-            <ProtectedRoute>
-              <Profile />
-            </ProtectedRoute>
-          } />
-          <Route path="/catalogue" element={
-            <ProtectedRoute>
-              <Catalogue />
-            </ProtectedRoute>
-          } />
-
+          <Route
+            path="/search"
+            element={
+              <ProtectedRoute>
+                <Search />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/detail/:id"
+            element={
+              <ProtectedRoute>
+                <Detail />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/galerie"
+            element={
+              <ProtectedRoute>
+                <Galerie />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/catalogue"
+            element={
+              <ProtectedRoute>
+                <Catalogue />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/stream/:id"
+            element={
+              <ProtectedRoute>
+                <Stream />
+              </ProtectedRoute>
+            }
+          />
           {/* 404 */}
           <Route path="*" element={<NotFound />} />
         </Routes>
 
         <Footer />
-
-        
-      </div> 
+      </div>
     </AuthProvider>
   );
 }

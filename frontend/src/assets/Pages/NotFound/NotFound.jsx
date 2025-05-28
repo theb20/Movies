@@ -14,10 +14,10 @@ const NotFound = () => {
         window.location.reload()
     }
     return (
-        <main className='main-NotFound d-flex text-light'>
-            <div className="content-image-notFound d-flex flex-column justify-content-center align-items-center p-5">
+        <main className='main-NotFound min-vh-100 d-flex flex-column flex-lg-row text-light'>
+            <div className="content-image-notFound w-100 d-flex flex-column justify-content-center align-items-center p-5">
                 <h1 className='z-2 h1-custom'>404</h1>
-                <p className='z-2 w-50 text-center'>
+                <p className='z-2 w-50 d-none d-lg-block text-center'>
                     Désolé, la page que vous recherchez est introuvable. Elle a peut-être été supprimée, déplacée ou son URL est incorrecte.
                 </p>
             </div>
@@ -30,7 +30,7 @@ const NotFound = () => {
                         <Button onClick={updated} className='text-light border mb-0 '><GrUpdate size={20}/>{' '}Actualiser</Button>
                 </div>
             </div>
-        </main>   
+        </main>
     )
 }
 export default NotFound;

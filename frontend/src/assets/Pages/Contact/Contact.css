@@ -1,8 +1,5 @@
 @import url('../../../App.css');
-.main-contact {
-    height: 590px;
-    
-}
+
 .content-image-contact {
     background-image: url('../../images/Background/Background-contact.jpg');
     width: 100%;

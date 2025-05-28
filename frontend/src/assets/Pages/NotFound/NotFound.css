@@ -1,8 +1,5 @@
 @import url('../../../App.css');
-.main-NotFound {
-    height: 590px;
-    
-}
+
 .content-image-notFound {
     background-image: url('../../images/Background/Background.jpg');
     width: 70%;

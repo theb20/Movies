@@ -1,125 +1,102 @@
-import { useRef, useState, useEffect } from "react";
-import { FaPlay, FaPause, FaVolumeUp, FaVolumeMute, FaExpand } from "react-icons/fa";
-import Button from "../Btn-generique/btn";
+import { useEffect, useRef, useState } from "react";
+import { useParams } from "react-router-dom";
+import videojs from "video.js";
+import "video.js/dist/video-js.css";
+import movieService from "../../../services/movieService";
 import "./VideoPlayer.css";
 
-const VideoPlayer = ({ src, poster }) => {
+const SecureVideoPlayer = () => {
   const videoRef = useRef(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [volume, setVolume] = useState(1);
-  const [isMuted, setIsMuted] = useState(false);
-  const [currentTime, setCurrentTime] = useState("0:00");
-  const [duration, setDuration] = useState("0:00");
+  const playerRef = useRef(null);
+  const { id } = useParams();
+  const [movie, setMovie] = useState(null);
 
   useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    const updateTime = () => {
-      setProgress((video.currentTime / video.duration) * 100 || 0);
-      setCurrentTime(formatTime(video.currentTime));
+    const fetchMovie = async () => {
+      try {
+        const data = await movieService.getMovieById(id);
+        setMovie(data);
+      } catch (error) {
+        console.error("Erreur lors de la récupération du film :", error);
+      }
     };
+    if (id) fetchMovie();
+  }, [id]);
 
-    const setVideoDuration = () => setDuration(formatTime(video.duration));
+  useEffect(() => {
+    // Attendre que l'élément vidéo soit monté dans le DOM
+    const timer = setTimeout(() => {
+      if (!movie || !videoRef.current) return;
 
-    video.addEventListener("timeupdate", updateTime);
-    video.addEventListener("loadedmetadata", setVideoDuration);
+      // Nettoyer l'ancien lecteur si nécessaire
+      if (playerRef.current) {
+        playerRef.current.dispose();
+        playerRef.current = null;
+      }
+
+      // Initialiser le nouveau lecteur
+      const player = videojs(videoRef.current, {
+        controls: true,
+        fluid: true,
+        responsive: true,
+        preload: 'auto',
+        html5: {
+          hls: {
+            enableLowInitialPlaylist: true,
+            smoothQualityChange: true,
+            overrideNative: true
+          },
+          nativeVideoTracks: false,
+          nativeAudioTracks: false,
+          nativeTextTracks: false
+        },
+        sources: [{
+          src: `${import.meta.env.VITE_API_URL}${movie.video}`,
+          type: 'video/mp4'
+        }]
+      });
+
+      playerRef.current = player;
+
+      // Écouter les événements du lecteur
+      player.on('ready', () => {
+        console.log('Lecteur prêt');
+      });
+
+      player.on('error', (error) => {
+        console.error('Erreur du lecteur:', error);
+      });
+    }, 100); // Petit délai pour s'assurer que le DOM est prêt
 
     return () => {
-      video.removeEventListener("timeupdate", updateTime);
-      video.removeEventListener("loadedmetadata", setVideoDuration);
+      clearTimeout(timer);
+      if (playerRef.current) {
+        playerRef.current.dispose();
+        playerRef.current = null;
+      }
     };
-  }, []);
+  }, [movie]);
 
-  const togglePlayPause = () => {
-    if (!videoRef.current) return;
-    if (videoRef.current.paused) {
-      videoRef.current.play();
-      setIsPlaying(true);
-    } else {
-      videoRef.current.pause();
-      setIsPlaying(false);
-    }
-  };
-
-  const handleVolumeChange = (event) => {
-    const newVolume = event.target.value;
-    setVolume(newVolume);
-    setIsMuted(newVolume == 0);
-    videoRef.current.volume = newVolume;
-  };
-
-  const toggleMute = () => {
-    setIsMuted(!isMuted);
-    videoRef.current.muted = !isMuted;
-  };
-
-  const handleProgressChange = (event) => {
-    const newTime = (event.target.value / 100) * videoRef.current.duration;
-    videoRef.current.currentTime = newTime;
-    setProgress(event.target.value);
-  };
-
-  const handleFullscreen = () => {
-    if (videoRef.current.requestFullscreen) {
-      videoRef.current.requestFullscreen();
-    }
-  };
-
-  const formatTime = (time) => {
-    const minutes = Math.floor(time / 60);
-    const seconds = Math.floor(time % 60);
-    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
-  };
+  if (!movie) {
+    return (
+      <div className="d-flex justify-content-center align-items-center vh-100">
+        <div className="spinner-border text-light" role="status">
+          <span className="visually-hidden">Chargement...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="video-container">
-      <video
-        ref={videoRef}
-        src={src}
-        poster={poster}
-        className="w-100 h-100"
-        onContextMenu={(e) => e.preventDefault()} // Désactive clic droit
-        controls={false}
-      />
-
-      {/* Barre de contrôle Bootstrap */}
-      <div className="controls d-flex justify-content-between align-items-center p-2">
-        <Button onClick={togglePlayPause} className="btn btn-light">
-          {isPlaying ? <FaPause /> : <FaPlay />}
-        </Button>
-
-        <span className="text-light">{currentTime} / {duration}</span>
-
-        <input
-          type="range"
-          className="form-range w-50"
-          value={progress}
-          onChange={handleProgressChange}
-          max="100"
+      <div data-vjs-player>
+        <video
+          ref={videoRef}
+          className="video-js vjs-big-play-centered vjs-default-skin"
         />
-
-        <Button onClick={toggleMute} className="btn btn-light">
-          {isMuted ? <FaVolumeMute /> : <FaVolumeUp />}
-        </Button>
-
-        <input
-          type="range"
-          className="form-range volume-control"
-          min="0"
-          max="1"
-          step="0.1"
-          value={isMuted ? 0 : volume}
-          onChange={handleVolumeChange}
-        />
-
-        <Button onClick={handleFullscreen} className="btn btn-light">
-          <FaExpand />
-        </Button>
       </div>
     </div>
   );
 };
 
-export default VideoPlayer;
+export default SecureVideoPlayer;

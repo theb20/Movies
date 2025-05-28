@@ -84,7 +84,7 @@ const SignUp = () => {
   const sizeLi = 20;
 
   return (
-    <main className="mainSignUp d-flex justify-content-center align-items-center">
+    <main className="mainSignUp d-flex p-3 justify-content-center align-items-center">
       <div className="container-register z-2 d-flex justify-content-center align-items-center flex-column text-light">
         {error && <div className="alert alert-danger">{error}</div>}
         
@@ -92,7 +92,7 @@ const SignUp = () => {
           <h2>Inscription</h2>
 
           {/* Nom et Prénom */}
-          <div className="d-flex gap-2 rounded-1 w-100">
+          <div className="d-flex flex-column flex-lg-row gap-2 rounded-1 w-100">
             <Input
               label="Nom"
               name="lastName"
@@ -120,8 +120,8 @@ const SignUp = () => {
           </div>
 
           {/* Forfait Basique */}
-          <div className="d-flex w-100">
-            <div className="w-100">
+          <div className="d-flex  w-100">
+            <div className="w-100 d-none d-lg-block">
               <div className="d-flex w-100">
                 <div className="w-75">
                   <p>Basic | Usage personnel</p>
@@ -209,15 +209,16 @@ const SignUp = () => {
 
           {/* Checkbox conditions */}
           <div className="d-flex align-items-center w-100">
-            <Input
-              classcontainer="d-flex align-items-center gap-2 justify-content-center"
-              classinput={'InputFrom'}
+          <Input
+              classcontainer="bg-none d-flex align-items-center gap-2"
+              classinput="form-check-input"
               label={"En vous inscrivant, vous acceptez nos conditions générales d'utilisation et notre politique de confidentialité."}
               type="checkbox"
               name="terms"
               checked={formData.terms}
               onChange={handleChange}
               required
+              labelClassName="form-check-label text-light"
             />
           </div>
 

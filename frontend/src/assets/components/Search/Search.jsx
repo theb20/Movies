@@ -4,13 +4,21 @@ import { FaSearch, FaTimes } from 'react-icons/fa';
 import { useState, useEffect } from 'react';
 import movieService from "../../../services/movieService.js";
 import { Link } from 'react-router-dom';
+import { format } from 'date-fns';
+import { fr } from 'date-fns/locale';
 
 const Search = () => {
   const [searchValue, setSearchValue] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [showSearch, setShowSearch] = useState(false);
   const [categories, setCategories] = useState([]); // Modifié pour utiliser un tableau
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
   // Récupération et décodage du token pour obtenir l'id_user
   const token = localStorage.getItem('token');
   const userId = token ? JSON.parse(atob(token.split('.')[1])).id_user : null;
@@ -77,19 +85,18 @@ const Search = () => {
   };
 
   return (
-    <div className="search-component position-relative">
-      
-      <div className="search-bar-container d-flex flex-column justify-content-center align-items-center text-light position-fixed top-0 w-100 z-2">
-        <h1 className="fs-1 z-2 text-center">
-        Découvrez le film parfait
-        <br/>
-        Avec une recherche et une sélection sans effort
+    <div className="search-component position-relative " >
+      <div className="container-fluid search-bar-container d-flex flex-column pt-1 pt-lg-5 justify-content-center align-items-center text-light position-fixed top-0 z-2" style={{height:isMobile ? '330px' : '500px'}} >
+        <h1 className={`display-4 text-center z-3 mb-4 ${isMobile ? 'fs-2' : ''}`}>
+          Découvrez le film parfait
+          <br/>
+          Avec une recherche et une sélection sans effort
         </h1>
-        <form onSubmit={handleSubmit} className="p-4" style={{width:'920px'}}>
+        <form onSubmit={handleSubmit} className="w-100 px-3" style={{maxWidth: isMobile ? '100%' : '920px'}}>
           <div className="position-relative">
             <Input
-              classlabel="d-none"
-              classinput="rounded-5 bg-white p-3 ps-5 pe-5 w-100"
+              classlabel="visually-hidden"
+              classinput="form-control form-control-lg rounded-pill py-3 px-5"
               type="text"
               placeholder="Ex: Spider-Man 3"
               id="search-input"
@@ -98,77 +105,82 @@ const Search = () => {
               onChange={(e) => setSearchValue(e.target.value)}
               onFocus={() => setShowSearch(true)}
             />
-            <FaSearch className="position-absolute" style={{ left: 15, top: '50%', transform: 'translateY(-50%)', color: '#000' }} />
+            <FaSearch className="position-absolute" style={{ left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#000' }} />
             {searchValue && (
               <FaTimes
                 className="position-absolute"
-                style={{ right: 15, top: '50%', transform: 'translateY(-50%)', color: '#000', cursor: 'pointer' }}
+                style={{ right: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#000', cursor: 'pointer' }}
                 onClick={handleClear}
               />
             )}
           </div>
         </form>
-        <div className="categories-container z-2 mb-5">
-                <div className="flex-wrap gap-2 d-flex">
-                  <>
-                  {categories.slice(0,10).map((category) => (
-                    <div key={category.id_category} className="">
-                      <Link
-                        to={`/catalogue?category=${category.id_category}`}
-                        className="d-flex"
-                      >
-                        <p className="border rounded-5 text-center p-1">{category.category_name}</p>
-                      </Link>
-                      
+        <div className="container z-3 categories-container py-4">
+          <div className="row justify-content-center g-2">
+            {categories.slice(0, isMobile ? 6 : 10).map((category) => (
+              <div key={category.id_category} className="col-auto">
+                <Link
+                  to={`/catalogue?category=${category.id_category}`}
+                  className="text-decoration-none"
+                >
+                  <span className="badge border border-light rounded-pill px-3 py-2">{category.category_name}</span>
+                </Link>
+              </div>
+            ))}
+            <div className="col-auto">
+              <Link to={'/catalogue'} className="text-decoration-none">
+                <span className="badge border border-light rounded-pill px-3 py-2">...</span>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="container-fluid search-content position-absolute py-4" style={{top: isMobile ? "280px" : "420px"}}>
+        {searchResults.length > 0 ? (
+          <div className="search-results">
+            <p className="position-fixed z-2 h6 text-white mb-4" style={{top: isMobile ? '303px' : '450px', left: isMobile ? '1em':'3em'}}>
+              Titres liés à : <strong>{searchValue}</strong>
+            </p>
+
+            <div className="row g-lg-1 g-3 p-3" style={{marginTop: isMobile ? '10px' : '50px'}}>
+              {searchResults.map((movie) => (
+                <div key={movie.id_movie} className={`col-12 ${isMobile ? '' : 'col-md-6 col-lg-2'}`}>
+                  <Link
+                    to={`/detail/${movie.id_movie}`}  
+                    onClick={handleSearchClose}
+                    className="text-decoration-none text-light"
+                  >
+                    <div className="d-flex align-items-center justify-content-center pb-3">
+                      <img
+                        src={movie.img_presentation}
+                        alt={movie.title}
+                        className=""
+                        style={{
+                          width: isMobile ? '70px' : '150px',
+                          height: isMobile ? '100px' : '220px',
+                          objectFit: 'cover',
+                          borderRadius: '0.5rem'
+                        }}
+                      />
+                      <div className="flex-grow-1 ms-3 d-lg-none">
+                        <h5 className="mb-2">{movie.title}</h5>
+                        <p className="mb-0 text-white text-opacity-25 small">{format(new Date(movie.release_date), "d MMMM yyyy 'à' HH:mm", { locale: fr })}</p>
+                      </div>
                     </div>
-                    
-                  ))}<Link
-                        to={'/catalogue'}
-                        className="d-flex">
-                          <p className="border rounded-5 text-center py-1 px-3">...</p>
-                      </Link>
-                    </>
+                  </Link>
                 </div>
-        </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="row justify-content-center align-items-center min-vh-50">
+            <div className="col-12 text-center">
+              <h2 className={isMobile ? 'h4' : 'h2'}>Faites une recherche ...</h2>
+            </div>
+          </div>
+        )}
       </div>
-
-      <div className="search-content position-absolute p-5 z-1" style={{top:"420px"}}>
-      {searchResults.length > 0 ? (
-  <div className="search-results">
-    <p className="position-fixed fs-5 p-2" style={{top:'480px'}}>
-      Titres liés à : <strong>{searchValue}</strong>
-    </p>
-
-    <div className="d-flex flex-wrap justify-content-start mt-5">
-      {searchResults.map((movie) => (
-        <Link
-          key={movie.id_movie}
-          to={`${movie.id_movie}`}
-          onClick={handleSearchClose}
-          className=""
-        >
-          <img
-            src={movie.img_cover}
-            alt={movie.title}
-            className="m-3"
-            style={{
-              width: '210px',
-              height: '320px',
-              objectFit: 'cover',
-              borderRadius: '6px',
-            }}
-          />
-        </Link>
-      ))}
-    </div>
-  </div>
-      ) : (
-        <div className="categories-container d-flex align-items-center justify-content-center w-100 h-100 p-4 text-center ">
-          <h1 className="m-0">Faites une recherche ...</h1>
-        </div>
-      )}
-      </div>
-      
     </div>
   );
 };

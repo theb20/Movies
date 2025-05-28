@@ -71,7 +71,7 @@ const Home = () => {
 
     const styles = {
         mainHome: 'mainHome text-light vw-100 overflow-hidden',
-        homeOne: 'homeOne vh-100  d-flex pt-lg-0 pt-5 align-items-lg-center justify-content-center text-center',
+        homeOne: 'homeOne vh-100  d-flex align-items-center justify-content-center pt-lg-0 pt-5 align-items-lg-center justify-content-center text-center',
         homeTwo: 'homeTwo d-flex px-5 py-3 justify-content-center text-left',
         homeThree: 'vh-custom',
         homeFour: 'px-5',
@@ -103,7 +103,7 @@ const Home = () => {
 
             {/* Section One */}
             <section className={styles.homeOne}>
-                <div className="container-one w-50 text-center z-2">
+                <div style={{height:'350px'}} className="container-one d-flex align-items-center  flex-column justify-content-center w-50 text-center z-2">
                     <h1 className="display-5 ">Films en illimité, à tout moment et où que vous soyez</h1>
                     <p>À partir de 5 €. Annulable à tout moment. Découvrez une vaste sélection de films disponibles à tout moment. Profitez de l'expérience cinématographique ultime, où que vous soyez.</p>
                     <form className='d-flex mt-5 align-items-center gap-2 justify-content-center' onSubmit={handleSubmit}>

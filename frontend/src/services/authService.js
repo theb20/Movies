@@ -4,7 +4,7 @@ const authService = {
   login: async (credentials) => {
     try {
       const response = await api.post('/auth/login', credentials);
-      
+
       if (response.data.token) {
         localStorage.setItem('token', response.data.token);
       }
@@ -17,15 +17,14 @@ const authService = {
 
   register: async (userData) => {
     const response = await api.post('/auth/register', userData);
-  
+
     // Stocke le token seulement après une réponse positive
     if (response.data.token) {
       localStorage.setItem('token', response.data.token);
     }
-  
+
     return response.data;
   },
-  
 
   logout: async () => {
     try {
