@@ -1,5 +1,6 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
 import {
   FaTable,
   FaFilm,
@@ -7,7 +8,6 @@ import {
   FaHistory,
   FaMailBulk,
   FaUserShield,
-  FaDoorOpen,
   FaWpforms
 } from 'react-icons/fa';
 import { HiLogout } from 'react-icons/hi';
@@ -19,13 +19,50 @@ import Button from '../../../../components/Btn-generique/btn.jsx';
 
 import './Sidebar.css';
 
-const sizeIcon = 25;
-
 const Sidebar = () => {
+  const [userInfo, setUserInfo] = useState(null);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const sizeIcon = 20;
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        setUserInfo(decoded);
+      } catch (err) {
+        localStorage.removeItem('token');
+      }
+    } else {
+      navigate('/login');
+    }
+  }, [navigate]);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/login');
+  };
+
+  const menuItems = [
+    { to: '/backoffice', icon: <FaTable size={sizeIcon} />, label: "Vue d'ensemble" },
+    { to: '/backoffice/movies', icon: <FaFilm size={sizeIcon} />, label: 'Films' },
+    { to: '/backoffice/favorites', icon: <FaHeart size={sizeIcon} />, label: 'Mentions' },
+    { to: '/backoffice/history', icon: <FaHistory size={sizeIcon} />, label: 'Historique' },
+    {
+      to: '/backoffice/newsletter',
+      icon: <FaMailBulk size={sizeIcon} />,
+      label: 'Boite de réception'
+    },
+    { to: '/backoffice/users', icon: <FaUserShield size={sizeIcon} />, label: 'Utilisateurs' },
+    { to: '/backoffice/forms', icon: <FaWpforms size={sizeIcon} />, label: 'Documentation' }
+  ];
+
   return (
     <div
       className="sidebar h-100 rounded-3 position-relative z-3 overflow-y-hidden"
       style={{ backgroundColor: 'var(--background-admin)' }}>
+      {/* Logo */}
       <div
         className="logo d-flex align-items-center justify-content-center w-100"
         style={{ width: '100px', height: '80px' }}>
@@ -33,65 +70,46 @@ const Sidebar = () => {
         <img src={logoD} className="desactivated" height={50} alt="Logo_movie" />
       </div>
       <hr />
+
+      {/* Menu */}
       <div style={{ height: '93%' }} className="d-flex justify-content-between flex-column">
         <div className="overflow-auto">
-          <ul className="menu d-flex gap-3 list-unstyled mb-0">
-            <li>
-              <Link to="/backoffice">
-                <FaTable className="icon-sidebar" size={sizeIcon} />
-                <span className="desactivated">Vue d'ensemble</span>
-              </Link>
-            </li>
-            <li>
-              <Link to="/backoffice/movies">
-                <FaFilm className="icon-sidebar" size={sizeIcon} />
-                <span className="desactivated">Films</span>
-              </Link>
-            </li>
-            <li>
-              <Link to="/backoffice/favorites">
-                <FaHeart className="icon-sidebar" size={sizeIcon} />
-                <span className="desactivated">Mentions</span>
-              </Link>
-            </li>
-            <li>
-              <Link to="/backoffice/history">
-                <FaHistory className="icon-sidebar" size={sizeIcon} />
-                <span className="desactivated">Historique</span>
-              </Link>
-            </li>
-            <li>
-              <Link to="/backoffice/newsletter">
-                <FaMailBulk className="icon-sidebar" size={sizeIcon} />
-                <span className="desactivated">Boite de reception</span>
-              </Link>
-            </li>
-            <li>
-              <Link to="/backoffice/users">
-                <FaUserShield className="icon-sidebar" size={sizeIcon} />
-                <span className="desactivated">Utilisateurs</span>
-              </Link>
-            </li>
-            <li>
-              <Link to="/backoffice/forms">
-                <FaWpforms className="icon-sidebar" size={sizeIcon} />
-                <span className="desactivated">Documentation</span>
-              </Link>
-            </li>
+          <ul className="menu d-flex gap-3 list-unstyled mb-0 flex-column w-100 px-2">
+            {menuItems.map((item, idx) => (
+              <li key={idx} className={location.pathname === item.to ? 'act' : ''}>
+                <Link to={item.to} className="d-flex link align-items-center gap-2">
+                  {item.icon}
+                  <span className="desactivated ">{item.label}</span>
+                </Link>
+              </li>
+            ))}
           </ul>
         </div>
-        <div className="profil bg-dark bg-opacity-25 d-flex align-items-center justify-content-center flex-column p-3 rounded-3 border gap-2 m-3">
-          <div className="flex-row gap-2 d-flex">
-            <img src={userIcon} width={50} alt="Profil" />
-            <span className="desactivated flex-column">
-              <p className="text-black fs-5 fw-lighter mb-0">John Doe</p>
-              <p className="text-black fw-lighter mb-0">emailuser@gmail.com</p>
-            </span>
+
+        {/* Profil utilisateur */}
+        {userInfo && (
+          <div className="profil bg-dark bg-opacity-25 d-flex align-items-center justify-content-center flex-column p-3 rounded-3 border gap-2 m-3">
+            <div className="d-flex flex-row gap-2 align-items-center">
+              <img
+                src={userInfo.picture || userIcon}
+                width={50}
+                alt="Profil"
+                className="rounded-circle"
+              />
+              <div className="desactivated flex-column">
+                <p className="text-black fs-5 fw-lighter mb-0">
+                  <span>{userInfo.first_name}</span> <span>{userInfo.name_user}</span>
+                </p>
+                <p className="text-black fw-lighter mb-0">{userInfo.email}</p>
+              </div>
+            </div>
+            <Button
+              onClick={handleLogout}
+              className="desactivated s-btn justify-content-between w-100">
+              Déconnexion <HiLogout size={sizeIcon} />
+            </Button>
           </div>
-          <Button className="desactivated s-btn d-flex justify-content-between w-100">
-            Déconnexion <HiLogout size={sizeIcon} />
-          </Button>
-        </div>
+        )}
       </div>
     </div>
   );

@@ -47,6 +47,11 @@ const authService = {
     }
   },
 
+  deleteUser: async (userId) => {
+    const response = await api.delete(`/user/${userId}`);
+    return response.data;
+  },
+
   getAllUsers: async () => {
     const response = await api.get('/user');
     return response.data;

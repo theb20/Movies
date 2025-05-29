@@ -15,7 +15,7 @@ const Footer = () => {
 
   const isSearchPage = location.pathname === '/search';
   const isStreamPage = location.pathname === '/stream/:id';
-  const isDashPage = location.pathname === '/dashboard';
+  const isDashPage = location.pathname.startsWith('/backoffice');
 
   return (
     <footer>

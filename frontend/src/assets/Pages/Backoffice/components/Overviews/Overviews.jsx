@@ -2,24 +2,9 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { format, subDays } from 'date-fns';
-import { fr } from 'date-fns/locale';
 
 // Icons
-import {
-  FaTable,
-  FaFilm,
-  FaHeart,
-  FaHistory,
-  FaMailBulk,
-  FaUserShield,
-  FaDoorOpen,
-  FaWpforms,
-  FaRegHeart,
-  FaMoneyCheck,
-  FaRegUser
-} from 'react-icons/fa';
-import { IoMdMail } from 'react-icons/io';
-import { FaRegUserCircle } from 'react-icons/fa';
+import { FaFilm, FaMoneyCheck, FaRegUser } from 'react-icons/fa';
 import { GiBestialFangs } from 'react-icons/gi';
 import { CiCircleCheck, CiTimer } from 'react-icons/ci';
 import { SiInteractiondesignfoundation } from 'react-icons/si';
@@ -45,12 +30,13 @@ import {
 // Styles
 import './Overviews.css';
 
+//a roujouté une key aux elements de la table
+
 const Overviews = () => {
   const [movies, setMovies] = useState([]);
   const [categories, setCategories] = useState([]);
   const [users, setUsers] = useState([]);
   const [visible, setVisible] = useState(false);
-
   // Fonctions pour récupérer les données
   useEffect(() => {
     const fetchMovies = async () => {
@@ -114,33 +100,6 @@ const Overviews = () => {
       className="d-flex position-relative rounded-2 z-3 p-2">
       <div className="w-100">
         <div className="">
-          <nav className="navbar navbar-main navbar-expand-lg px-0 mx-3 shadow-none ">
-            <div className="container-fluid py-1 px-3 w-100 rounded bg-white border">
-              <nav className="d-flex align-items-center justify-content-between w-100">
-                <ul className="bg-transparent d-flex mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
-                  <li className="breadcrumb-item text-sm">
-                    <Link className="opacity-5 text-dark">Pages / </Link>
-                  </li>
-                  <li className="text-sm active-nav-main"> Dashboard</li>
-                </ul>
-                <ul className="navbar-nav align-items-center justify-content-between">
-                  <li className="nav-item py-2 px-3 d-flex align-items-center">
-                    {format(new Date(), 'yyyy', { locale: fr })}
-                  </li>
-                  <li className="nav-item p-1 bg-white d-flex align-items-center position-relative">
-                    <IoMdMail size={sizeIcon} />
-                    <span
-                      style={{ width: '10px', height: '10px' }}
-                      className=" bg-danger rounded-5 position-absolute top-0 end-0"></span>
-                  </li>
-                  <li className="nav-item p-2 bg-white d-flex align-items-center">
-                    <FaRegUserCircle size={sizeIcon} />
-                  </li>
-                </ul>
-              </nav>
-            </div>
-          </nav>
-
           <div className="container-fluid w-100 py-2">
             <div className="row ">
               <div className="ms-3">
@@ -336,60 +295,56 @@ const Overviews = () => {
                           </tr>
                         </thead>
                         <tbody>
-                          {movies
-                            .filter((movie) => movie.id === movie.id)
-                            .slice(0, 10)
-                            .map((movie) => (
-                              <tr>
-                                <td>
-                                  <div className="d-flex px-2 py-1">
-                                    <div>
-                                      <img
-                                        src={movie.img_cover}
-                                        className="avatar rounded-5 avatar-sm me-3"
-                                        alt={movie.title}
-                                        style={{ width: '40px', height: '40px' }}
-                                      />
-                                    </div>
-                                    <div className="d-flex flex-column justify-content-center">
-                                      <h6 className="mb-0 text-sm">{movie.title}</h6>
+                          {movies.slice(0, 10).map((movie) => (
+                            <tr>
+                              <td>
+                                <div className="d-flex px-2 py-1">
+                                  <div>
+                                    <img
+                                      src={movie.img_cover}
+                                      className="avatar rounded-5 avatar-sm me-3"
+                                      alt={movie.title}
+                                      style={{ width: '40px', height: '40px' }}
+                                    />
+                                  </div>
+                                  <div className="d-flex flex-column justify-content-center">
+                                    <h6 className="mb-0 text-sm">{movie.title}</h6>
+                                  </div>
+                                </div>
+                              </td>
+                              <td>
+                                <div className="avatar-group mt-2">
+                                  {format(new Date(movie.release_date), 'dd/MM/yyyy')}
+                                </div>
+                              </td>
+                              <td className="align-middle text-center text-sm">
+                                <span className="text-xs font-weight-bold">
+                                  {format(new Date(movie.created_at), 'dd/MM/yyyy')}
+                                </span>
+                              </td>
+                              <td className="align-middle">
+                                <div className="progress-wrapper w-75 mx-auto">
+                                  <div className="progress-info">
+                                    <div className="progress-percentage">
+                                      <span className="text-xs font-weight-bold">
+                                        {(movie.rating * 20).toFixed(0)}%
+                                      </span>
                                     </div>
                                   </div>
-                                </td>
-                                <td>
-                                  <div className="avatar-group mt-2">
-                                    {format(new Date(movie.release_date), 'dd/MM/yyyy')}
+                                  <div className="progress bg-transparent">
+                                    <progress
+                                      value={movie.rating}
+                                      className="h-100"
+                                      max="5"
+                                      role="progressbar"
+                                      aria-valuenow="60"
+                                      aria-valuemin="0"
+                                      aria-valuemax="100"></progress>
                                   </div>
-                                </td>
-                                <td className="align-middle text-center text-sm">
-                                  <span className="text-xs font-weight-bold">
-                                    {' '}
-                                    {format(new Date(movie.created_at), 'dd/MM/yyyy')}
-                                  </span>
-                                </td>
-                                <td className="align-middle">
-                                  <div className="progress-wrapper w-75 mx-auto">
-                                    <div className="progress-info">
-                                      <div className="progress-percentage">
-                                        <span className="text-xs font-weight-bold">
-                                          {(movie.rating * 20).toFixed(0)}%
-                                        </span>
-                                      </div>
-                                    </div>
-                                    <div className="progress bg-transparent">
-                                      <progress
-                                        value={movie.rating}
-                                        className="h-100"
-                                        max="5"
-                                        role="progressbar"
-                                        aria-valuenow="60"
-                                        aria-valuemin="0"
-                                        aria-valuemax="100"></progress>
-                                    </div>
-                                  </div>
-                                </td>
-                              </tr>
-                            ))}
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
                         </tbody>
                       </table>
                     </div>

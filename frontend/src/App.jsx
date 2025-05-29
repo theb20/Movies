@@ -25,6 +25,7 @@ import Detail from './assets/Pages/Detail/Detail.jsx';
 import Catalogue from './assets/Pages/Catalogue/Catalogue.jsx';
 import Stream from '../src/assets/components/VideoPlayer/VideoPLayer.jsx';
 import Backoffice from '../src/assets/Pages/Backoffice/index.jsx';
+import userBackoffice from '../src/assets/Pages/Backoffice/components/Users/Users.jsx';
 
 function App() {
   return (
@@ -50,7 +51,14 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Register />} />
           <Route path="/reset" element={<Reset />} />
-          <Route path="/dashboard" element={<Backoffice />} />
+          <Route
+            path="/backoffice/*"
+            element={
+              <ProtectedRoute>
+                <Backoffice />
+              </ProtectedRoute>
+            }
+          />
 
           {/* Routes protégées */}
           <Route
