@@ -1,4 +1,5 @@
 import api from '../configuration/api_axios';
+const API_BASE_URL = 'http://localhost:90/api';
 
 const movieService = {
   // Opérations de lecture des films
@@ -19,7 +20,12 @@ const movieService = {
 
   // Opérations CRUD sur les films
   addMovie: async (movieData) => {
-    const response = await api.post('/movies', movieData);
+    const response = await api.post('/movies', movieData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+
     return response.data;
   },
 
@@ -64,13 +70,12 @@ const movieService = {
     const response = await api.delete(`/search/${id}`);
     return response.data;
   },
-   // Recherche de films
-   searchMovies: async (query, userId) => {
+  // Recherche de films
+  searchMovies: async (query, userId) => {
     const response = await api.get(`/search/movies?q=${encodeURIComponent(query)}&userId=${userId}
 `);
     return response.data;
   }
 };
-
 
 export default movieService;

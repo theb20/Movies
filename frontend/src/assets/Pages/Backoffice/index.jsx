@@ -6,6 +6,7 @@ import Overviews from './components/Overviews/Overviews.jsx';
 import Footer from './components/Footer/Footer.jsx';
 import Users from './components/Users/Users.jsx';
 import Header from './components/Header/Header.jsx';
+import Movies from './components/Movies/Movies.jsx';
 
 const Backoffice = () => {
   return (
@@ -17,7 +18,7 @@ const Backoffice = () => {
         <Routes>
           <Route path="/" element={<Overviews />} />
           <Route path="users" element={<Users />} />
-          {/* Ajoute d'autres routes ici */}
+          <Route path="movies" element={<Movies />} />
         </Routes>
         <Footer />
       </div>

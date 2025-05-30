@@ -72,12 +72,14 @@ const Sidebar = () => {
       <hr />
 
       {/* Menu */}
-      <div style={{ height: '93%' }} className="d-flex justify-content-between flex-column">
+      <div style={{ height: '83%' }} className="d-flex justify-content-between flex-column">
         <div className="overflow-auto">
           <ul className="menu d-flex gap-3 list-unstyled mb-0 flex-column w-100 px-2">
             {menuItems.map((item, idx) => (
               <li key={idx} className={location.pathname === item.to ? 'act' : ''}>
-                <Link to={item.to} className="d-flex link align-items-center gap-2">
+                <Link
+                  to={item.to}
+                  className="d-flex link align-items-center justify-content-center gap-2">
                   {item.icon}
                   <span className="desactivated ">{item.label}</span>
                 </Link>
