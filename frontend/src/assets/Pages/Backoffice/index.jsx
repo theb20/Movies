@@ -7,6 +7,7 @@ import Footer from './components/Footer/Footer.jsx';
 import Users from './components/Users/Users.jsx';
 import Header from './components/Header/Header.jsx';
 import Movies from './components/Movies/Movies.jsx';
+import Mentions from './components/Mentions/Mentions.jsx';
 
 const Backoffice = () => {
   return (
@@ -19,6 +20,7 @@ const Backoffice = () => {
           <Route path="/" element={<Overviews />} />
           <Route path="users" element={<Users />} />
           <Route path="movies" element={<Movies />} />
+          <Route path="favorites" element={<Mentions />} />
         </Routes>
         <Footer />
       </div>

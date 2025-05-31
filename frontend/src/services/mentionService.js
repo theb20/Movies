@@ -1,7 +1,7 @@
-import api from "../configuration/api_axios.js";
+import api from '../configuration/api_axios.js';
 
 const mentionService = {
-//opérations commentaires
+  //opérations commentaires
   getAllComments: async () => {
     const response = await api.get('/comment');
     return response.data;
@@ -23,6 +23,20 @@ const mentionService = {
     return response.data;
   },
   //opérations likes
+  getAllLikes: async () => {
+    const response = await api.get('/likes');
+    return response.data;
+  },
+  getLikeById: async (id) => {
+    const response = await api.get(`/likes/${id}`);
+    return response.data;
+  },
+
+  getAllLikes: async () => {
+    const response = await api.get('/likes');
+    return response.data;
+  },
+
   getAllLikesByMovie: async (id_movie) => {
     // Récupère tous les likes d'un film donné
     const response = await api.get(`/likes/movie/${id_movie}`);
@@ -46,11 +60,11 @@ const mentionService = {
     const response = await api.delete(`/likes/remove/${id_movie}/${id_user}`);
     return response.data;
   },
-  
+
   getAllLikesByUser: async (id_user) => {
     // Récupère tous les likes d'un utilisateur donné
     const response = await api.get(`/likes/user/${id_user}`);
     return response.data;
   }
-}
+};
 export default mentionService;
