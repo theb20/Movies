@@ -48,12 +48,7 @@ const Sidebar = () => {
     { to: '/backoffice', icon: <FaTable size={sizeIcon} />, label: "Vue d'ensemble" },
     { to: '/backoffice/movies', icon: <FaFilm size={sizeIcon} />, label: 'Films' },
     { to: '/backoffice/favorites', icon: <FaHeart size={sizeIcon} />, label: 'Mentions' },
-    { to: '/backoffice/history', icon: <FaHistory size={sizeIcon} />, label: 'Historique' },
-    {
-      to: '/backoffice/newsletter',
-      icon: <FaMailBulk size={sizeIcon} />,
-      label: 'Boite de réception'
-    },
+
     { to: '/backoffice/users', icon: <FaUserShield size={sizeIcon} />, label: 'Utilisateurs' },
     { to: '/backoffice/forms', icon: <FaWpforms size={sizeIcon} />, label: 'Documentation' }
   ];
