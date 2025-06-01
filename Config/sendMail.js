@@ -14,42 +14,45 @@ export const mailInscription = async (email, firstName) => {
         });
 
         const emailContent = {
-            from: 'MOVIE',
-            to: email,
-            subject: 'Bienvenue sur MOVIE',
-            html: `
-            <div 
-                 style="max-width:600px; margin:0 auto; font-family:'Segoe UI', sans-serif; color:#333; background:#ffffff; border:1px solid #e0e0e0; border-radius:8px; overflow:hidden;">
-      
-                <div style="background-color:#1c1c1c; padding:20px; text-align:center;">
-                    <img src="../public/Logo_movies_ft.svg" alt="MOVIE Logo" style="width:120px; height:auto; margin-bottom:10px;" />
-                    <h1 style="color:#ffffff; font-size:24px; margin:0;">Bienvenue chez MOVIE</h1>
+          from: '"MOVIE" <no-reply@movie.com>', // Personnalise si besoin
+          to: email,
+          subject: 'Bienvenue sur MOVIE',
+          html: `
+            <div style="max-width:600px;margin:0 auto;font-family:'Segoe UI',sans-serif;color:#333;background:#ffffff;border:1px solid #e0e0e0;border-radius:8px;overflow:hidden;">
+              
+              <div style="background-color:#1c1c1c;padding:20px;text-align:center;">
+                <img src="https://i.imgur.com/4NZ6uLY.png" alt="MOVIE Logo" style="width:120px;height:auto;margin-bottom:10px;" />
+                <h1 style="color:#ffffff;font-size:24px;margin:0;">Bienvenue chez MOVIE</h1>
+              </div>
+        
+              <div style="padding:30px;">
+                <h2 style="color:#1c1c1c;">Bonjour ${firstName},</h2>
+                <p>Nous sommes ravis de vous accueillir dans l’univers <strong>MOVIE</strong>.</p>
+                <p>Plongez dès maintenant dans une expérience cinématographique unique avec une large sélection de films, séries, et bien plus encore.</p>
+                <p style="font-weight:bold;">Accédez à votre compte pour découvrir les dernières nouveautés !</p>
+        
+                <div style="text-align:center;margin:30px 0;">
+                  <a href="${process.env.FRONTEND_URL}" style="display:inline-block;padding:12px 24px;background-color:#e50914;color:#ffffff;text-decoration:none;border-radius:4px;font-weight:bold;">
+                    Se connecter
+                  </a>
                 </div>
-
-                <div style="padding:30px;">
-                    <h2 style="color:#1c1c1c;">Bonjour ${firstName},</h2>
-                    <p>Nous sommes ravis de vous accueillir dans l’univers MOVIE.</p>
-                    <p>Plongez dès maintenant dans une expérience cinématographique unique avec une large sélection de films, séries, et bien plus encore.</p>
-                    <p style="font-weight:bold;">Accédez à votre compte pour découvrir les dernières nouveautés !</p>
-
-                    <div style="text-align:center; margin:30px 0;">
-                        <a href="" style="display:inline-block; padding:12px 24px; background-color:#e50914; color:#ffffff; text-decoration:none; border-radius:4px; font-weight:bold;">Se connecter</a>
-                    </div>
-
+        
                 <p>Notre équipe est à votre écoute pour toute question ou assistance.</p>
                 <p>À très bientôt sur MOVIE !</p>
-
-                <p style="font-style:italic; color:#666;">– L’équipe MOVIE</p>
-
-                <p style="font-size:14px; color:#aaa; text-align:center;">
-                    Besoin d’aide ? Notre équipe est disponible 7j/7 pour vous accompagner.<br/>
-                    À très bientôt sur <strong>MOVIE</strong> 🍿
+        
+                <p style="font-style:italic;color:#666;">– L’équipe MOVIE</p>
+        
+                <hr style="margin:30px 0;border:none;border-top:1px solid #eee;" />
+        
+                <p style="font-size:14px;color:#aaa;text-align:center;">
+                  Besoin d’aide ? Notre équipe est disponible 7j/7 pour vous accompagner.<br/>
+                  À très bientôt sur <strong>MOVIE</strong> 🍿
                 </p>
-
-             </div>
-        </div>
-            `
+              </div>
+            </div>
+          `
         };
+        
 
         await transporter.sendMail(emailContent);// le await permet d'attendre que l'email soit envoyé de maniere asynchrone
         return { success: true, message: 'Email sent successfully' };
@@ -59,7 +62,7 @@ export const mailInscription = async (email, firstName) => {
     }
 };
 // message de connexion
-export const mailConnected = async (email, firstName) =>{
+export const mailConnected = async (email, firstName, userIP) => {
     try {
         const transporter = nodemailer.createTransport({
             service: 'gmail',
@@ -70,10 +73,10 @@ export const mailConnected = async (email, firstName) =>{
         });
 
         const emailContent = {
-          from: 'MOVIE',
-          to: email,
-          subject: 'Nouvelle connexion détectée sur votre compte MOVIE 🔐',
-          html: `
+            from: 'MOVIE',
+            to: email,
+            subject: 'Nouvelle connexion détectée sur votre compte MOVIE 🔐',
+            html: `
             <div style="max-width:600px; margin:0 auto; font-family:'Segoe UI', sans-serif; color:#333; background:#ffffff; border:1px solid #e0e0e0; border-radius:8px; overflow:hidden;">
               
               <div style="background-color:#fff; padding:20px; text-align:center;">
@@ -89,7 +92,7 @@ export const mailConnected = async (email, firstName) =>{
                 <ul style="line-height:1.6;">
                   <li><strong>Appareil :</strong> Navigateur ou appareil inconnu</li>
                   <li><strong>Date :</strong> ${new Date().toLocaleString('fr-FR')}</li>
-                  <li><strong>Adresse IP :</strong> 192.168.X.X</li>
+                  <li><strong>Adresse IP :</strong> ${userIP}</li>
                 </ul>
         
                 <p>Si vous êtes à l'origine de cette connexion, aucune action n'est requise.</p>
@@ -97,10 +100,10 @@ export const mailConnected = async (email, firstName) =>{
                 <p><a href="http://localhost:3000/reset" style="color:#e50914; text-decoration:underline;">Réinitialisez immédiatement votre mot de passe</a> pour protéger votre compte.</p>
         
                 <div style="text-align:center; margin:30px 0;">
-                  <a href="http://localhost:3000/profile" style="display:inline-block; padding:12px 24px; background-color:#e50914; color:#ffffff; text-decoration:none; border-radius:4px; font-weight:bold;">Gérer mon compte</a>
+                  <a href="" style="display:inline-block; padding:12px 24px; background-color:#e50914; color:#ffffff; text-decoration:none; border-radius:4px; font-weight:bold;">Se connecter</a>
                 </div>
         
-                <p style="font-style:italic; color:#666;">– L’équipe MOVIE</p>
+                <p style="font-style:italic; color:#666;">– L'équipe MOVIE</p>
         
                 <p style="font-size:13px; color:#aaa; text-align:center; margin-top:40px;">
                   Ce message vous a été envoyé automatiquement suite à une connexion récente.<br/>

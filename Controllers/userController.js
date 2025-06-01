@@ -9,18 +9,17 @@ dotenv.config();
 export const getUser = async (req, res) => {
     try {
         const db = await connectDB();
-        const [user] = await db.query ("SELECT * FROM user WHERE id_user = ?", [req.params.id]);
-        if(!user.length){
-            return res.status(404).json({message: '❌ Utilisateur impossible a trouver'})
-        }
-        console.log("+1 req save !⏺️");
-        res.status(200).json(user[0])
-    }catch (error){
-        console.log('❌', error)
-        res.status(500).json({message:'Erreur interne veuillez réessayer plus tard'})
-    }
-}
+        const [users] = await db.query("SELECT * FROM user");
 
+        if (!users.length) {
+            return res.status(404).json({ message: 'Aucun utilisateur trouvé' });
+        }
+
+        res.status(200).json(users);
+    } catch (error) {
+        res.status(500).json({ message: 'Erreur interne, veuillez réessayer plus tard' });
+    }
+};
 export const createUser = async (req, res) => {
    try{
     const db = await connectDB();
@@ -54,7 +53,6 @@ export const createUser = async (req, res) => {
 }
 
 };
-
 export const updateUser = async (req, res) => {
     try {
         const db = await connectDB();
@@ -74,7 +72,6 @@ export const updateUser = async (req, res) => {
         res.status(500).json({ error: "Erreur interne" });
     }
 }
-
 export const login = async (req, res) => {
     try {
         const db = await connectDB();
@@ -115,13 +112,13 @@ export const login = async (req, res) => {
                 role: user[0].role 
             },
             jwtSecret,
-            { expiresIn: '1h' }
+            { expiresIn: '2d' }
         );
 
         // Set secure cookie in production
         res.cookie('token', token, {
             httpOnly: true,
-            maxAge: 3600000,
+            maxAge: 2 * 60 * 60 * 1000, // 2jours
             sameSite: 'lax',
             secure: false,
           });          
@@ -139,7 +136,6 @@ export const login = async (req, res) => {
         res.status(500).json({ message: '❌ Erreur interne veuillez réessayer plus tard' });
     }
 };
-
 export const getMe = async (req, res) => {
     try {
         const db = await connectDB();
@@ -155,8 +151,26 @@ export const getMe = async (req, res) => {
         res.status(500).json({ message: "Erreur interne du serveur" });
     }
 };
-
 export const logout = (req, res) => {
     res.clearCookie('token'); // Supprime le cookie 'token'
     res.status(200).json({ message: 'Déconnexion réussie' });
 }
+export const deleteUser = async (req, res) => {
+    try {
+      const db = await connectDB();
+      const { id } = req.params;
+  
+      const [result] = await db.query("DELETE FROM user WHERE id_user = ?", [id]);
+  
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ message: "Utilisateur non trouvé" });
+      }
+  
+      res.status(200).json({ message: "Utilisateur supprimé avec succès" });
+  
+    } catch (error) {
+      console.error("Erreur suppression utilisateur :", error);
+      res.status(500).json({ message: "Erreur serveur" });
+    }
+  };
+   

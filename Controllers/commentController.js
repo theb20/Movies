@@ -17,30 +17,49 @@ export const getIdComment = async (req, res) => {
 }
 
 export const getComment = async (req, res) => {
-    try{
+    try {
         const db = await connectDB();
-        const [comment] = await db.query("SELECT * FROM comment");
-        res.status(200).json(comment);
-        console.log("+1 req save !⏺️")
-    }catch(err){
-        console.error('❌ Erreur de reccuperation',err.message)
-        res.status(500).json({error: "Erreur interne"})
+        const [comments] = await db.query(`
+            SELECT 
+                c.*,
+                u.name_user,
+                u.first_name,
+                u.email,
+                u.picture_user
+            FROM comment c
+            LEFT JOIN user u ON c.id_user = u.id_user
+            ORDER BY c.comment_date DESC
+        `);
+        
+        // Formater les données pour éviter les valeurs null
+        const formattedComments = comments.map(comment => ({
+            ...comment,
+            name_user: comment.name_user || 'Utilisateur supprimé',
+            first_name: comment.first_name || '',
+            email: comment.email || '',
+            picture_user: comment.picture_user 
+        }));
+        
+        res.status(200).json(formattedComments);
+        console.log("✅ Commentaires récupérés avec succès");
+    } catch(err) {
+        console.error('❌ Erreur de récupération', err.message);
+        res.status(500).json({error: "Erreur interne du serveur"});
     }
-
 }
 
 export const addComment = async (req, res) => {
     try {
         console.log("📩 Données reçues :", req.body);
         const db = await connectDB();
-        const { content, id_movie, comment_date, id_user } = req.body;
-        if (!content || !id_movie || !comment_date || !id_user) {
+        const { content, id_movie, id_user } = req.body;
+        if (!content || !id_movie || !id_user) {
             return res.status(400).json({ error: "champs requi" });
         }
         
         const [result] = await db.query(
-            "INSERT INTO comment (content, comment_date, id_movie, id_user) VALUES (?, ?, ?, ?)",
-            [content, comment_date, id_movie, id_user]
+            "INSERT INTO comment (content, id_movie, id_user) VALUES (?, ?, ?)",
+            [content, id_movie, id_user]
         );
 
         console.log("✅ Commentaire ajouté avec à la table :", result.insertId);

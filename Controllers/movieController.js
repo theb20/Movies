@@ -10,43 +10,67 @@ const BASE_URL = process.env.BASE_URL;
 // Fonction pour ajouter un film
 export const addMovie = (req, res) => {
     upload(req, res, async (err) => {
-        if (err) return res.status(500).json({ error: "Erreur lors de l'upload des fichiers" });
-
-        try {
-            const db = await connectDB();
-            const movieData = {
-                title: req.body.title,
-                description: req.body.description || null,
-                release_date: req.body.release_date || null,
-                director: req.body.director || null,
-                rating: req.body.rating || null,
-                video: req.files?.video?.[0]?.path || null,
-                trailer: req.files?.trailer?.[0]?.path || null,
-                img_presentation: req.files?.img_presentation?.[0]?.path || null,
-                img_cover: req.files?.img_cover?.[0]?.path || null,
-                id_category: req.body.id_category || null,
-            };
-
-            const [result] = await db.execute(
-                `INSERT INTO movie 
-                (title, description, release_date, director, rating, video, trailer, img_presentation, img_cover, id_category) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-                Object.values(movieData)
-            );
-
-            res.status(201).json({
-                message: "✅ Film ajouté avec succès !",
-                movieId: result.insertId,
-                movie: movieData
-            });
-
-        } catch (err) {
-            console.error('❌ Erreur lors de l\'ajout du film:', err);
-            res.status(500).json({ error: "Erreur interne lors de l'ajout du film" });
-        }
+      if (err) {
+        console.error("❌ Erreur multer :", err.message);
+        return res.status(400).json({ error: `Erreur multer : ${err.message}` });
+      }
+  
+      // 🧪 Debug complet
+      console.log("✅ Requête reçue");
+      console.log("📥 Champs texte :", req.body);
+      console.log("🗂️ Fichiers reçus :", req.files);
+  
+      const missingFiles = [];
+      if (!req.files?.video?.[0]) missingFiles.push('video');
+      if (!req.files?.trailer?.[0]) missingFiles.push('trailer');
+      if (!req.files?.img_presentation?.[0]) missingFiles.push('img_presentation');
+      if (!req.files?.img_cover?.[0]) missingFiles.push('img_cover');
+  
+      if (missingFiles.length > 0) {
+        console.log("❌ Fichiers manquants :", missingFiles);
+        return res.status(400).json({
+          error: `Fichiers manquants : ${missingFiles.join(', ')}`,
+        });
+      }
+  
+      try {
+        const toNull = (val) =>
+          typeof val === 'undefined' || val === '' ? null : val;
+  
+        const db = await connectDB();
+  
+        const movieData = {
+          title: toNull(req.body.title),
+          description: toNull(req.body.description),
+          release_date: toNull(req.body.release_date),
+          director: toNull(req.body.director),
+          rating: toNull(req.body.rating),
+          video: req.files.video[0].path,
+          trailer: req.files.trailer[0].path,
+          img_presentation: req.files.img_presentation[0].path,
+          img_cover: req.files.img_cover[0].path,
+          id_category: toNull(req.body.id_category),
+        };
+  
+        const [result] = await db.execute(
+          `INSERT INTO movie 
+            (title, description, release_date, director, rating, video, trailer, img_presentation, img_cover, id_category) 
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          Object.values(movieData)
+        );
+  
+        res.status(201).json({
+          message: "✅ Film ajouté avec succès !",
+          movieId: result.insertId,
+          movie: movieData
+        });
+      } catch (err) {
+        console.error('❌ Erreur lors de l\'ajout du film:', err);
+        res.status(500).json({ error: "Erreur interne lors de l'ajout du film" });
+      }
     });
 };
-
+  
 // Fonction pour modifier un film
 export const putMovie = async (req, res) => {
     try {
@@ -122,10 +146,10 @@ export const getMovieById = async (req, res) => {
 
         const movieWithUrls = {
             ...movie[0],
-            img_presentation: `${BASE_URL}/uploads/images/presentation/${movie[0].img_presentation}`,
-            img_cover: `${BASE_URL}/uploads/images/cover/${movie[0].img_cover}`,
-            trailer: `${BASE_URL}/uploads/video/trailer/${movie[0].trailer}`,
-            video: `${BASE_URL}/uploads/video/content/${movie[0].video}`
+            img_presentation: `${BASE_URL}/${movie[0].img_presentation}`,
+            img_cover: `${BASE_URL}/${movie[0].img_cover}`,
+            trailer: `${BASE_URL}/${movie[0].trailer}`,
+            video: `${BASE_URL}/${movie[0].video}`
         };
 
         res.json(movieWithUrls);

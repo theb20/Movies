@@ -3,7 +3,16 @@ import { connectDB} from "../Config/db.js";
 const BASE_URL = process.env.BASE_URL
 
 
-
+export const getSearches = async (req, res) => {
+    try {
+        const db = await connectDB();
+        const [searches] = await db.execute('SELECT * FROM search');
+        res.json(searches);
+    } catch (error) {
+        console.error('❌ Erreur lors de la récupération des recherches:', error);
+        res.status(500).json({ message: "Erreur interne du serveur" });
+    }
+}
 export const deleteSearch = async (req, res) =>{
     try {
         const db = await connectDB();
@@ -19,11 +28,9 @@ export const deleteSearch = async (req, res) =>{
         res.status(500).json({ message: "Erreur interne du serveur" });
     }
 }
-
 export const getPopularSearch = async (req, res) => {
     try {
         const db = await connectDB();
-        
         // Récupérer l'ID utilisateur depuis le token ou les paramètres de la requête
         const userId = req.query.userId || null;
         if (!userId) {
@@ -42,8 +49,6 @@ export const getPopularSearch = async (req, res) => {
         res.status(500).json({ message: "Erreur interne du serveur" });
     }
 }
-
-
 export const searchMovies = async (req, res) => {
     try {
         const db = await connectDB();
