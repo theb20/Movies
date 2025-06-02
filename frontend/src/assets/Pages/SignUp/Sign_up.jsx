@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { BiHide, BiShow } from "react-icons/bi";
-import { GrValidate } from "react-icons/gr";
-import { RiPoliceBadgeLine } from "react-icons/ri";
-import { useLocation, useNavigate} from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { BiHide, BiShow } from 'react-icons/bi';
+import { GrValidate } from 'react-icons/gr';
+import { RiPoliceBadgeLine } from 'react-icons/ri';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthProvider.jsx';
 
 import Input from '../../components/Input-Form/Input.jsx';
@@ -27,7 +28,7 @@ const SignUp = () => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }));
@@ -36,8 +37,6 @@ const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [chargement, setChargement] = useState(false);
-  
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -48,7 +47,7 @@ const SignUp = () => {
       setChargement(false);
       return;
     }
-    
+
     // Créer un objet avec seulement les champs attendus par l'API
     const userToSend = {
       name_user: formData.lastName,
@@ -58,37 +57,39 @@ const SignUp = () => {
       password: formData.password,
       role: 'user' // Fixé ici côté frontend
     };
-  
+
     try {
       const res = await register(userToSend);
       console.log('Réponse register:', res);
-      if (res && res.message === "Utilisateur créé") {
-        console.log("Inscription réussie");
-        navigate("/login");
+      if (res && res.message === 'Utilisateur créé') {
+        console.log('Inscription réussie');
+        navigate('/login');
       } else {
-        console.log("Réponse invalide:", res);
+        console.log('Réponse invalide:', res);
         throw new Error("Données d'inscription invalides");
       }
     } catch (err) {
       console.error('Erreur register détaillée:', err);
       setError(
         err.response?.data?.error ||
-        err.message ||
-        'Une erreur s\'est produite lors de l\'inscription. Veuillez réessayer plus tard.'
+          err.message ||
+          "Une erreur s'est produite lors de l'inscription. Veuillez réessayer plus tard."
       );
     } finally {
       setChargement(false);
     }
   };
-  
+
   const sizeLi = 20;
 
   return (
     <main className="mainSignUp d-flex p-3 justify-content-center align-items-center">
       <div className="container-register z-2 d-flex justify-content-center align-items-center flex-column text-light">
         {error && <div className="alert alert-danger">{error}</div>}
-        
-        <form onSubmit={handleSubmit} className="form-register bg-custom-from text-light py-3 px-5 d-flex justify-content-center align-items-center flex-column gap-3 mt-2 w-100">
+
+        <form
+          onSubmit={handleSubmit}
+          className="form-register bg-custom-from text-light py-3 px-5 d-flex justify-content-center align-items-center flex-column gap-3 mt-2 w-100">
           <h2>Inscription</h2>
 
           {/* Nom et Prénom */}
@@ -132,7 +133,8 @@ const SignUp = () => {
 
               <ul>
                 <li className="d-flex gap-3 align-items-center">
-                  <GrValidate className="text-light" size={sizeLi} /> Accès immédiat sans carte bancaire.
+                  <GrValidate className="text-light" size={sizeLi} /> Accès immédiat sans carte
+                  bancaire.
                 </li>
                 <li className="d-flex gap-3 align-items-center">
                   <GrValidate className="text-light" size={sizeLi} /> Accessible partout.
@@ -144,7 +146,8 @@ const SignUp = () => {
                   <GrValidate className="text-light" size={sizeLi} /> Qualité max 720p.
                 </li>
                 <li className="d-flex gap-3 align-items-center">
-                  <GrValidate className="text-light" size={sizeLi} /> Notifications pour les nouvelles sorties.
+                  <GrValidate className="text-light" size={sizeLi} /> Notifications pour les
+                  nouvelles sorties.
                 </li>
               </ul>
             </div>
@@ -184,7 +187,7 @@ const SignUp = () => {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  type={showPassword ? "text" : "password"}
+                  type={showPassword ? 'text' : 'password'}
                   classcontainer={classcontainer}
                   classlabel={LabelForm}
                   classinput={InputFrom}
@@ -193,26 +196,27 @@ const SignUp = () => {
                   required
                 />
                 <Button
-              type="button"
-              className="position-absolute end-0 bottom-0 translate-middle-y me-2 p-0"
-              onClick={() => setShowPassword((prev) => !prev)}
-            >
-              {showPassword ? (
-                <BiHide className="text-black" size={20} />
-              ) : (
-                <BiShow className="text-black" size={20} />
-              )}
-            </Button>
+                  type="button"
+                  className="position-absolute end-0 bottom-0 translate-middle-y me-2 p-0"
+                  onClick={() => setShowPassword((prev) => !prev)}>
+                  {showPassword ? (
+                    <BiHide className="text-black" size={20} />
+                  ) : (
+                    <BiShow className="text-black" size={20} />
+                  )}
+                </Button>
               </div>
             </div>
           </div>
 
           {/* Checkbox conditions */}
           <div className="d-flex align-items-center w-100">
-          <Input
+            <Input
               classcontainer="bg-none d-flex align-items-center gap-2"
               classinput="form-check-input"
-              label={"En vous inscrivant, vous acceptez nos conditions générales d'utilisation et notre politique de confidentialité."}
+              label={
+                "En vous inscrivant, vous acceptez nos conditions générales d'utilisation et notre politique de confidentialité."
+              }
               type="checkbox"
               name="terms"
               checked={formData.terms}
@@ -221,11 +225,14 @@ const SignUp = () => {
               labelClassName="form-check-label text-light"
             />
           </div>
+          <Link to="/login" style={{ fontSize: '10px' }} className="text-decoration-underline">
+            Vous avez déja un compte ? Connectez-vous
+          </Link>
 
           {/* Bouton Inscription */}
           <Button
             type="submit"
-            children={chargement ? "Veuillez patienter..." : "S'inscrire"}
+            children={chargement ? 'Veuillez patienter...' : "S'inscrire"}
             className="s-btn w-100 rounded-1 py-2"
             disabled={chargement}
           />

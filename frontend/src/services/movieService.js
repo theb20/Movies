@@ -66,6 +66,11 @@ const movieService = {
     return response.data;
   },
 
+  getSearch: async () => {
+    const response = await api.get('/search');
+    return response.data;
+  },
+
   deleteSearch: async (id) => {
     const response = await api.delete(`/search/${id}`);
     return response.data;

@@ -25,8 +25,7 @@ import Detail from './assets/Pages/Detail/Detail.jsx';
 import Catalogue from './assets/Pages/Catalogue/Catalogue.jsx';
 import Stream from '../src/assets/components/VideoPlayer/VideoPLayer.jsx';
 import Backoffice from '../src/assets/Pages/Backoffice/index.jsx';
-import userBackoffice from '../src/assets/Pages/Backoffice/components/Users/Users.jsx';
-
+import Logout from '../src/assets/Pages/Logout/Logout.jsx';
 function App() {
   return (
     <AuthProvider>
@@ -51,6 +50,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Register />} />
           <Route path="/reset" element={<Reset />} />
+          <Route path="/logout" element={<Logout />} />
           <Route
             path="/backoffice/*"
             element={

@@ -58,8 +58,18 @@ const AuthProvider = ({ children }) => {
       throw error;
     }
   }
+  const putUserById = async (id, userData) => {
+    try {
+      const response = await authService.putUserById(id, userData);
+      await checkAuth(); // Rafraîchir les données utilisateur
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, register, loading }}>
+    <AuthContext.Provider value={{ user, login, logout, register, loading, putUserById }}>
       {!loading && children}
     </AuthContext.Provider>
   );

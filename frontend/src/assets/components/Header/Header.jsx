@@ -31,7 +31,7 @@ const Header = () => {
   const handleLogout = async () => {
     try {
       await logout();
-      navigate('/');
+      navigate('/logout');
     } catch (error) {
       console.error('Erreur de déconnexion:', error);
     }

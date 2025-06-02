@@ -29,21 +29,19 @@ const Login = () => {
 
     try {
       const res = await login(formData);
-      
+
       // Vérification plus détaillée de la réponse
       if (res && (res.token || res.id_user)) {
         console.log('Authentification réussie');
         navigate('/catalogue');
       } else {
         console.log('Réponse invalide:', res);
-        throw new Error('Données d\'authentification invalides');
+        throw new Error("Données d'authentification invalides");
       }
     } catch (err) {
       console.error('Erreur login détaillée:', err);
       setError(
-        err.response?.data?.message ||
-        err.message ||
-        'Identifiants incorrects. Veuillez réessayer.'
+        err.response?.data?.message || err.message || 'Identifiants incorrects. Veuillez réessayer.'
       );
     } finally {
       setChargement(false);
@@ -52,16 +50,17 @@ const Login = () => {
 
   return (
     <main className="mainLogin d-flex justify-content-center align-items-center vh-100">
-      <div className="container-login z-2 d-flex justify-content-center align-items-center flex-column text-light p-2">
+      <div className="container-login z-3 d-flex justify-content-center align-items-center flex-column text-light p-2">
         <h1 className="fs-1 text-center">Déverrouillez un monde de divertissement sans fin</h1>
-        <p className="fs-5 text-center">Connectez-vous ou Inscrivez-vous pour découvrir, diffuser et profiter !</p>
+        <p className="fs-5 text-center">
+          Connectez-vous ou Inscrivez-vous pour découvrir, diffuser et profiter !
+        </p>
 
         {error && <div className="alert alert-danger w-100 mt-2">{error}</div>}
 
         <form
           onSubmit={handleSubmit}
-          className="form-login bg-custom-from text-light py-5 px-5 w-45 d-flex justify-content-center align-items-center flex-column gap-3 mt-2"
-        >
+          className="form-login bg-custom-from text-light py-5 px-5 w-45 d-flex justify-content-center align-items-center flex-column gap-3 mt-2">
           <h2>Connexion</h2>
 
           <div className="bg-light rounded-1 w-100">
@@ -93,8 +92,7 @@ const Login = () => {
             <Button
               type="button"
               className="position-absolute end-0 bottom-0 translate-middle-y me-2 p-0"
-              onClick={() => setShowPassword((prev) => !prev)}
-            >
+              onClick={() => setShowPassword((prev) => !prev)}>
               {showPassword ? (
                 <BiHide className="text-black" size={20} />
               ) : (
@@ -115,11 +113,7 @@ const Login = () => {
             </Link>
           </div>
 
-          <Button
-            type="submit"
-            className="s-btn w-100 rounded-1 py-2"
-            disabled={chargement}
-          >
+          <Button type="submit" className="s-btn w-100 rounded-1 py-2" disabled={chargement}>
             {chargement ? 'Connexion en cours...' : 'Se connecter'}
           </Button>
         </form>

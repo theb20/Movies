@@ -4,13 +4,36 @@ import icondefault from '../../images/Icons/user.png';
 import Button from '../../components/Btn-generique/btn.jsx';
 import Input from '../../components/Input-Form/Input.jsx';
 import useAuth from '../../../contexts/useAuth';
+import { jwtDecode } from 'jwt-decode';
+import { IoIosCloseCircleOutline } from 'react-icons/io';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import Mentions from '../../../services/movieService.js';
 import './Profile.css';
 
 const Profile = () => {
-  const { user, logout, updateUser } = useAuth();
+  const { user, logout, putUserById } = useAuth();
+  const [visible, setVisible] = useState(false);
+  const toggleVisibility = () => {
+    setVisible(!visible);
+  };
+  const token = localStorage.getItem('token');
+  const decodedToken = jwtDecode(token);
+  const userId = decodedToken.id_user;
   const navigate = useNavigate();
+  const [history, setHistory] = useState([]);
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        const date = await Mentions.getSearch();
+        const filteredHistory = date.filter((item) => item.id_user === userId);
+        setHistory(filteredHistory);
+      } catch (error) {
+        console.error("❌ Erreur lors de la récupération de l'historique :", error);
+      }
+    };
+    fetchHistory();
+  }, []); // Added userId to dependency array
 
   const [profile, setProfile] = useState({
     name: '',
@@ -26,7 +49,8 @@ const Profile = () => {
   useEffect(() => {
     if (user) {
       const userData = {
-        name: `${user.first_name} ${user.name_user}`.trim() || 'No name',
+        name: user.name_user || 'No name',
+        first_name: user.first_name || 'No first name',
         email: user.email || 'No email',
         birthday: user.birthday || '',
         creationDate: user.inscription_date || '',
@@ -53,18 +77,31 @@ const Profile = () => {
 
   const handleSave = async () => {
     try {
-      await updateUser(tempProfile);
-      setProfile(tempProfile);
+      // Assurez-vous que les champs correspondent à ceux attendus par l'API
+      const dataToUpdate = {
+        name_user: tempProfile.name,
+        first_name: tempProfile.first_name,
+        email: tempProfile.email,
+        birthday: tempProfile.birthday
+      };
+      const updatedUser = await putUserById(userId, dataToUpdate);
+      setProfile({
+        name: updatedUser.name_user || 'No name',
+        first_name: updatedUser.first_name || 'No first name',
+        email: updatedUser.email || 'No email',
+        birthday: updatedUser.birthday || '',
+        creationDate: updatedUser.inscription_date || '',
+        role: updatedUser.role || 'Utilisateur'
+      });
       setIsEditing(false);
     } catch (error) {
-      console.error('❌ Erreur lors de la mise à jour du profil :', error);
+      console.error('Erreur lors de la mise à jour du profil :', error);
     }
   };
-
   const handleLogout = async () => {
     try {
       await logout();
-      navigate('/');
+      navigate('/logout');
     } catch (error) {
       console.error('❌ Erreur lors de la déconnexion :', error);
     }
@@ -78,10 +115,19 @@ const Profile = () => {
       return 'Format invalide';
     }
   };
+  const handleDelete = async (id) => {
+    try {
+      await Mentions.deleteSearch(id);
+      const updatedHistory = history.filter((item) => item.id_search !== id);
+      setHistory(updatedHistory);
+    } catch (error) {
+      console.error("❌ Erreur lors de la suppression de l'historique :", error);
+    }
+  };
 
   return (
-    <div className="container mt-5 pt-5">
-      <div className="bg-dark profile-container p-3 p-lg-4 rounded">
+    <div className="container vh-100 d-flex align-items-center justify-content-center mt-5 pt-5">
+      <div className="bg-dark w-100 profile-container p-3 p-lg-4 rounded">
         <div className="wallpaper"></div>
 
         {/* Mode édition */}
@@ -92,7 +138,18 @@ const Profile = () => {
                 label="Nom :"
                 type="text"
                 name="name"
+                classinput="bg-light"
                 value={tempProfile.name}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="mb-3 w-100 w-lg-auto">
+              <Input
+                label="Prénom(s) :"
+                type="text"
+                name="first_name"
+                classinput="bg-light"
+                value={tempProfile.first_name}
                 onChange={handleChange}
               />
             </div>
@@ -101,6 +158,7 @@ const Profile = () => {
                 label="Email :"
                 type="email"
                 name="email"
+                classinput="bg-light"
                 value={tempProfile.email}
                 onChange={handleChange}
               />
@@ -118,16 +176,54 @@ const Profile = () => {
                 className="profile-img position-absolute"
                 width="150"
               />
-              <h4 className="pt-lg-3">{profile.name}</h4>
+              <h4 className=" pt-lg-3">
+                {profile.first_name} {profile.name}
+              </h4>
               <p>{profile.email}</p>
             </div>
 
             <div className="w-100 w-lg-auto">
               <div className="px-3 py-4 bg-gray rounded mb-3 h-custom">
                 <h6 className="text-light">Historique</h6>
-                <Link to="/history" className="fs-4 fs-lg-2">
+                <Link onClick={toggleVisibility} className="fs-4 fs-lg-2">
                   Voir plus
                 </Link>
+                {visible && (
+                  <div className="bg-black bg-opacity-50 position-absolute z-3 d-flex align-items-center justify-content-center top-0 bottom-0 start-0 end-0">
+                    <div className="bg-dark p-4 rounded">
+                      <div className="d-flex gap-5 justify-content-center align-items-center">
+                        <h6 className="text-white m-0 p-0">
+                          Historique de visionnage{' '}
+                          <span className="border rounded-5 py-1 px-2">{history.length}</span>
+                        </h6>
+                        <Button onClick={toggleVisibility} className="s-btn p-1">
+                          Fermer
+                        </Button>
+                      </div>
+                      {history.map((item) => (
+                        <ul key={item.id_search} className="list-unstyled m-0">
+                          <li className="d-flex align-items-center justify-content-between border-bottom border-white border-opacity-10 py-2 gap-2">
+                            <span className="text-white">{item.keyword}</span>
+                            <span style={{ fontSize: '12px' }} className="text-white">
+                              {format(new Date(item.date_search), 'd MMMM yyyy', { locale: fr })}
+                            </span>
+                            <Button
+                              variant="link"
+                              className="text-white p-0"
+                              onClick={() => handleDelete(item.id_search)}>
+                              <IoIosCloseCircleOutline size={15} />
+                            </Button>
+                          </li>
+                        </ul>
+                      ))}
+                      {!history.length && (
+                        <p className="text-white text-center mt-5 mb-5">
+                          Aucun historique de recherche trouvé.
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
               <p>
                 <strong>Email</strong>

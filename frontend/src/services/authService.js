@@ -64,6 +64,10 @@ const authService = {
 
   getToken: () => {
     return localStorage.getItem('token');
+  },
+  putUserById: async (id, userData) => {
+    const response = await api.put(`/user/${id}`, userData);
+    return response.data;
   }
 };
 
