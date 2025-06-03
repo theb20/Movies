@@ -12,23 +12,22 @@ import './Catalogue.css';
 const Catalogue = () => {
   const navigate = useNavigate();
   const [movies, setMovies] = useState([]);
-  const [categories, setCategories] = useState({});
+  const [categories, setCategories] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
+  // Gérer le responsive
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768);
     };
-
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const handleSelect = (selectedIndex) => {
-    setCurrentIndex(selectedIndex);
-  };
+  const handleSelect = (selectedIndex) => setCurrentIndex(selectedIndex);
 
+  // Récupération des données
   useEffect(() => {
     const fetchMovies = async () => {
       try {
@@ -36,14 +35,8 @@ const Catalogue = () => {
           movieService.getAllMovies(),
           movieService.getCategories()
         ]);
-
-        const categoryMap = {};
-        categoriesData.forEach((cat) => {
-          categoryMap[cat.id_category] = cat.category_name;
-        });
-
         setMovies(moviesData);
-        setCategories(categoryMap);
+        setCategories(categoriesData);
       } catch (error) {
         console.error('Erreur lors de la récupération des films ou catégories :', error);
       }
@@ -52,6 +45,7 @@ const Catalogue = () => {
     fetchMovies();
   }, []);
 
+  // Composant pour afficher une carte de film
   const MovieCard = ({ movie, showTitle = true }) => (
     <div className="movie-card position-relative">
       <Link to={`/detail/${movie.id_movie}`}>
@@ -75,8 +69,23 @@ const Catalogue = () => {
     </div>
   );
 
+  // Création des sections dynamiques
+  const sections = [
+    {
+      id: 'tendance',
+      title: 'Tendance actuelle',
+      filter: () => true
+    },
+    ...categories.map((cat) => ({
+      id: cat?.category_name?.toLowerCase().replace(/\s+/g, '-'),
+      title: cat?.category_name,
+      filter: (m) => m.id_category === cat.id_category
+    }))
+  ];
+
   return (
     <div className="catalogue-container">
+      {/* Carrousel principal */}
       <Carousel
         controls={false}
         activeIndex={currentIndex}
@@ -84,7 +93,7 @@ const Catalogue = () => {
         onSelect={handleSelect}>
         {movies.map((movie) => (
           <Carousel.Item
-            key={movie.id}
+            key={movie.id_movie}
             className="position-relative"
             style={{ width: '100%', height: isMobile ? '50vh' : '73vh' }}>
             <div className="img_carousel w-100 h-100">
@@ -97,7 +106,7 @@ const Catalogue = () => {
             <Carousel.Caption
               className={`position-absolute ${isMobile ? 'col-12' : 'col-lg-6'} 
                 text-start d-flex flex-column gap-3 gap-lg-4 bottom-0 start-0`}
-              style={{ paddingLeft: '04%', zIndex: '10' }}>
+              style={{ paddingLeft: '4%', zIndex: '10' }}>
               <h3 className="fs-title-carousel">{movie.title}</h3>
 
               <div className="d-flex align-items-center justify-content-start gap-2 gap-lg-3">
@@ -111,14 +120,15 @@ const Catalogue = () => {
                 <p className="fs-6 fs-lg-5">
                   {format(new Date(movie.release_date), "d MMMM yyyy 'à' HH:mm", { locale: fr })}
                 </p>
-                <p className="fs-6 fs-lg-5">{categories[movie.id_category]}</p>
+                <p className="fs-6 fs-lg-5">
+                  {categories.find((cat) => cat.id_category === movie.id_category)?.category_name}
+                </p>
               </div>
 
-              <p
-                className={`${isMobile ? 'fs-6 description-mobile' : 'fs-5'} 
-                ${isMobile ? 'line-clamp-2' : ''}`}>
+              <p className={`${isMobile ? 'fs-6 description-mobile line-clamp-2' : 'fs-5'}`}>
                 {movie.description}
               </p>
+
               <div className="btns d-flex gap-2 gap-lg-3">
                 <Button
                   className="s-btn rounded-5 d-flex gap-2 align-items-center justify-content-center"
@@ -128,7 +138,7 @@ const Catalogue = () => {
                       Play <FaPlay />
                     </>
                   }
-                  onClick={''}
+                  onClick={() => {}}
                 />
                 <Button
                   className="t-btn rounded-5 d-flex gap-2 align-items-center justify-content-center"
@@ -147,40 +157,37 @@ const Catalogue = () => {
         ))}
       </Carousel>
 
+      {/* Sections par catégorie */}
       <div className="container-movies" style={{ padding: '0 4%' }}>
-        {[
-          { title: 'Tendance actuelle', filter: (m) => true },
-          { title: 'Comédie', filter: (m) => m.id_category === 1 },
-          { title: 'Action', filter: (m) => m.id_category === 5 },
-          { title: 'Science-Fiction', filter: (m) => m.id_category === 4 },
-          { title: 'Horreur', filter: (m) => m.id_category === 3 }
-        ].map((section) => (
-          <div key={section.title} className={section.title.replace(/\s+/g, '')}>
+        {sections.map((section) => (
+          <div key={section.title} id={section.id} className={section.id}>
             <h2 className="title fs-2 fs-lg-1 text-white mt-4 mt-lg-5 mb-3 mb-lg-5">
               {section.title}
             </h2>
             <div className="carousel d-flex gap-3 gap-lg-4 overflow-x-scroll py-2">
               {movies.filter(section.filter).map((movie) => (
-                <MovieCard key={movie.id} movie={movie} />
+                <MovieCard key={movie.id_movie} movie={movie} />
               ))}
             </div>
           </div>
         ))}
 
+        {/* Top 10 */}
         <div className="Top10">
           <h2 className="title fs-2 fs-lg-1 text-white mt-4 mt-lg-5 mb-3 mb-lg-5">Top 10</h2>
           <div className="carousel d-flex gap-3 gap-lg-4 overflow-x-scroll py-3 py-lg-5">
             {movies
               .filter((movie) => movie.rating >= 4)
+              .sort((a, b) => b.rating - a.rating)
               .slice(0, 10)
               .map((movie, index) => (
                 <div
-                  key={movie.id}
+                  key={movie.id_movie}
                   className="movie-card position-relative p-3 p-lg-5"
                   style={{ height: isMobile ? '400px' : '600px' }}>
                   <Link to={`/detail/${movie.id_movie}`}>
                     <span
-                      className="position-absolute fw-bold "
+                      className="position-absolute fw-bold"
                       style={{
                         fontSize: isMobile ? '60px' : '100px',
                         top: isMobile ? '0px' : '-84px',

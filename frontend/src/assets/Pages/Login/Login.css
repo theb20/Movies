@@ -27,3 +27,8 @@
 .fs-8 {
   font-size: 09px;
 }
+
+.overlay-blur {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px); /* pour Safari */
+}

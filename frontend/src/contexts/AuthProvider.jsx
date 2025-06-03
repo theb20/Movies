@@ -1,6 +1,6 @@
-import { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import authService from '../services/authService';
-
 
 export const AuthContext = createContext(null);
 
@@ -9,13 +9,12 @@ export const useAuth = () => useContext(AuthContext);
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   const checkAuth = async () => {
     try {
       const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('No token found');
-      }
+      if (!token) throw new Error('No token found');
       const userData = await authService.getCurrentUser();
       setUser(userData);
     } catch (error) {
@@ -33,10 +32,10 @@ const AuthProvider = ({ children }) => {
   const login = async (credentials) => {
     try {
       const response = await authService.login(credentials);
-      await checkAuth(); // Verify token and get user data
+      await checkAuth();
       return response;
     } catch (error) {
-      throw error;//throw signifie que l'on veut lever l'erreur et qu'on ne veut pas que le code continue d'executer apres le throw
+      throw error;
     }
   };
 
@@ -46,22 +45,24 @@ const AuthProvider = ({ children }) => {
     } finally {
       localStorage.removeItem('token');
       setUser(null);
+      navigate('/logout');
     }
   };
 
-  const register = async (credentials) =>{
+  const register = async (credentials) => {
     try {
       const response = await authService.register(credentials);
-      await checkAuth(); // Verify token and get user data
+      await checkAuth();
       return response;
     } catch (error) {
       throw error;
     }
-  }
+  };
+
   const putUserById = async (id, userData) => {
     try {
       const response = await authService.putUserById(id, userData);
-      await checkAuth(); // Rafraîchir les données utilisateur
+      await checkAuth();
       return response;
     } catch (error) {
       throw error;

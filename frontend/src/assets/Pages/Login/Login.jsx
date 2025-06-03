@@ -5,6 +5,7 @@ import { BiHide, BiShow } from 'react-icons/bi';
 import useAuth from '../../../contexts/useAuth';
 import Input from '../../components/Input-Form/Input';
 import Button from '../../components/Btn-generique/btn';
+import { jwtDecode } from 'jwt-decode';
 import './Login.css';
 
 const Login = () => {
@@ -16,6 +17,8 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [chargement, setChargement] = useState(false);
+  const [visible, setVisible] = useState(false);
+  const [infoUser, setInfoUser] = useState([]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -30,10 +33,25 @@ const Login = () => {
     try {
       const res = await login(formData);
 
-      // Vérification plus détaillée de la réponse
-      if (res && (res.token || res.id_user)) {
+      if (res?.token) {
         console.log('Authentification réussie');
-        navigate('/catalogue');
+
+        // Décodage du token
+        const tokenDecoded = jwtDecode(res.token);
+        console.log('Token décodé:', tokenDecoded);
+        setInfoUser(tokenDecoded);
+        // Redirection selon le rôle
+        switch (tokenDecoded.role) {
+          case 'user':
+            navigate('/catalogue');
+            break;
+          case 'admin':
+          case 'moderator':
+            setVisible(true);
+            break;
+          default:
+            throw new Error('Rôle non reconnu');
+        }
       } else {
         console.log('Réponse invalide:', res);
         throw new Error("Données d'authentification invalides");
@@ -118,6 +136,31 @@ const Login = () => {
           </Button>
         </form>
       </div>
+      {visible && infoUser && (
+        <div className=" overlay-blur position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center bg-dark bg-opacity-50 backdrop-blur z-3 px-3">
+          <div
+            className="card bg-dark text-light shadow-lg border-danger border border-opacity-25 rounded-4 w-100"
+            style={{ maxWidth: '420px' }}>
+            <div className="card-body text-center p-4">
+              <h2 className="fw-bold fst-italic mb-3 animate-welcome">
+                Bienvenue {infoUser.first_name}
+              </h2>
+              <p className="mb-4">Où souhaitez-vous aller ?</p>
+
+              <div className="d-grid gap-3">
+                <Button className="s-btn rounded-1" onClick={() => navigate('/catalogue')}>
+                  Aller au Catalogue
+                </Button>
+                <Button
+                  className="btn btn-secondary rounded-1"
+                  onClick={() => navigate('/backoffice')}>
+                  Aller au Back-office
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 };

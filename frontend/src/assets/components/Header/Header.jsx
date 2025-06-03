@@ -28,14 +28,6 @@ const Header = () => {
   const isDashboard = location.pathname.startsWith('/backoffice');
   const handleLogin = () => navigate('/login');
   const handleRegister = () => navigate('/signup');
-  const handleLogout = async () => {
-    try {
-      await logout();
-      navigate('/logout');
-    } catch (error) {
-      console.error('Erreur de déconnexion:', error);
-    }
-  };
 
   const logo_D = { width: '130px' };
   const logo_M = { width: '60px', backgroundColor: 'var(--background-gray)' };
@@ -63,12 +55,12 @@ const Header = () => {
                         </Link>
                       </li>
                       <li>
-                        <Link className="nav-link text-light" to="/catalogue#section8">
+                        <Link className="nav-link text-light" to="/terms#section8">
                           Blog
                         </Link>
                       </li>
                       <li>
-                        <Link className="nav-link text-light" to="/catalogue">
+                        <Link className="nav-link text-light" to="/galerie">
                           Galerie
                         </Link>
                       </li>
@@ -118,9 +110,7 @@ const Header = () => {
                         </Link>
                       </li>
                       <li>
-                        <Button
-                          onClick={handleLogout}
-                          className="s-btn dropdown-item text-center w-100">
+                        <Button onClick={logout} className="s-btn dropdown-item text-center w-100">
                           Déconnexion
                         </Button>
                       </li>

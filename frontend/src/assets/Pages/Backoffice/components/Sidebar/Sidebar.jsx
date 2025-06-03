@@ -101,8 +101,13 @@ const Sidebar = () => {
               </div>
             </div>
             <Button
+              onClick={() => navigate('/catalogue')}
+              className="desactivated rounded-1 bg-danger border-0 t-btn justify-content-between w-100">
+              Retour Catalogue <HiLogout size={sizeIcon} />
+            </Button>
+            <Button
               onClick={handleLogout}
-              className="desactivated s-btn justify-content-between w-100">
+              className="desactivated s-btn rounded-1 justify-content-between w-100">
               Déconnexion <HiLogout size={sizeIcon} />
             </Button>
           </div>

@@ -14,37 +14,35 @@ import './Profile.css';
 const Profile = () => {
   const { user, logout, putUserById } = useAuth();
   const [visible, setVisible] = useState(false);
-  const toggleVisibility = () => {
-    setVisible(!visible);
-  };
-  const token = localStorage.getItem('token');
-  const decodedToken = jwtDecode(token);
-  const userId = decodedToken.id_user;
-  const navigate = useNavigate();
   const [history, setHistory] = useState([]);
-  useEffect(() => {
-    const fetchHistory = async () => {
-      try {
-        const date = await Mentions.getSearch();
-        const filteredHistory = date.filter((item) => item.id_user === userId);
-        setHistory(filteredHistory);
-      } catch (error) {
-        console.error("❌ Erreur lors de la récupération de l'historique :", error);
-      }
-    };
-    fetchHistory();
-  }, []); // Added userId to dependency array
-
   const [profile, setProfile] = useState({
     name: '',
+    first_name: '',
     email: '',
     birthday: '',
     creationDate: '',
     role: ''
   });
-
   const [tempProfile, setTempProfile] = useState(profile);
   const [isEditing, setIsEditing] = useState(false);
+  const navigate = useNavigate();
+
+  const token = localStorage.getItem('token');
+  const decodedToken = token ? jwtDecode(token) : null;
+  const userId = decodedToken?.id_user;
+
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        const data = await Mentions.getSearch();
+        const filtered = data.filter((item) => item.id_user === userId);
+        setHistory(filtered);
+      } catch (error) {
+        console.error('❌ Erreur historique :', error);
+      }
+    };
+    if (userId) fetchHistory();
+  }, [userId]);
 
   useEffect(() => {
     if (user) {
@@ -54,7 +52,7 @@ const Profile = () => {
         email: user.email || 'No email',
         birthday: user.birthday || '',
         creationDate: user.inscription_date || '',
-        role: user.role || 'Utilisateur'
+        role: user.role?.toLowerCase() || 'utilisateur'
       };
       setProfile(userData);
       setTempProfile(userData);
@@ -69,15 +67,12 @@ const Profile = () => {
   };
 
   const handleEdit = () => {
-    if (isEditing) {
-      setTempProfile(profile); // reset changes
-    }
+    if (isEditing) setTempProfile(profile);
     setIsEditing(!isEditing);
   };
 
   const handleSave = async () => {
     try {
-      // Assurez-vous que les champs correspondent à ceux attendus par l'API
       const dataToUpdate = {
         name_user: tempProfile.name,
         first_name: tempProfile.first_name,
@@ -91,79 +86,72 @@ const Profile = () => {
         email: updatedUser.email || 'No email',
         birthday: updatedUser.birthday || '',
         creationDate: updatedUser.inscription_date || '',
-        role: updatedUser.role || 'Utilisateur'
+        role: updatedUser.role?.toLowerCase() || 'utilisateur'
       });
       setIsEditing(false);
     } catch (error) {
-      console.error('Erreur lors de la mise à jour du profil :', error);
+      console.error('❌ Erreur mise à jour :', error);
     }
   };
+
   const handleLogout = async () => {
     try {
       await logout();
       navigate('/logout');
     } catch (error) {
-      console.error('❌ Erreur lors de la déconnexion :', error);
+      console.error('❌ Erreur logout :', error);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await Mentions.deleteSearch(id);
+      setHistory((prev) => prev.filter((item) => item.id_search !== id));
+    } catch (error) {
+      console.error('❌ Suppression historique échouée :', error);
     }
   };
 
   const formatDate = (dateStr, formatStr = "d MMMM yyyy 'à' HH:mm") => {
     try {
-      if (!dateStr) return 'Non défini';
-      return format(new Date(dateStr), formatStr, { locale: fr });
-    } catch (err) {
+      return dateStr ? format(new Date(dateStr), formatStr, { locale: fr }) : 'Non défini';
+    } catch {
       return 'Format invalide';
-    }
-  };
-  const handleDelete = async (id) => {
-    try {
-      await Mentions.deleteSearch(id);
-      const updatedHistory = history.filter((item) => item.id_search !== id);
-      setHistory(updatedHistory);
-    } catch (error) {
-      console.error("❌ Erreur lors de la suppression de l'historique :", error);
     }
   };
 
   return (
-    <div className="container vh-100 d-flex align-items-center justify-content-center mt-5 pt-5">
-      <div className="bg-dark w-100 profile-container p-3 p-lg-4 rounded">
+    <div className="container vh-lg-100 d-flex align-items-center justify-content-center mt-5 pt-5">
+      <div className="bg-dark w-100 h-50 profile-container p-3 p-lg-4 rounded">
         <div className="wallpaper"></div>
 
-        {/* Mode édition */}
         {isEditing ? (
-          <form className="d-flex flex-column flex-lg-row justify-content-around align-items-center gap-3 w-100 p-3">
-            <div className="mb-3 w-100 w-lg-auto">
-              <Input
-                label="Nom :"
-                type="text"
-                name="name"
-                classinput="bg-light"
-                value={tempProfile.name}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="mb-3 w-100 w-lg-auto">
-              <Input
-                label="Prénom(s) :"
-                type="text"
-                name="first_name"
-                classinput="bg-light"
-                value={tempProfile.first_name}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="mb-3 w-100 w-lg-auto">
-              <Input
-                label="Email :"
-                type="email"
-                name="email"
-                classinput="bg-light"
-                value={tempProfile.email}
-                onChange={handleChange}
-              />
-            </div>
-            <Button type="button" className="btn btn-success w-100 w-lg-25" onClick={handleSave}>
+          <form className="d-flex align-items-center flex-column flex-lg-row justify-content-around align-items-center gap-3 w-100 p-4">
+            <Input
+              label="Nom :"
+              type="text"
+              name="name"
+              classinput="bg-light"
+              value={tempProfile.name}
+              onChange={handleChange}
+            />
+            <Input
+              label="Prénom(s) :"
+              type="text"
+              name="first_name"
+              classinput="bg-light"
+              value={tempProfile.first_name}
+              onChange={handleChange}
+            />
+            <Input
+              label="Email :"
+              type="email"
+              name="email"
+              classinput="bg-light"
+              value={tempProfile.email}
+              onChange={handleChange}
+            />
+            <Button type="button" className="btn btn-success w-25 w-lg-25" onClick={handleSave}>
               Sauvegarder
             </Button>
           </form>
@@ -176,47 +164,60 @@ const Profile = () => {
                 className="profile-img position-absolute"
                 width="150"
               />
-              <h4 className=" pt-lg-3">
+              <h4 className="pt-lg-3">
                 {profile.first_name} {profile.name}
               </h4>
               <p>{profile.email}</p>
+
+              <div className="mt-4">
+                {(profile.role === 'admin' || profile.role === 'moderator') && (
+                  <Button
+                    className="p
+                  s-btn rounded-1 "
+                    onClick={() => navigate('/backoffice')}>
+                    Aller au back-office
+                  </Button>
+                )}
+              </div>
             </div>
 
             <div className="w-100 w-lg-auto">
               <div className="px-3 py-4 bg-gray rounded mb-3 h-custom">
                 <h6 className="text-light">Historique</h6>
-                <Link onClick={toggleVisibility} className="fs-4 fs-lg-2">
+                <Link onClick={() => setVisible(!visible)} className="fs-4 fs-lg-2">
                   Voir plus
                 </Link>
+
                 {visible && (
-                  <div className="bg-black bg-opacity-50 position-absolute z-3 d-flex align-items-center justify-content-center top-0 bottom-0 start-0 end-0">
+                  <div className="bg-black bg-opacity-50 m-3 position-absolute z-3 d-flex align-items-center justify-content-center top-0 bottom-0 start-0 end-0">
                     <div className="bg-dark p-4 rounded">
                       <div className="d-flex gap-5 justify-content-center align-items-center">
                         <h6 className="text-white m-0 p-0">
                           Historique de visionnage{' '}
                           <span className="border rounded-5 py-1 px-2">{history.length}</span>
                         </h6>
-                        <Button onClick={toggleVisibility} className="s-btn p-1">
+                        <Button onClick={() => setVisible(false)} className="s-btn p-1">
                           Fermer
                         </Button>
                       </div>
-                      {history.map((item) => (
-                        <ul key={item.id_search} className="list-unstyled m-0">
-                          <li className="d-flex align-items-center justify-content-between border-bottom border-white border-opacity-10 py-2 gap-2">
-                            <span className="text-white">{item.keyword}</span>
-                            <span style={{ fontSize: '12px' }} className="text-white">
-                              {format(new Date(item.date_search), 'd MMMM yyyy', { locale: fr })}
-                            </span>
-                            <Button
-                              variant="link"
-                              className="text-white p-0"
-                              onClick={() => handleDelete(item.id_search)}>
-                              <IoIosCloseCircleOutline size={15} />
-                            </Button>
-                          </li>
-                        </ul>
-                      ))}
-                      {!history.length && (
+                      {history.length ? (
+                        history.map((item) => (
+                          <ul key={item.id_search} className="list-unstyled m-0">
+                            <li className="d-flex align-items-center justify-content-between border-bottom border-white border-opacity-10 py-2 gap-2">
+                              <span className="text-white">{item.keyword}</span>
+                              <span className="text-white" style={{ fontSize: '12px' }}>
+                                {format(new Date(item.date_search), 'd MMMM yyyy', { locale: fr })}
+                              </span>
+                              <Button
+                                variant="link"
+                                className="text-white p-0"
+                                onClick={() => handleDelete(item.id_search)}>
+                                <IoIosCloseCircleOutline size={15} />
+                              </Button>
+                            </li>
+                          </ul>
+                        ))
+                      ) : (
                         <p className="text-white text-center mt-5 mb-5">
                           Aucun historique de recherche trouvé.
                         </p>
@@ -225,6 +226,7 @@ const Profile = () => {
                   </div>
                 )}
               </div>
+
               <p>
                 <strong>Email</strong>
               </p>
@@ -261,7 +263,6 @@ const Profile = () => {
           <Button className="p-btn px-4 py-2 w-100 w-lg-auto" onClick={handleEdit}>
             {isEditing ? 'Annuler' : 'Modifier'}
           </Button>
-
           <Button className="p-btn px-4 py-2 w-100 w-lg-auto" onClick={handleLogout}>
             Déconnexion
           </Button>

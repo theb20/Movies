@@ -21,7 +21,7 @@ const GoodBye = () => {
           to="/login"
           className=" text-white px-4 py-2 rounded-pill shadow-sm"
           style={{ backgroundColor: 'var(--background-btn)', color: '#000' }}>
-          Se reconnecter
+          Se connecter
         </Link>
       </div>
     </div>
