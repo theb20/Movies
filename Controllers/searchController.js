@@ -18,7 +18,7 @@ export const deleteSearch = async (req, res) =>{
         const db = await connectDB();
         const { id_search } = req.params;
         const [result] = await db.execute(
-            'DELETE FROM search WHERE id_search =?' [id_search]
+            'DELETE FROM search WHERE id_search =?', [id_search]
         );
         if (result.affectedRows === 0) return res.status(404).json({ error: "Recherche non trouvée"})
 
@@ -28,6 +28,7 @@ export const deleteSearch = async (req, res) =>{
         res.status(500).json({ message: "Erreur interne du serveur" });
     }
 }
+
 export const getPopularSearch = async (req, res) => {
     try {
         const db = await connectDB();

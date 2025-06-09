@@ -2,7 +2,7 @@ import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
 
 dotenv.config();
-
+// message d'inscription
 export const mailInscription = async (email, firstName) => {
     try {
         const transporter = nodemailer.createTransport({ //createTransport crée un objet qui est enssuite envoyé
@@ -122,3 +122,42 @@ export const mailConnected = async (email, firstName, userIP) => {
         return { success: false, message: error.message };
     }
 }
+// message de réinitialisation de mot de passe
+export const sendResetCodeEmail = async (email, firstName, resetCode) => {
+  try {
+      const transporter = nodemailer.createTransport({
+          service: 'gmail',
+          auth: {
+              user: process.env.EMAIL,
+              pass: process.env.PASSWORD,
+          }
+      });
+
+      const emailContent = {
+          from: '"MOVIE" <no-reply@movie.com>',
+          to: email,
+          subject: 'Code de réinitialisation de votre mot de passe',
+          html: `
+            <div style="max-width:600px;margin:0 auto;font-family:'Segoe UI',sans-serif;color:#333;background:#ffffff;border:1px solid #e0e0e0;border-radius:8px;">
+              <div style="background-color:#1c1c1c;padding:20px;text-align:center;">
+                <h1 style="color:#ffffff;">Réinitialisation du mot de passe</h1>
+              </div>
+              <div style="padding:30px;">
+                <p>Bonjour ${firstName},</p>
+                <p>Vous avez demandé à réinitialiser votre mot de passe sur MOVIE.</p>
+                <p>Voici votre code de réinitialisation :</p>
+                <h2 style="text-align:center;color:#e50914;">${resetCode}</h2>
+                <p>Ce code est valable pendant quelques minutes. Si vous n’êtes pas à l’origine de cette demande, ignorez cet email.</p>
+                <p style="font-style:italic;color:#999;">– L’équipe MOVIE</p>
+              </div>
+            </div>
+          `
+      };
+
+      await transporter.sendMail(emailContent);
+      return { success: true, message: 'Code envoyé par email' };
+  } catch (error) {
+      console.error('Erreur lors de l’envoi du mail de réinitialisation:', error);
+      return { success: false, message: error.message };
+  }
+};
