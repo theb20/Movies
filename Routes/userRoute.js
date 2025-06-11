@@ -1,9 +1,9 @@
 import express from "express"
-import { getUser, createUser, login, getMe, logout, deleteUser, updateUser, sendResetCode, verifyResetCode, resetPassword } from "../Controllers/userController.js"
+import { getAllUser, createUser, login, getMe, logout, deleteUser, updateUser, sendResetCode, verifyResetCode, resetPassword } from "../Controllers/userController.js"
 import {verifyToken} from '../Middlewares/authMiddleware.js'
 
 const router = express.Router()
-router.get('/user', getUser)
+router.get('/user', getAllUser)
 router.put('/user/:id', updateUser)
 router.post('/auth/register', createUser)
 router.post('/auth/login', login)

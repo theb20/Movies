@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 // message d'inscription
-export const mailInscription = async (email, firstName) => {
+export const mailInscription = async (email, first_name) => {
     try {
         const transporter = nodemailer.createTransport({ //createTransport crée un objet qui est enssuite envoyé
             service: 'gmail',
@@ -21,18 +21,18 @@ export const mailInscription = async (email, firstName) => {
             <div style="max-width:600px;margin:0 auto;font-family:'Segoe UI',sans-serif;color:#333;background:#ffffff;border:1px solid #e0e0e0;border-radius:8px;overflow:hidden;">
               
               <div style="background-color:#1c1c1c;padding:20px;text-align:center;">
-                <img src="https://i.imgur.com/4NZ6uLY.png" alt="MOVIE Logo" style="width:120px;height:auto;margin-bottom:10px;" />
+                <img src="https://i.pinimg.com/736x/4f/9e/17/4f9e17fb9da6c9188371e6fc97416c67.jpg" alt="MOVIE Logo" style="width:120px;height:auto;margin-bottom:10px;" />
                 <h1 style="color:#ffffff;font-size:24px;margin:0;">Bienvenue chez MOVIE</h1>
               </div>
         
               <div style="padding:30px;">
-                <h2 style="color:#1c1c1c;">Bonjour ${firstName},</h2>
+                <h2 style="color:#1c1c1c;">Bonjour ${first_name},</h2>
                 <p>Nous sommes ravis de vous accueillir dans l’univers <strong>MOVIE</strong>.</p>
                 <p>Plongez dès maintenant dans une expérience cinématographique unique avec une large sélection de films, séries, et bien plus encore.</p>
                 <p style="font-weight:bold;">Accédez à votre compte pour découvrir les dernières nouveautés !</p>
         
                 <div style="text-align:center;margin:30px 0;">
-                  <a href="${process.env.FRONTEND_URL}" style="display:inline-block;padding:12px 24px;background-color:#e50914;color:#ffffff;text-decoration:none;border-radius:4px;font-weight:bold;">
+                  <a href="${process.env.FRONTEND_URL}/login" style="display:inline-block;padding:12px 24px;background-color:#e50914;color:#ffffff;text-decoration:none;border-radius:4px;font-weight:bold;">
                     Se connecter
                   </a>
                 </div>
@@ -97,10 +97,10 @@ export const mailConnected = async (email, firstName, userIP) => {
         
                 <p>Si vous êtes à l'origine de cette connexion, aucune action n'est requise.</p>
                 <p style="color:#e50914;"><strong>Vous ne reconnaissez pas cette activité ?</strong></p>
-                <p><a href="http://localhost:3000/reset" style="color:#e50914; text-decoration:underline;">Réinitialisez immédiatement votre mot de passe</a> pour protéger votre compte.</p>
+                <p><a href="${process.env.FRONTEND_URL}/reset" style="color:#e50914; text-decoration:underline;">Réinitialisez immédiatement votre mot de passe</a> pour protéger votre compte.</p>
         
                 <div style="text-align:center; margin:30px 0;">
-                  <a href="" style="display:inline-block; padding:12px 24px; background-color:#e50914; color:#ffffff; text-decoration:none; border-radius:4px; font-weight:bold;">Se connecter</a>
+                  <a href="${process.env.FRONTEND_URL}/login" style="display:inline-block; padding:12px 24px; background-color:#e50914; color:#ffffff; text-decoration:none; border-radius:4px; font-weight:bold;">Se connecter</a>
                 </div>
         
                 <p style="font-style:italic; color:#666;">– L'équipe MOVIE</p>

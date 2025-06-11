@@ -10,6 +10,7 @@
     "pm2": "pm2 start ecosystem.config.cjs"
   },
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.2",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
