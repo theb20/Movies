@@ -1,6 +1,6 @@
 import { connectDB } from "../Config/db.js";
 import {mailInscription,mailConnected, sendResetCodeEmail} from "../Config/sendMail.js";
-import { allUser, findByEmail, findById, insertUser, resultUser, updateResetCode, verificationCode, resetUserPassword } from "../models/userModel.js";
+import { allUser, findByEmail, findById, insertUser, resultUser, updateResetCode, verificationCode, resetUserPassword, deleteByUser } from "../models/userModel.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv"
@@ -235,10 +235,9 @@ export const resetPassword = async (req, res) => {
   };
 export const deleteUser = async (req, res) => {
     try {
-      const db = await connectDB();
       const { id } = req.params;
   
-      const [result] = await db.query("DELETE FROM user WHERE id_user = ?", [id]);
+      const result = await deleteByUser(id);
   
       if (result.affectedRows === 0) {
         return res.status(404).json({ message: "Utilisateur non trouvé" });

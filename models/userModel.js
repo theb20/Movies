@@ -80,7 +80,6 @@ export const verificationCode = async (resetCode, email) => {
     throw new Error("Erreur interne, veuillez réessayer plus tard.");
   }
 }
-
 export const resetUserPassword = async (newPassword, email) => {
   try {
     const db = await connectDB();
@@ -97,3 +96,14 @@ export const resetUserPassword = async (newPassword, email) => {
     throw new Error("Erreur interne, veuillez réessayer plus tard.");
   }
 };
+// Suppression d'un utilisateur
+export const deleteByUser = async (id) => {
+  try {
+    const db = await connectDB();
+    const [result] = await db.query("DELETE FROM user WHERE id_user =?", [id]);
+    return result;
+  } catch (error) {
+    console.error("❌ deleteUser:", error);
+    throw new Error("Erreur interne, veuillez réessayer plus tard.");
+  }
+}
