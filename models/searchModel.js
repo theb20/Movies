@@ -1,14 +1,14 @@
 import { connectDB } from "../Config/db.js";
 
 // Récupération de toutes les recherches
-export const getAllSearch = async (req, res) => {
+export const getAllSearch = async () => {
   try {
     const db = await connectDB();
     const [search] = await db.query("SELECT * FROM search");
     return search;
   } catch (error) {
     console.error("❌ getAllSearch:", error);
-    res.status(500).json({ message: "Erreur interne, veuillez réessayer plus tard." });
+    throw new Error("Erreur lors de la récupération des recherches.");   
   }
 }
 // Supprimer une recherche
@@ -21,7 +21,7 @@ export const deleteSearchById = async (id_search) => {
     return result;
   }catch (error) {
     console.error("❌ deleteSearch:", error);
-    res.status(500).json({ message: "Erreur interne, veuillez réessayer plus tard." });
+    throw new Error("Erreur lors de la suppression de la recherche.");   
   }
 }
 // recherche par film
@@ -32,7 +32,7 @@ export const searchQuerryByMovies = async (query) => {
     return movies;
   } catch (error) {
     console.error("❌ searchMovies:", error);
-    res.status(500).json({ message: "Erreur interne, veuillez réessayer plus tard." });
+    throw new Error("Erreur lors de la recherche de films.");   
   }
 }
 // insertion de la recherche
@@ -46,7 +46,7 @@ export const insertSearch = async (keyword, userId) => {
     return result.insertId;
   } catch (error) {
     console.error("❌ insertSearch:", error);
-    res.status(500).json({ message: "Erreur interne, veuillez réessayer plus tard." });
+    throw new Error("Erreur lors de l'insertion de la recherche.");   
   }
 }
 export const getMoviesPopularSearch = async (userId) => {
@@ -64,7 +64,7 @@ export const getMoviesPopularSearch = async (userId) => {
       return popularSearches;
     } catch (error) {
       console.error("❌ getMoviesPopularSearch:", error);
-      throw error; // remonter l'erreur au controller
+      throw new Error("Erreur lors de la récupération des recherches populaires.");   
     }
   };
   

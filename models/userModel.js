@@ -2,14 +2,14 @@ import { connectDB } from "../Config/db.js";
 import bcrypt from "bcrypt";
 
 // Obtenir tous les utilisateurs
-export const allUser = async (req, res) => {
+export const allUser = async () => {
   try {
     const db = await connectDB();
     const [users] = await db.query("SELECT * FROM user");
     return users
   } catch (error) {
     console.error("❌ getUser:", error);
-    res.status(500).json({ message: "Erreur interne, veuillez réessayer plus tard." });
+    throw new Error("Erreur lors de la récupération des utilisateurs.");   
   }
 };
 // recherche par email
@@ -20,7 +20,7 @@ export const findByEmail = async (email) => {
     return user[0];
   } catch (error) {
     console.error("❌ getUser:", error);
-    throw new Error("Erreur interne, veuillez réessayer plus tard.");
+    throw new Error("Erreur lors de l'utilisateur par email.");
   }
 }
 // recherche par id
@@ -31,7 +31,7 @@ export const findById = async (id) => {
     return user[0];
   } catch (error) {
     console.error("❌ getUser:", error);
-    throw new Error("Erreur interne, veuillez réessayer plus tard.");
+    throw new Error("Erreur lors de l'utilisateur par id.");
   }
 }
 // insertion d'un utilisateur
@@ -43,7 +43,7 @@ export const insertUser = async (name_user, first_name, birthday, email, hashedP
     return result.insertId;
   } catch (error) {
     console.error("❌ insertUser:", error);
-    throw new Error("Erreur interne, veuillez réessayer plus tard.");
+    throw new Error("Erreur lors de l'insertion de l'utilisateur.");
   }
 }
 // mise à jour d'un utilisateur
@@ -57,7 +57,7 @@ export const resultUser = async (name_user, first_name, birthday, email, pwd_hac
       return result; // retourne l'objet complet pour accéder à affectedRows
     } catch (error) {
       console.error("❌ resultUser:", error);
-      throw new Error("Erreur interne, veuillez réessayer plus tard.");
+      throw new Error("Erreur lors de la mise à jour de l'utilisateur.");
     }
 };
 export const updateResetCode = async (resetCode, email) => {
@@ -67,7 +67,7 @@ export const updateResetCode = async (resetCode, email) => {
     return result;
   } catch (error) {
     console.error("❌ updateResetCode:", error);
-    throw new Error("Erreur interne, veuillez réessayer plus tard.");
+    throw new Error("Erreur lors de la mise à jour du code de réinitialisation.");
   }
 }
 export const verificationCode = async (resetCode, email) => {
@@ -77,7 +77,7 @@ export const verificationCode = async (resetCode, email) => {
     return result[0];
   } catch (error) {
     console.error("❌ verificationCode:", error);
-    throw new Error("Erreur interne, veuillez réessayer plus tard.");
+    throw new Error("Erreur lors de la vérification du code de réinitialisation.");
   }
 }
 export const resetUserPassword = async (newPassword, email) => {
@@ -93,7 +93,7 @@ export const resetUserPassword = async (newPassword, email) => {
     return result[0];
   } catch (error) {
     console.error("❌ resetPassword:", error);
-    throw new Error("Erreur interne, veuillez réessayer plus tard.");
+    throw new Error("Erreur lors de la réinitialisation du mot de passe.");
   }
 };
 // Suppression d'un utilisateur
@@ -104,6 +104,6 @@ export const deleteByUser = async (id) => {
     return result;
   } catch (error) {
     console.error("❌ deleteUser:", error);
-    throw new Error("Erreur interne, veuillez réessayer plus tard.");
+    throw new Error("Erreur lors de la suppression de l'utilisateur.");
   }
 }
