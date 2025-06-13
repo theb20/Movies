@@ -1,4 +1,3 @@
-import { connectDB } from "../Config/db.js";
 import {mailInscription,mailConnected, sendResetCodeEmail} from "../Config/sendMail.js";
 import { allUser, findByEmail, findById, insertUser, resultUser, updateResetCode, verificationCode, resetUserPassword, deleteByUser } from "../models/userModel.js";
 import bcrypt from "bcryptjs";

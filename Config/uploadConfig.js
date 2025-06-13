@@ -46,18 +46,32 @@ const storage = multer.diskStorage({
 // Filtrage des types de fichiers
 const fileFilter = (req, file, cb) => {
   const ext = path.extname(file.originalname).toLowerCase();
+
+  // Champs pour les images
+  const imageFields = ['img_cover', 'img_presentation'];
+  // Champs  pour les vidéos
+  const videoFields = ['video', 'trailer'];
+
   const allowedImages = ['.jpg', '.jpeg', '.png', '.webp'];
   const allowedVideos = ['.mp4', '.mkv', '.mov'];
 
-  if (
-    (file.fieldname.startsWith('img_') && allowedImages.includes(ext)) ||
-    (['video', 'trailer'].includes(file.fieldname) && allowedVideos.includes(ext))
-  ) {
-    cb(null, true);
+  if (imageFields.includes(file.fieldname)) {
+    if (allowedImages.includes(ext)) {
+      cb(null, true);
+    } else {
+      cb(new Error(`❌ Fichier non image accepté pour ${file.fieldname}`));
+    }
+  } else if (videoFields.includes(file.fieldname)) {
+    if (allowedVideos.includes(ext)) {
+      cb(null, true);
+    } else {
+      cb(new Error(`❌ Fichier non vidéo accepté pour ${file.fieldname}`));
+    }
   } else {
-    cb(new Error('❌ Type de fichier non autorisé'));
+    cb(new Error(`❌ Champ fichier non reconnu: ${file.fieldname}`));
   }
 };
+
 
 // Limite de taille (optionnelle : 200 Mo pour vidéo, 5 Mo pour images)
 const limits = {
