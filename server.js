@@ -19,7 +19,7 @@ import userRoute from "./Routes/userRoute.js";
 import commentRoute from "./Routes/commentRoute.js";
 import searchRoute from "./Routes/searchRoute.js";
 import likeMovieRoute from "./Routes/likeMovieRoute.js";
-import uploadRoute from "./Config/uploadConfig.js"; // ✅ Route d'upload sécurisée
+import uploadRoute from "./Middlewares/multerMiddleware.js"; 
 
 dotenv.config();
 

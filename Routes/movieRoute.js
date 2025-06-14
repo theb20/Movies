@@ -1,16 +1,16 @@
 import express from 'express';
 import { addMovie, putMovie, deleteMovie, getAllMovies, getMovieById } from '../Controllers/movieController.js';
-
+import { authorizeRole } from '../Middlewares/authMiddleware.js';
 const router = express.Router();
 
 // Route pour ajouter un film
-router.post('/movies', addMovie);
+router.post('/movies',authorizeRole('admin', 'moderator'), addMovie);
 
 // Route pour modifier un film
-router.put('/movies/:id', putMovie);
+router.put('/movies/:id',authorizeRole('admin'), putMovie);
 
 // Route pour supprimer un film
-router.delete('/movies/:id', deleteMovie);
+router.delete('/movies/:id',authorizeRole('admin'), deleteMovie);
 
 // Route pour récupérer tous les films
 router.get('/movies', getAllMovies);

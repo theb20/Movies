@@ -1,4 +1,4 @@
-import upload from "../Config/uploadConfig.js";
+import upload from "../Middlewares/multerMiddleware.js";
 import dotenv from "dotenv";
 import { insertMovie, updateMovie, deleteMovieById, AllMovies, movieById } from "../models/movieModel.js";
 
