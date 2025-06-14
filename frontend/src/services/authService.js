@@ -68,6 +68,18 @@ const authService = {
   putUserById: async (id, userData) => {
     const response = await api.put(`/user/${id}`, userData);
     return response.data;
+  },
+  requestReset: async (email) => {
+    const response = await api.post('/auth/reset-code', { email });
+    return response.data;
+  },
+  verifyCode: async (email, resetCode) => {
+    const response = await api.post('/auth/verify-code', { email, resetCode });
+    return response.data;
+  },
+  resetPassword: async (email, resetCode, newPassword) => {
+    const response = await api.post('/auth/reset-password', { email, resetCode, newPassword });
+    return response.data;
   }
 };
 

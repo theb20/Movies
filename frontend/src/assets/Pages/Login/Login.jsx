@@ -38,7 +38,6 @@ const Login = () => {
 
         // Décodage du token
         const tokenDecoded = jwtDecode(res.token);
-        console.log('Token décodé:', tokenDecoded);
         setInfoUser(tokenDecoded);
         // Redirection selon le rôle
         switch (tokenDecoded.role) {

@@ -138,7 +138,7 @@ const Catalogue = () => {
                       Play <FaPlay />
                     </>
                   }
-                  onClick={() => {}}
+                  onClick={() => navigate(`/stream/${movie.id_movie}`)}
                 />
                 <Button
                   className="t-btn rounded-5 d-flex gap-2 align-items-center justify-content-center"

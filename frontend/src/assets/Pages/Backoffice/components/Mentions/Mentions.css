@@ -1,7 +1,84 @@
-.table img {
-  transition: transform 0.2s ease;
+/* Styles de base pour les tables */
+.mentions-container .table {
+  font-size: 0.9rem; /* Légèrement plus petit pour l'espace */
 }
 
-.table img:hover {
-  transform: scale(1.05);
+.mentions-container .table th,
+.mentions-container .table td {
+  padding: 0.75rem; /* Réduire le padding pour plus d'espace */
+}
+
+/* Ajustements pour les images dans la table des likes */
+.mentions-container .table img {
+  border: 1px solid #ddd; /* Petite bordure pour les images */
+}
+
+/* Styles spécifiques pour les petits écrans (smartphones) */
+@media (max-width: 767.98px) {
+  .mentions-container .table th,
+  .mentions-container .table td {
+    font-size: 0.8rem; /* Encore plus petit sur mobile */
+    padding: 0.5rem; /* Moins de padding sur mobile */
+  }
+
+  .mentions-container .table-responsive {
+    overflow-x: auto; /* Permet le défilement horizontal si la table est trop large */
+  }
+
+  .mentions-container .table img {
+    width: 40px !important; /* Réduire la taille des images sur mobile */
+    height: 40px !important;
+  }
+
+  .mentions-container .table td div.position-relative {
+    padding-left: 15px !important; /* Ajuster le padding pour les images superposées */
+  }
+
+  .mentions-container .table img.position-absolute {
+    right: 15px !important; /* Ajuster la position de l'image superposée */
+  }
+
+  .mentions-container .col-lg-4.col-md-12 > div {
+    height: auto !important; /* Laisser la hauteur s'adapter sur mobile */
+  }
+
+  .mentions-container .list-group {
+    max-height: 250px !important; /* Réduire la hauteur max de la liste sur mobile */
+  }
+
+  .mentions-container .p-4 {
+    padding: 1rem !important; /* Réduire le padding des cartes sur mobile */
+  }
+}
+
+/* Styles pour les écrans de taille moyenne (tablettes) */
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .mentions-container .table th,
+  .mentions-container .table td {
+    font-size: 0.85rem;
+  }
+
+  .mentions-container .table img {
+    width: 45px !important;
+    height: 45px !important;
+  }
+
+  .mentions-container .table td div.position-relative {
+    padding-left: 20px !important;
+  }
+
+  .mentions-container .table img.position-absolute {
+    right: 20px !important;
+  }
+}
+
+/* S'assurer que le bouton de suppression dans la liste des catégories est bien aligné */
+.mentions-container .list-group-item .bg-danger {
+  margin-left: auto; /* Pousser le bouton à droite */
+}
+
+/* Overlay pour l'ajout de catégorie */
+.mentions-container .col-lg-4 .bg-light.position-absolute {
+  z-index: 10; /* Assurez-vous que l'overlay est au-dessus du contenu */
+  left: 0; /* S'assurer qu'il couvre toute la largeur de son parent */
 }

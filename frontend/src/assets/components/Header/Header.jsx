@@ -22,9 +22,11 @@ const Header = () => {
 
   const isHome = location.pathname === '/';
   const isLogin = location.pathname === '/login';
+  const isReset = location.pathname === '/reset';
   const isRegister = location.pathname === '/signup';
-  const isStream = location.pathname === '/stream/:id';
   const isTerms = location.pathname === '/terms';
+  const isPlayer = location.pathname.startsWith('/stream/');
+  const isUnauthorized = location.pathname === '/unauthorized';
   const isDashboard = location.pathname.startsWith('/backoffice');
   const handleLogin = () => navigate('/login');
   const handleRegister = () => navigate('/signup');
@@ -35,8 +37,10 @@ const Header = () => {
 
   return (
     <>
-      {!isDashboard && (
-        <header className="d-flex justify-content-between flex-column align-items-center z-3 py-3 px-5 text-light">
+      {!isPlayer && !isDashboard && !isUnauthorized && (
+        <header
+          style={{ zIndex: '99' }}
+          className="d-flex justify-content-between flex-column align-items-center py-3 px-5 text-light">
           <>
             {/* === DESKTOP === */}
             <div className="desktop d-none d-md-flex justify-content-between w-100">
@@ -46,7 +50,7 @@ const Header = () => {
                     <img style={logo_D} className="logoD" src={logoD} alt="logo desktop" />
                   </Link>
                 </div>
-                {!isHome && !isStream && !isTerms && !isLogin && !isRegister && (
+                {!isHome && !isReset && !isTerms && !isLogin && !isRegister && (
                   <nav>
                     <ul className="nav fs-6 d-flex gap-3">
                       <li>
@@ -78,55 +82,58 @@ const Header = () => {
                   </nav>
                 )}
               </div>
+              {!isReset && (
+                <div className="btnPlusProfil d-flex align-items-center">
+                  <Link to="/search">
+                    <img src={logoR} alt="recherche" style={{ width: '24px' }} />
+                  </Link>
 
-              <div className="btnPlusProfil d-flex align-items-center">
-                <Link to="/search">
-                  <img src={logoR} alt="recherche" style={{ width: '24px' }} />
-                </Link>
+                  <Button className="bg-transparent border-0 p-0">
+                    <select
+                      className="form-select text-light bg-transparent border-0 w-auto"
+                      style={{ fontSize: '1em' }}>
+                      <option value="fr">Français</option>
+                    </select>
+                  </Button>
 
-                <Button className="bg-transparent border-0 p-0">
-                  <select
-                    className="form-select text-light bg-transparent border-0 w-auto"
-                    style={{ fontSize: '1em' }}>
-                    <option value="fr">Français</option>
-                  </select>
-                </Button>
-
-                {user ? (
-                  <div className="dropdown text-center">
-                    <Button
-                      className="bg-transparent text-light d-flex align-items-center justify-content-center w-100"
-                      type="button"
-                      data-bs-toggle="dropdown">
-                      <span className="me-2">{user.first_name}</span>
-                      <img src={user.picture_user || logoU} alt="user" width="30" />
-                    </Button>
-                    <ul
-                      className="dropdown-menu dropdown-menu-dark p-3 text-center"
-                      style={{ minWidth: '200px' }}>
-                      <li>
-                        <Link className="dropdown-item text-center" to="/profile">
-                          Voir le profil
-                        </Link>
-                      </li>
-                      <li>
-                        <Button onClick={logout} className="s-btn dropdown-item text-center w-100">
-                          Déconnexion
-                        </Button>
-                      </li>
-                    </ul>
-                  </div>
-                ) : (
-                  <div className="d-flex gap-2">
-                    <Button onClick={handleLogin} className="t-btn" type="button">
-                      Se connecter
-                    </Button>
-                    <Button onClick={handleRegister} className="p-btn" type="button">
-                      S'inscrire
-                    </Button>
-                  </div>
-                )}
-              </div>
+                  {user ? (
+                    <div className="dropdown text-center">
+                      <Button
+                        className="bg-transparent text-light d-flex align-items-center justify-content-center w-100"
+                        type="button"
+                        data-bs-toggle="dropdown">
+                        <span className="me-2">{user.first_name}</span>
+                        <img src={logoU} alt="user" width="30" />
+                      </Button>
+                      <ul
+                        className="dropdown-menu dropdown-menu-dark p-3 text-center"
+                        style={{ minWidth: '200px' }}>
+                        <li>
+                          <Link className="dropdown-item text-center" to="/profile">
+                            Voir le profil
+                          </Link>
+                        </li>
+                        <li>
+                          <Button
+                            onClick={logout}
+                            className="s-btn dropdown-item text-center w-100">
+                            Déconnexion
+                          </Button>
+                        </li>
+                      </ul>
+                    </div>
+                  ) : (
+                    <div className="d-flex gap-2">
+                      <Button onClick={handleLogin} className="t-btn" type="button">
+                        Se connecter
+                      </Button>
+                      <Button onClick={handleRegister} className="p-btn" type="button">
+                        S'inscrire
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* === MOBILE === */}

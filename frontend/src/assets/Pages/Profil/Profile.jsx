@@ -151,6 +151,9 @@ const Profile = () => {
               value={tempProfile.email}
               onChange={handleChange}
             />
+            <Link to={'/reset'} className="text-light text-opacity-50 text-center">
+              Modifier le mot de passe ?
+            </Link>
             <Button type="button" className="btn btn-success w-25 w-lg-25" onClick={handleSave}>
               Sauvegarder
             </Button>

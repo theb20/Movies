@@ -10,7 +10,8 @@ import Header from './assets/components/Header/Header';
 import Footer from './assets/components/Footer/Footer';
 import Search from './assets/components/Search/Search.jsx';
 import Newsletter from './assets/components/Newsletter/Newsletter.jsx'; // Assure-toi que c'est bien une fonction exportée
-import Cookies from './assets/components/Cookie/cookie.jsx';
+// Components
+import Unauthorized from './assets/components/Unauthorized/403.jsx';
 // Pages
 import Home from './assets/Pages/Home/Home';
 import Terms from './assets/Pages/Termes-Conditions/Terms.jsx';
@@ -26,6 +27,7 @@ import Catalogue from './assets/Pages/Catalogue/Catalogue.jsx';
 import Stream from '../src/assets/components/VideoPlayer/VideoPLayer.jsx';
 import Backoffice from '../src/assets/Pages/Backoffice/index.jsx';
 import Logout from '../src/assets/Pages/Logout/Logout.jsx';
+
 function App() {
   return (
     <AuthProvider>
@@ -47,6 +49,7 @@ function App() {
           />
           <Route path="/terms" element={<Terms />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/unauthorized" element={<Unauthorized />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Register />} />
           <Route path="/reset" element={<Reset />} />
@@ -54,7 +57,7 @@ function App() {
           <Route
             path="/backoffice/*"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={['admin', 'moderator']}>
                 <Backoffice />
               </ProtectedRoute>
             }

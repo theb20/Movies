@@ -155,17 +155,20 @@ const SignUp = () => {
             {/* Colonne droite : infos utilisateurs */}
             <div className="w-100 gap-3 d-flex flex-column">
               <div className="rounded-1 w-100 gap-3 d-flex flex-column">
-                <Input
-                  label="Date de naissance"
-                  name="birthDate"
-                  value={formData.birthDate}
-                  onChange={handleChange}
-                  type="date"
-                  classcontainer={classcontainer}
-                  classlabel={LabelForm}
-                  classinput={`text-black ${InputFrom}`}
-                  required
-                />
+                <div className={classcontainer}>
+                  <Input
+                    label="Date de naissance"
+                    type="date"
+                    name="birthDate"
+                    value={formData.birthDate}
+                    classlabel={LabelForm}
+                    onChange={handleChange}
+                    classinput={InputFrom}
+                    required
+                    max={new Date().toISOString().split('T')[0]} // empêche la sélection d'une date future
+                  />
+                </div>
+
                 <Input
                   label="E-mail"
                   name="email"

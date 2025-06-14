@@ -1,5 +1,4 @@
 import api from '../configuration/api_axios';
-const API_BASE_URL = 'http://localhost:90/api';
 
 const movieService = {
   // Opérations de lecture des films
@@ -10,11 +9,6 @@ const movieService = {
 
   getMovieById: async (id) => {
     const response = await api.get(`/movies/${id}`);
-    return response.data;
-  },
-
-  getPopularMovies: async () => {
-    const response = await api.get('/search/popular');
     return response.data;
   },
 
@@ -30,7 +24,11 @@ const movieService = {
   },
 
   putMovie: async (id, movieData) => {
-    const response = await api.put(`/movies/${id}`, movieData);
+    const response = await api.put(`/movies/${id}`, movieData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
     return response.data;
   },
 

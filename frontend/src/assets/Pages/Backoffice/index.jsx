@@ -11,7 +11,7 @@ import Mentions from './components/Mentions/Mentions.jsx';
 
 const Backoffice = () => {
   return (
-    <div className="backoffice-container bg-white p-3 vh-100 d-flex">
+    <div className="backoffice-container position-fixed bottom-0 top-0 end-0 start-0 bg-white p-3 d-flex">
       <Sidebar />
 
       <div className="main-content px-3 w-100 d-flex flex-column gap-3">

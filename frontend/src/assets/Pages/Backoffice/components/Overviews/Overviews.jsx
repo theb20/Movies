@@ -97,7 +97,7 @@ const Overviews = () => {
   return (
     <div
       style={{ backgroundColor: 'var(--background-admin)', fontSize: '13px' }}
-      className="d-flex position-relative rounded-2 z-3 p-2">
+      className="d-flex position-relative rounded-2 z-2 p-2">
       <div className="w-100">
         <div className="">
           <div className="container-fluid w-100 py-2">

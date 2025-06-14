@@ -14,12 +14,14 @@ const Footer = () => {
   const location = useLocation();
 
   const isSearchPage = location.pathname === '/search';
-  const isStreamPage = location.pathname === '/stream/:id';
+  const isStreamPage = location.pathname.startsWith('/stream/');
+  const isResetPage = location.pathname === '/reset';
+  const isUnauthorizedPage = location.pathname === '/unauthorized';
   const isDashPage = location.pathname.startsWith('/backoffice');
 
   return (
     <footer>
-      {!isDashPage && !isSearchPage && !isStreamPage && (
+      {!isDashPage && !isResetPage && !isUnauthorizedPage && !isSearchPage && !isStreamPage && (
         <div className="d-flex flex-column align-items-center vw-100 p-5">
           <div className="f-top d-flex align-items-center gap-3 pb-3">
             <Link
