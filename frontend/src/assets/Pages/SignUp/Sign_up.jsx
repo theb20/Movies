@@ -55,7 +55,7 @@ const SignUp = () => {
       birthday: formData.birthDate,
       email: formData.email,
       password: formData.password,
-      role: 'user' // Fixé ici côté frontend
+      role: 'user'
     };
 
     try {

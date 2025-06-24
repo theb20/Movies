@@ -42,10 +42,10 @@ const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       await authService.logout();
-    } finally {
-      localStorage.removeItem('token');
-      setUser(null);
+      await checkAuth();
       navigate('/logout');
+    } catch {
+      throw error;
     }
   };
 
@@ -69,8 +69,28 @@ const AuthProvider = ({ children }) => {
     }
   };
 
+  const deleteUserById = async (id) => {
+    try {
+      const response = await authService.deleteUserById(id);
+      await checkAuth();
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const checkUser = async () => {
+    try {
+      const response = await authService.getCurrentUser();
+      await checkAuth();
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  };
   return (
-    <AuthContext.Provider value={{ user, login, logout, register, loading, putUserById }}>
+    <AuthContext.Provider
+      value={{ user, login, logout, register, loading, putUserById, deleteUserById, checkUser }}>
       {!loading && children}
     </AuthContext.Provider>
   );

@@ -7,8 +7,10 @@ import userService from '../../../../../services/authService.js';
 import { IoMdCloseCircleOutline } from 'react-icons/io';
 import { jwtDecode } from 'jwt-decode';
 import { Link } from 'react-router-dom';
+import useAuth from '../../../../../contexts/useAuth.js';
 
 const Users = () => {
+  const { logout, checkUser, deleteUserById } = useAuth();
   const token = localStorage.getItem('token');
   const decodedToken = jwtDecode(token);
   const userRole = decodedToken.role;
@@ -34,11 +36,40 @@ const Users = () => {
     }
   };
 
+  //etat de role
   useEffect(() => {
-    if (userRole === 'admin') {
-      setVisibleAdmin(true);
-    }
-  }, [userRole]);
+    let isMounted = true; // est variable qui permet de savoir si le composant est monté ou non
+
+    const checkAdminRole = async () => {
+      try {
+        const user = await checkUser();
+        if (isMounted) {
+          if (user && user.role === 'admin') {
+            setVisibleAdmin(true);
+          } else {
+            setVisibleAdmin(false);
+          }
+        }
+      } catch (error) {
+        console.error('Erreur lors de la vérification du rôle admin :', error);
+        if (isMounted) {
+          setVisibleAdmin(false);
+        }
+      }
+    };
+
+    checkAdminRole();
+
+    // setinterval signifie que la fonction sera appelée toutes les secondes
+    const interval = setInterval(checkAdminRole, 7000);
+
+    // Nettoyage à la destruction du composant
+    return () => {
+      isMounted = false;
+      clearInterval(interval); // Nettoyage de l'intervalle
+    };
+  }, [checkUser]);
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -73,7 +104,7 @@ const Users = () => {
     if (!window.confirm('Voulez-vous supprimer cet utilisateur ?')) return;
 
     try {
-      await userService.deleteUser(id);
+      await deleteUserById(id);
       setUsers(users.filter((user) => user.id_user !== id));
     } catch (error) {
       console.error('Erreur lors de la suppression :', error);

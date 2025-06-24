@@ -34,8 +34,6 @@ const Login = () => {
       const res = await login(formData);
 
       if (res?.token) {
-        console.log('Authentification réussie');
-
         // Décodage du token
         const tokenDecoded = jwtDecode(res.token);
         setInfoUser(tokenDecoded);

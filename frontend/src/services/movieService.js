@@ -7,11 +7,16 @@ const movieService = {
     return response.data;
   },
 
+  getBest: async () => {
+    const response = await api.get('/movies/best');
+    console.log(response.data);
+    return response.data;
+  },
+
   getMovieById: async (id) => {
     const response = await api.get(`/movies/${id}`);
     return response.data;
   },
-
   // Opérations CRUD sur les films
   addMovie: async (movieData) => {
     const response = await api.post('/movies', movieData, {

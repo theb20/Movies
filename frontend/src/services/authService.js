@@ -80,6 +80,10 @@ const authService = {
   resetPassword: async (email, resetCode, newPassword) => {
     const response = await api.post('/auth/reset-password', { email, resetCode, newPassword });
     return response.data;
+  },
+  deleteUserById: async (id) => {
+    const response = await api.delete(`/user/${id}`);
+    return response.data;
   }
 };
 

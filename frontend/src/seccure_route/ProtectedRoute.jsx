@@ -9,7 +9,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
   if (!user) return <Navigate to="/login" />;
 
   // Si un filtre de rôle est défini
-  if (allowedRoles && !allowedRoles.includes(user.role)) {
+  if (allowedRoles && !allowedRoles.includes(user.role)) { // Si l'utilisateur n'a pas le rôle requis
     return <Navigate to="/unauthorized" />;
   }
 

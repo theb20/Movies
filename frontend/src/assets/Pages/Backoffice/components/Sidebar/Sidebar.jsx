@@ -9,6 +9,7 @@ import logoM from '../../../../images/Logos/Logo_M.svg';
 import logoD from '../../../../images/Logos/Logo_movies_ft.svg';
 import userIcon from '../../../../images/Icons/user.png';
 import Button from '../../../../components/Btn-generique/btn.jsx';
+import useAuth from '../../../../../contexts/useAuth.js';
 
 import './Sidebar.css';
 
@@ -16,6 +17,7 @@ const Sidebar = () => {
   const [userInfo, setUserInfo] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
+  const { logout } = useAuth();
   const sizeIcon = 20;
 
   useEffect(() => {
@@ -34,8 +36,7 @@ const Sidebar = () => {
   }, [navigate]);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    navigate('/login');
+    logout();
   };
 
   const menuItems = [

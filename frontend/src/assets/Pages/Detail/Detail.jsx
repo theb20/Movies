@@ -1,21 +1,22 @@
 import './Detail.css';
-import { FaPlay, FaFilm } from 'react-icons/fa';
+import { FaPlay, FaFilm, FaStar } from 'react-icons/fa';
 import { IoIosCloseCircleOutline } from 'react-icons/io';
 import { AiFillLike } from 'react-icons/ai';
-import { FaStar } from 'react-icons/fa6';
 import Button from '../../components/Btn-generique/btn.jsx';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-import movieService from '../../../services/movieService.js';
-import mentionService from '../../../services/mentionService.js';
-import likeService from '../../../services/mentionService.js'; // Correction du chemin d'importation
-
-// Ajoutez l'import en haut du fichier
+import { useState, useEffect, useCallback } from 'react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
+// Services
+import movieService from '../../../services/movieService.js';
+import mentionService from '../../../services/mentionService.js';
+import likeService from '../../../services/mentionService.js';
+
 const Detail = () => {
-  // États
+  // =============================================================================
+  // ÉTATS (STATE)
+  // =============================================================================
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [movie, setMovie] = useState(null);
   const [allMovie, setAllMovie] = useState([]);
@@ -24,76 +25,132 @@ const Detail = () => {
   const [mentions, setMentions] = useState([]);
   const [totalLikes, setTotalLikes] = useState(0);
   const [getLike, setGetLike] = useState([]);
-  const [closeComment, setCloseComment] = useState();
   const [visible, setVisible] = useState(false);
   const [commentText, setCommentText] = useState('');
 
-  // Paramètres et variables
+  // =============================================================================
+  // VARIABLES ET PARAMÈTRES
+  // =============================================================================
   const { id } = useParams();
+  const navigate = useNavigate();
   const storedUser = localStorage.getItem('token');
   const userId = storedUser ? JSON.parse(atob(storedUser.split('.')[1])).id_user : null;
   const idMovie = parseInt(id);
-  const navigate = useNavigate();
 
-  // Effets close comment
-  useEffect(() => {
-    const closeComment = document.querySelectorAll('.close-comment');
+  // =============================================================================
+  // FONCTIONS UTILITAIRES
+  // =============================================================================
+  const getUserFirstName = useCallback(() => {
+    if (!storedUser) return 'Utilisateur';
     try {
-      if (userId === comment.id_user) {
-        // alors sera en display block
-        closeComment.forEach((btnClose) => {
-          btnClose.style.display = 'block';
-          setCloseComment(btnClose);
+      return decodeURIComponent(escape(JSON.parse(atob(storedUser.split('.')[1])).first_name));
+    } catch (error) {
+      console.error('Erreur lors de la récupération du prénom:', error);
+      return 'Utilisateur';
+    }
+  }, [storedUser]);
+
+  // =============================================================================
+  // GESTIONNAIRES D'ÉVÉNEMENTS
+  // =============================================================================
+  const handleResize = useCallback(() => {
+    setIsMobile(window.innerWidth <= 768);
+  }, []);
+
+  const handleSubmitComment = useCallback(
+    async (e) => {
+      e?.preventDefault();
+
+      if (!userId) {
+        console.error('Utilisateur non connecté');
+        return;
+      }
+
+      if (!commentText.trim()) {
+        return;
+      }
+
+      try {
+        await mentionService.addComment({
+          id_movie: idMovie,
+          id_user: userId,
+          content: commentText.trim()
         });
+
+        // Rafraîchir les commentaires
+        const allComments = await mentionService.getAllComments();
+        const filteredComments = allComments.filter((comment) => comment.id_movie === idMovie);
+        setMentions(filteredComments);
+        setCommentText('');
+        setVisible(false);
+      } catch (error) {
+        console.error("Erreur lors de l'ajout du commentaire:", error);
+      }
+    },
+    [userId, commentText, idMovie]
+  );
+
+  const handleDeleteComment = useCallback(
+    async (commentId) => {
+      try {
+        if (!userId) {
+          console.error('Utilisateur non connecté');
+          return;
+        }
+
+        // Vérifier si l'utilisateur est l'auteur du commentaire
+        const comment = mentions.find((c) => c.id_comment === commentId);
+        if (!comment || comment.id_user !== userId) {
+          console.error("Vous n'êtes pas autorisé à supprimer ce commentaire");
+          return;
+        }
+
+        await mentionService.deleteComment(commentId);
+        setMentions((prevMentions) => prevMentions.filter((c) => c.id_comment !== commentId));
+      } catch (error) {
+        console.error('Erreur lors de la suppression du commentaire:', error);
+      }
+    },
+    [userId, mentions]
+  );
+
+  const handleLike = useCallback(async () => {
+    if (!userId) return;
+
+    const hasLiked = getLike.includes(idMovie);
+
+    try {
+      if (!hasLiked) {
+        await likeService.addLike({ id_movie: idMovie });
+        setGetLike((prev) => [...prev, idMovie]);
+        setTotalLikes((prev) => prev + 1);
       } else {
-        // alors sera en display none
-        closeComment.forEach((btnClose) => {
-          btnClose.style.display = 'none';
-          setCloseComment(btnClose);
-        });
+        await likeService.deleteLike(idMovie);
+        setGetLike((prev) => prev.filter((i) => i !== idMovie));
+        setTotalLikes((prev) => prev - 1);
       }
     } catch (error) {
-      console.log(error);
+      console.error('Erreur like:', error);
     }
-  }, []);
+  }, [userId, getLike, idMovie]);
+
+  // =============================================================================
+  // EFFETS (useEffect)
+  // =============================================================================
+
   // Gestion du responsive
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth <= 768);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  const handleSubmitComment = async () => {
-    if (!userId) {
-      console.error('Utilisateur non connecté');
-      return;
-    }
-
-    if (!commentText.trim()) {
-      return;
-    }
-
-    try {
-      await mentionService.addComment({
-        id_movie: idMovie,
-        id_user: userId,
-        content: commentText
-      });
-
-      // Rafraîchir les commentaires
-      const allComments = await mentionService.getAllComments();
-      const filteredComments = allComments.filter((comment) => comment.id_movie === parseInt(id));
-      setMentions(filteredComments);
-      setVisible(false);
-    } catch (error) {
-      console.error("Erreur lors de l'ajout du commentaire:", error);
-    }
-  };
+  }, [handleResize]);
 
   // Chargement des données du film
   useEffect(() => {
     const fetchMovieDetails = async () => {
+      if (!id) return;
+
       try {
+        setLoading(true);
         const movieData = await movieService.getMovieById(id);
         setMovie(movieData);
       } catch (error) {
@@ -103,12 +160,12 @@ const Detail = () => {
       }
     };
 
-    if (id) fetchMovieDetails();
+    fetchMovieDetails();
   }, [id]);
 
   // Chargement des likes de l'utilisateur
   useEffect(() => {
-    const fetchGetLike = async () => {
+    const fetchUserLikes = async () => {
       if (!userId) return;
 
       try {
@@ -120,7 +177,7 @@ const Detail = () => {
       }
     };
 
-    fetchGetLike();
+    fetchUserLikes();
   }, [userId]);
 
   // Chargement de tous les films
@@ -133,39 +190,30 @@ const Detail = () => {
         console.error('Erreur lors de la récupération de tous les films:', error);
       }
     };
+
     fetchAllMovies();
   }, []);
 
+  // Chargement des commentaires
   useEffect(() => {
-    const fetchAllCommentById = async () => {
+    const fetchComments = async () => {
+      if (!id) return;
+
       try {
         const allComments = await mentionService.getAllComments();
         const filteredComments = allComments.filter((comment) => comment.id_movie === parseInt(id));
         setMentions(filteredComments);
-
-        // Gestion de l'affichage des boutons de suppression
-        const closeButtons = document.querySelectorAll('.close-comment');
-        closeButtons.forEach((btnClose) => {
-          const commentId = btnClose.closest('.allComment').getAttribute('data-comment-id');
-          const comment = filteredComments.find((c) => c.id_comment === parseInt(commentId));
-
-          if (comment && userId === comment.id_user) {
-            btnClose.style.display = 'block';
-          } else {
-            btnClose.style.display = 'none';
-          }
-          setCloseComment(btnClose);
-        });
       } catch (error) {
         console.error('Erreur lors de la récupération des commentaires:', error);
       }
     };
-    fetchAllCommentById();
-  }, [id, userId]);
+
+    fetchComments();
+  }, [id]);
 
   // Chargement du nombre total de likes
   useEffect(() => {
-    const initializeLikes = async () => {
+    const fetchMovieLikes = async () => {
       try {
         const likesData = await likeService.getAllLikesByMovie(idMovie);
         setTotalLikes(likesData.totalLikes || 0);
@@ -174,65 +222,30 @@ const Detail = () => {
         setTotalLikes(0);
       }
     };
-    initializeLikes();
+
+    if (idMovie) {
+      fetchMovieLikes();
+    }
   }, [idMovie]);
-  // Gestion de la suppression des commentaires
-  const handleDeleteComment = async (commentId) => {
-    try {
-      if (!userId) {
-        console.error('Utilisateur non connecté');
-        return;
-      }
 
-      // Vérifier si l'utilisateur est l'auteur du commentaire
-      const comment = mentions.find((c) => c.id_comment === commentId);
-      if (!comment || comment.id_user !== userId) {
-        console.error("Vous n'êtes pas autorisé à supprimer ce commentaire");
-        return;
-      }
-
-      await mentionService.deleteComment(commentId);
-
-      // Mise à jour locale des commentaires sans rechargement de page
-      setMentions((prevMentions) => prevMentions.filter((c) => c.id_comment !== commentId));
-    } catch (error) {
-      console.error('Erreur lors de la suppression du commentaire:', error);
-    }
-  };
-  // Gestion des likes
-  const handleLike = async () => {
-    if (!userId) {
-      console.error('Utilisateur non connecté');
-      return;
-    }
-
-    try {
-      const isLiked = getLike.includes(idMovie);
-
-      if (!isLiked) {
-        await likeService.addLike({
-          id_movie: idMovie,
-          id_user: userId
-        });
-        setGetLike((prev) => [...prev, idMovie]);
-        setTotalLikes((prev) => prev + 1);
-      } else {
-        await likeService.deleteLike(idMovie, userId);
-        setGetLike((prev) => prev.filter((id) => id !== idMovie));
-        setTotalLikes((prev) => prev - 1);
-      }
-    } catch (error) {
-      console.error('Erreur lors de la gestion du like:', error);
-    }
+  // =============================================================================
+  // FONCTION UTILITAIRE POUR LE RENDU DES ÉTOILES
+  // =============================================================================
+  const renderStars = (rating) => {
+    return Array.from({ length: Math.floor(rating) }).map((_, index) => (
+      <FaStar key={index} className="text-danger" size={isMobile ? 16 : 20} />
+    ));
   };
 
-  // Rendus conditionnels
+  // =============================================================================
+  // RENDU PRINCIPAL
+  // =============================================================================
   if (loading) return <div className="text-white text-center p-5">Chargement...</div>;
   if (!movie) return <div className="text-white text-center p-5">Film non trouvé</div>;
 
-  // Rendu principal
   return (
     <div className="container-detail" style={{ minHeight: '50vh' }}>
+      {/* Section principale du film */}
       <div className="detail-top position-relative" style={{ height: isMobile ? '40vh' : '50vh' }}>
         <div
           className="movie-backdrop position-absolute w-100"
@@ -260,11 +273,9 @@ const Detail = () => {
             {movie.title}
           </h1>
 
-          <p className={`lead mb-3 mb-lg-4 ${isMobile ? 'fs-6' : ''}`}>
-            {movie.description}
-            <p className="fs-6 text-dark fs-lg-5">
-              {format(new Date(movie.release_date), "d MMMM yyyy 'à' HH:mm", { locale: fr })}
-            </p>
+          <p className={`lead mb-3 mb-lg-4 ${isMobile ? 'fs-6' : ''}`}>{movie.description}</p>
+          <p className="fs-6 text-light fs-lg-5">
+            {format(new Date(movie.release_date), "d MMMM yyyy 'à' HH:mm", { locale: fr })}
           </p>
 
           <div className="d-flex flex-wrap align-items-center gap-1 gap-lg-3">
@@ -274,27 +285,30 @@ const Detail = () => {
               onClick={() => navigate(`/stream/${id}`)}>
               <FaPlay size={isMobile ? 14 : 16} /> Play
             </Button>
+
             <Button className="t-btn" style={{ padding: isMobile ? '8px 16px' : '' }}>
               <FaFilm size={isMobile ? 14 : 16} /> Bande annonce
             </Button>
+
             <div className="d-flex align-items-center gap-2">
               <Button
-                className={`btn rounded-5 p-2 ${getLike.includes(parseInt(idMovie)) ? 'btn-danger' : 'btn-outline-danger'}`}
-                onClick={handleLike}>
-                <AiFillLike size={isMobile ? 24 : 26} />
+                className={getLike.includes(idMovie) ? 'btn-danger' : 'btn-outline-danger'}
+                onClick={handleLike}
+                disabled={!userId}>
+                <AiFillLike color={getLike.includes(idMovie) ? 'white' : 'red'} />
               </Button>
             </div>
-            <p className="m-0 d-flex align-items-center">
-              {Array.from({ length: Math.floor(movie.rating) }).map((_, index) => (
-                <FaStar key={index} className="text-danger" size={isMobile ? 16 : 20} />
-              ))}
-            </p>
+
+            <p className="m-0 d-flex align-items-center">{renderStars(movie.rating)}</p>
+
             <p>{totalLikes} J'aime</p>
           </div>
         </div>
       </div>
 
+      {/* Section inférieure */}
       <div className="detail-bottom p-3 p-lg-4">
+        {/* Films tendance */}
         <div className="db-top mb-3 mb-lg-4">
           <h4 className={`text-white ${isMobile ? 'fs-5' : ''}`}>Tendance actuelle</h4>
           <div className="trending-content d-flex gap-3 gap-lg-4 overflow-x-auto">
@@ -309,15 +323,11 @@ const Detail = () => {
                     width: isMobile ? '150px' : '250px'
                   }}
                   key={movieItem.id_movie}>
-                  <Link
-                    onClick={() => (window.location.href = `/detail/${movieItem.id_movie}`)}
-                    className="text-decoration-none">
+                  <Link to={`/detail/${movieItem.id_movie}`} className="text-decoration-none">
                     <img
                       src={movieItem.img_presentation}
                       className="h-100 w-100 rounded-3"
-                      style={{
-                        objectFit: 'cover'
-                      }}
+                      style={{ objectFit: 'cover' }}
                       alt={movieItem.title}
                     />
                     <div
@@ -334,8 +344,10 @@ const Detail = () => {
           </div>
         </div>
 
+        {/* Section commentaires */}
         <div className="db-bottom">
           <h4 className={`text-white mb-3 ${isMobile ? 'fs-5' : ''}`}>Commentaires</h4>
+
           <div className="comments-container">
             <div className="d-flex overflow-x-scroll gap-3">
               {mentions.map((comment) => (
@@ -354,7 +366,7 @@ const Detail = () => {
                             minWidth: '50px'
                           }}>
                           <span className="fs-4 text-white fw-bold">
-                            {comment.name_user[0].toUpperCase()}
+                            {comment.name_user?.[0]?.toUpperCase() || 'U'}
                           </span>
                         </div>
                         <div className="user-info">
@@ -384,6 +396,8 @@ const Detail = () => {
               ))}
             </div>
           </div>
+
+          {/* Bouton d'ajout de commentaire */}
           <div className="d-flex justify-content-end position-relative mt-4">
             <Button
               className="s-btn rounded-1 position-absolute z-3 px-4"
@@ -392,10 +406,9 @@ const Detail = () => {
             </Button>
           </div>
 
+          {/* Formulaire de commentaire */}
           {visible && (
-            <div
-              style={{}}
-              className="comment-form z-2 top-0 bottom-0 start-0 end-0 position-absolute bg-black bg-opacity-75 p-4 d-flex justify-content-center align-items-center rounded-3">
+            <div className="comment-form z-2 top-0 bottom-0 start-0 end-0 position-absolute bg-black bg-opacity-75 p-4 d-flex justify-content-center align-items-center rounded-3">
               <div className="bg-white bg-opacity-25 rounded-3 px-4 py-3">
                 <div className="d-flex align-items-center gap-3">
                   <div
@@ -405,21 +418,18 @@ const Detail = () => {
                       height: '50px',
                       minWidth: '50px'
                     }}>
-                    <span className="fs-4 text-white fw-bold">A</span>
+                    <span className="fs-4 text-white fw-bold">
+                      {getUserFirstName()[0]?.toUpperCase() || 'U'}
+                    </span>
                   </div>
                   <div className="user-info">
-                    <h5 className="mb-0 text-white fw-bold">
-                      {storedUser
-                        ? decodeURIComponent(
-                            escape(JSON.parse(atob(storedUser.split('.')[1])).first_name)
-                          )
-                        : 'Utilisateur'}
-                    </h5>
+                    <h5 className="mb-0 text-white fw-bold">{getUserFirstName()}</h5>
                     <p className="mb-0 text-white-50 small">
                       {format(new Date(), "d MMMM yyyy 'à' HH:mm", { locale: fr })}
                     </p>
                   </div>
                 </div>
+
                 <form
                   className="comment-body m-3 gap-3 d-flex flex-column"
                   onSubmit={handleSubmitComment}>
@@ -432,12 +442,13 @@ const Detail = () => {
                       height: '130px',
                       minWidth: '260px',
                       resize: 'none'
-                    }}></textarea>
-
+                    }}
+                    required
+                  />
                   <div className="d-flex bg-transparent justify-content-end">
                     <Button
                       type="submit"
-                      className="s-btn rounded-1  w-100"
+                      className="s-btn rounded-1 w-100"
                       disabled={!commentText.trim()}>
                       Envoyer
                     </Button>
@@ -451,5 +462,4 @@ const Detail = () => {
     </div>
   );
 };
-
 export default Detail;

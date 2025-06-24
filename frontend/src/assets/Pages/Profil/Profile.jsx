@@ -12,7 +12,7 @@ import Mentions from '../../../services/movieService.js';
 import './Profile.css';
 
 const Profile = () => {
-  const { user, logout, putUserById } = useAuth();
+  const { user, logout, putUserById, deleteUserById } = useAuth();
   const [visible, setVisible] = useState(false);
   const [history, setHistory] = useState([]);
   const [profile, setProfile] = useState({
@@ -117,6 +117,19 @@ const Profile = () => {
       return dateStr ? format(new Date(dateStr), formatStr, { locale: fr }) : 'Non défini';
     } catch {
       return 'Format invalide';
+    }
+  };
+  const deleteUser = async () => {
+    try {
+      const confirmDelete = window.confirm(
+        'Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.'
+      );
+      if (confirmDelete) {
+        await deleteUserById(userId);
+        navigate('/logout');
+      }
+    } catch (error) {
+      console.error('❌ Suppression du compte échouée :', error);
     }
   };
 
@@ -262,12 +275,17 @@ const Profile = () => {
           </div>
         )}
 
-        <div className="d-flex flex-column flex-lg-row justify-content-between gap-3 px-3 px-lg-5 mt-4">
-          <Button className="p-btn px-4 py-2 w-100 w-lg-auto" onClick={handleEdit}>
-            {isEditing ? 'Annuler' : 'Modifier'}
-          </Button>
-          <Button className="p-btn px-4 py-2 w-100 w-lg-auto" onClick={handleLogout}>
-            Déconnexion
+        <div className="d-flex flex-column ">
+          <div className="d-flex flex-column flex-lg-row justify-content-between gap-3 px-3 px-lg-5 mt-4">
+            <Button className="p-btn px-4 py-2 w-100 w-lg-auto" onClick={handleEdit}>
+              {isEditing ? 'Annuler' : 'Modifier'}
+            </Button>
+            <Button className="p-btn px-4 py-2 w-100 w-lg-auto" onClick={handleLogout}>
+              Déconnexion
+            </Button>
+          </div>
+          <Button onClick={deleteUser} className="text-danger text-center mt-2 bg-none border-0 ">
+            Supprimer mon compte.
           </Button>
         </div>
       </div>

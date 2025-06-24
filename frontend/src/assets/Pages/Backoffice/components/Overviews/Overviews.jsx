@@ -26,11 +26,7 @@ import {
   AreaChart,
   Area
 } from 'recharts';
-
-// Styles
 import './Overviews.css';
-
-//a roujouté une key aux elements de la table
 
 const Overviews = () => {
   const [movies, setMovies] = useState([]);
@@ -91,7 +87,6 @@ const Overviews = () => {
     value: format(new Date(user.inscription_date), 'MM')
   }));
 
-  const onClick = () => setVisible(!visible);
   const sizeIcon = 18;
 
   return (
@@ -99,296 +94,291 @@ const Overviews = () => {
       style={{ backgroundColor: 'var(--background-admin)', fontSize: '13px' }}
       className="d-flex position-relative rounded-2 z-2 p-2">
       <div className="w-100">
-        <div className="">
-          <div className="container-fluid w-100 py-2">
-            <div className="row ">
-              <div className="ms-3">
-                <h3 className="mb-0 h4 font-weight-bolder">Vue d'ensemble</h3>
-                <p className="mb-4 text-dark">
-                  Analyse rapide des films les plus populaires et des préférences du public.
-                </p>
-              </div>
-              <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-                <div className="card">
-                  <div className="card-header p-2 ps-3">
-                    <div className="d-flex align-items-center justify-content-between">
-                      <div>
-                        <p className="text-sm mb-0 text-dark text-capitalize fs-5">Films</p>
-                        <h2 className="mb-0">{movies.length}</h2>
-                      </div>
-                      <div className="bg-dark p-3 rounded-3 shadow shadow-dark">
-                        <FaFilm className="text-white" size={20} />
-                      </div>
+        <div
+          className="container-fluid w-100 py-5"
+          style={{ maxHeight: 'calc(100vh - 100px)', overflowY: 'auto' }}>
+          <div className="row ">
+            <div className="ms-3">
+              <h3 className="mb-0 h4 font-weight-bolder">Vue d'ensemble</h3>
+              <p className="mb-4 text-dark">
+                Analyse rapide des films les plus populaires et des préférences du public.
+              </p>
+            </div>
+            <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+              <div className="card">
+                <div className="card-header p-2 ps-3">
+                  <div className="d-flex align-items-center justify-content-between">
+                    <div>
+                      <p className="text-sm mb-0 text-dark text-capitalize fs-5">Films</p>
+                      <h2 className="mb-0">{movies.length}</h2>
                     </div>
-                  </div>
-                  <div className="p-2 ps-3">
-                    <p className="mb-0 text-dark text-opacity-50 text-sm">
-                      <span className="text-success font-weight-bolder">+{numberThisWeek}</span>{' '}
-                      films ajoutés.
-                    </p>
+                    <div className="bg-dark p-3 rounded-3 shadow shadow-dark">
+                      <FaFilm className="text-white" size={20} />
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-                <div className="card">
-                  <div className="card-header p-2 ps-3">
-                    <div className="d-flex align-items-center justify-content-between">
-                      <div>
-                        <p className="text-sm mb-0 text-dark text-capitalize fs-5">Tarifs</p>
-                        <h2 className="mb-0">0</h2>
-                      </div>
-                      <div className="bg-dark p-3 rounded-3 shadow shadow-dark">
-                        <FaMoneyCheck className="text-white" size={20} />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="p-2 ps-3">
-                    <p className="mb-0 text-dark text-opacity-50 text-sm">
-                      <span className="text-success font-weight-bolder">Lancement beta</span>
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-                <div className="card">
-                  <div className="card-header p-2 ps-3">
-                    <div className="d-flex align-items-center justify-content-between">
-                      <div>
-                        <p className="text-sm mb-0 text-dark text-capitalize fs-5">Top</p>
-                        <h2 className="mb-0">
-                          {movies.filter((movie) => movie.rating >= 4).length}
-                        </h2>
-                      </div>
-                      <div className="bg-dark p-3 rounded-3 shadow shadow-dark">
-                        <GiBestialFangs className="text-white" size={20} />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="p-2 ps-3">
-                    <p className="mb-0 text-dark text-opacity-50 text-sm">
-                      <span className="text-success font-weight-bolder">+55% </span>than last week
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-                <div className="card">
-                  <div className="card-header p-2 ps-3">
-                    <div className="d-flex align-items-center justify-content-between">
-                      <div>
-                        <p className="text-sm mb-0 text-dark text-capitalize fs-5">Utilisateurs</p>
-                        <h2 className="mb-0">{users.length}</h2>
-                      </div>
-                      <div className="bg-dark p-3 rounded-3 shadow shadow-dark">
-                        <FaRegUser className="text-white" size={20} />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="p-2 ps-3">
-                    <p className="mb-0 text-dark text-opacity-50 text-sm">
-                      <span className="text-success font-weight-bolder">+{numberThisWeekUser}</span>{' '}
-                      cette semaine.
-                    </p>
-                  </div>
+                <div className="p-2 ps-3">
+                  <p className="mb-0 text-dark text-opacity-50 text-sm">
+                    <span className="text-success font-weight-bolder">+{numberThisWeek}</span> films
+                    ajoutés.
+                  </p>
                 </div>
               </div>
             </div>
-            <div className="row">
-              <div className="col-lg-6 col-md-6 mt-4 mb-4">
-                <div className="card">
-                  <div className="card-body">
-                    <h6 className="mb-0">Statistiques (Films)</h6>
-                    <p className="text-sm text-dark">Performances récentes des films</p>
+            <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+              <div className="card">
+                <div className="card-header p-2 ps-3">
+                  <div className="d-flex align-items-center justify-content-between">
+                    <div>
+                      <p className="text-sm mb-0 text-dark text-capitalize fs-5">Tarifs</p>
+                      <h2 className="mb-0">0</h2>
+                    </div>
+                    <div className="bg-dark p-3 rounded-3 shadow shadow-dark">
+                      <FaMoneyCheck className="text-white" size={20} />
+                    </div>
+                  </div>
+                </div>
+                <div className="p-2 ps-3">
+                  <p className="mb-0 text-dark text-opacity-50 text-sm">
+                    <span className="text-success font-weight-bolder">Lancement beta</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+              <div className="card">
+                <div className="card-header p-2 ps-3">
+                  <div className="d-flex align-items-center justify-content-between">
+                    <div>
+                      <p className="text-sm mb-0 text-dark text-capitalize fs-5">Top</p>
+                      <h2 className="mb-0">{movies.filter((movie) => movie.rating >= 4).length}</h2>
+                    </div>
+                    <div className="bg-dark p-3 rounded-3 shadow shadow-dark">
+                      <GiBestialFangs className="text-white" size={20} />
+                    </div>
+                  </div>
+                </div>
+                <div className="p-2 ps-3">
+                  <p className="mb-0 text-dark text-opacity-50 text-sm">
+                    <span className="text-success font-weight-bolder">+55% </span>than last week
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+              <div className="card">
+                <div className="card-header p-2 ps-3">
+                  <div className="d-flex align-items-center justify-content-between">
+                    <div>
+                      <p className="text-sm mb-0 text-dark text-capitalize fs-5">Utilisateurs</p>
+                      <h2 className="mb-0">{users.length}</h2>
+                    </div>
+                    <div className="bg-dark p-3 rounded-3 shadow shadow-dark">
+                      <FaRegUser className="text-white" size={20} />
+                    </div>
+                  </div>
+                </div>
+                <div className="p-2 ps-3">
+                  <p className="mb-0 text-dark text-opacity-50 text-sm">
+                    <span className="text-success font-weight-bolder">+{numberThisWeekUser}</span>{' '}
+                    cette semaine.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="row">
+            <div className="col-lg-6 col-md-6 mt-4 mb-4">
+              <div className="card">
+                <div className="card-body">
+                  <h6 className="mb-0">Statistiques (Films)</h6>
+                  <p className="text-sm text-dark">Performances récentes des films</p>
 
-                    <div className="pe-5">
-                      <div className="p-0 m-0">
-                        <ResponsiveContainer width="100%" height={300}>
-                          <LineChart data={dataMovie}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="name" />
-                            <YAxis />
-                            <Tooltip />
-                            <Legend />
-                            <Line type="" dataKey="value" stroke="#8884d8" activeDot={{ r: 8 }} />
-                          </LineChart>
-                        </ResponsiveContainer>
-                      </div>
-                    </div>
-                    <hr className="dark horizontal" />
-                    <div className="d-flex gap-2">
-                      <CiTimer size={sizeIcon} />
-                      <p className="mb-0 text-dark text-sm">
-                        <Link className="text-dark">Voir plus en detail </Link>
-                      </p>
+                  <div className="pe-5">
+                    <div className="p-0 m-0">
+                      <ResponsiveContainer width="100%" height={300}>
+                        <LineChart data={dataMovie}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="name" />
+                          <YAxis />
+                          <Tooltip />
+                          <Legend />
+                          <Line type="" dataKey="value" stroke="#8884d8" activeDot={{ r: 8 }} />
+                        </LineChart>
+                      </ResponsiveContainer>
                     </div>
                   </div>
-                </div>
-              </div>
-              <div className="col-lg-6 col-md-6 mt-4 mb-4">
-                <div className="card ">
-                  <div className="card-body">
-                    <h6 className="mb-0 ">Statistique (Utilisateurs)</h6>
-                    <p className="text-dark text-sm ">
-                      {' '}
-                      <span className=" font-weight-bolder">
-                        Performance récente des utilisateurs %
-                      </span>
+                  <hr className="dark horizontal" />
+                  <div className="d-flex gap-2">
+                    <CiTimer size={sizeIcon} />
+                    <p className="mb-0 text-dark text-sm">
+                      <Link className="text-dark">Voir plus en detail </Link>
                     </p>
-                    <div className="pe-5">
-                      <div className="chart">
-                        <ResponsiveContainer width="100%" height={290}>
-                          <AreaChart data={dataUser}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="name" />
-                            <YAxis />
-                            <Tooltip />
-                            <Area type="monotone" dataKey="value" stroke="#82ca9d" fill="#82ca9d" />
-                          </AreaChart>
-                        </ResponsiveContainer>
-                      </div>
-                    </div>
-                    <hr className="dark horizontal" />
-                    <div className="d-flex gap-2">
-                      <CiTimer size={sizeIcon} />
-                      <p className="mb-0 text-dark text-sm">
-                        <Link className="text-dark">Voir plus en detail </Link>{' '}
-                      </p>
-                    </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div className="row mb-4">
-              <div className="col-lg-8 col-md-6 mb-md-0 mb-4">
-                <div className="card">
-                  <div className="card-header pb-0">
-                    <div className="row">
-                      <div className="d-flex justify-content-between w-100 col-lg-6 col-7">
-                        <h6>Catalogue de films</h6>
-                        <p className="text-dark text-sm mb-0">
-                          <CiCircleCheck size={sizeIcon} />
-                          <span className="text-dark font-weight-bold ms-1">
-                            {movies.length}
-                          </span>{' '}
-                          films
-                        </p>
-                      </div>
+            <div className="col-lg-6 col-md-6 mt-4 mb-4">
+              <div className="card ">
+                <div className="card-body">
+                  <h6 className="mb-0 ">Statistique (Utilisateurs)</h6>
+                  <p className="text-dark text-sm ">
+                    <span className=" font-weight-bolder">
+                      Performance récente des utilisateurs %
+                    </span>
+                  </p>
+                  <div className="pe-5">
+                    <div className="chart">
+                      <ResponsiveContainer width="100%" height={290}>
+                        <AreaChart data={dataUser}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="name" />
+                          <YAxis />
+                          <Tooltip />
+                          <Area type="monotone" dataKey="value" stroke="#82ca9d" fill="#82ca9d" />
+                        </AreaChart>
+                      </ResponsiveContainer>
                     </div>
                   </div>
-                  <div className="card-body px-0 pb-2">
-                    <div className="table-responsive">
-                      <table className="table align-items-center mb-0">
-                        <thead>
-                          <tr>
-                            <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                              Titre
-                            </th>
-                            <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
-                              Date de sortie
-                            </th>
-                            <th className="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                              Date de création
-                            </th>
-                            <th className="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                              Note
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {movies.slice(0, 10).map((movie) => (
-                            <tr>
-                              <td>
-                                <div className="d-flex px-2 py-1">
-                                  <div>
-                                    <img
-                                      src={movie.img_cover}
-                                      className="avatar rounded-5 avatar-sm me-3"
-                                      alt={movie.title}
-                                      style={{ width: '40px', height: '40px' }}
-                                    />
-                                  </div>
-                                  <div className="d-flex flex-column justify-content-center">
-                                    <h6 className="mb-0 text-sm">{movie.title}</h6>
-                                  </div>
-                                </div>
-                              </td>
-                              <td>
-                                <div className="avatar-group mt-2">
-                                  {format(new Date(movie.release_date), 'dd/MM/yyyy')}
-                                </div>
-                              </td>
-                              <td className="align-middle text-center text-sm">
-                                <span className="text-xs font-weight-bold">
-                                  {format(new Date(movie.created_at), 'dd/MM/yyyy')}
-                                </span>
-                              </td>
-                              <td className="align-middle">
-                                <div className="progress-wrapper w-75 mx-auto">
-                                  <div className="progress-info">
-                                    <div className="progress-percentage">
-                                      <span className="text-xs font-weight-bold">
-                                        {(movie.rating * 20).toFixed(0)}%
-                                      </span>
-                                    </div>
-                                  </div>
-                                  <div className="progress bg-transparent">
-                                    <progress
-                                      value={movie.rating}
-                                      className="h-100"
-                                      max="5"
-                                      role="progressbar"
-                                      aria-valuenow="60"
-                                      aria-valuemin="0"
-                                      aria-valuemax="100"></progress>
-                                  </div>
-                                </div>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
+                  <hr className="dark horizontal" />
+                  <div className="d-flex gap-2">
+                    <CiTimer size={sizeIcon} />
+                    <p className="mb-0 text-dark text-sm">
+                      <Link className="text-dark">Voir plus en detail </Link>{' '}
+                    </p>
                   </div>
                 </div>
               </div>
-              <div className="col-lg-4 col-md-6">
-                <div className="card h-100">
-                  <div className="card-header d-flex justify-content-between pb-0">
-                    <h6>Catégories</h6>
-                    <p className="text-dark text-sm">
-                      <i className="fa fa-arrow-up text-success" aria-hidden="true"></i>
-                      <span className="font-weight-bold">{categories.length}</span> Désignations
-                    </p>
+            </div>
+          </div>
+          <div className="row mb-5">
+            <div className="col-lg-8 col-md-6 mb-md-0 mb-4">
+              <div className="card">
+                <div className="card-header pb-0">
+                  <div className="row">
+                    <div className="d-flex justify-content-between w-100 col-lg-6 col-7">
+                      <h6>Catalogue de films</h6>
+                      <p className="text-dark text-sm mb-0">
+                        <CiCircleCheck size={sizeIcon} />
+                        <span className="text-dark font-weight-bold ms-1">{movies.length}</span>
+                        films
+                      </p>
+                    </div>
                   </div>
-                  <div className="card-body p-3">
-                    {categories.slice(0, 12).map((category) => (
-                      <div className="timeline timeline-one-side">
-                        <div className="timeline-block d-flex align-items-center gap-2 mb-3">
-                          <span className="timeline-step">
-                            <SiInteractiondesignfoundation scale={1.5} />
-                          </span>
-                          <div className="timeline-content">
-                            <h6 className="text-dark text-sm font-weight-bold mb-0">
-                              {category.category_name}
-                            </h6>
-                            <p className="text-secondary font-weight-bold text-xs mt-1 mb-0">
-                              slug : {category.slug}
-                            </p>
-                          </div>
+                </div>
+                <div className="card-body px-0 pb-2">
+                  <div className="table-responsive">
+                    <table className="table align-items-center mb-0">
+                      <thead>
+                        <tr>
+                          <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                            Titre
+                          </th>
+                          <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                            Date de sortie
+                          </th>
+                          <th className="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                            Date de création
+                          </th>
+                          <th className="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                            Note
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {movies.slice(0, 10).map((movie) => (
+                          <tr key={movie.id}>
+                            <td>
+                              <div className="d-flex px-2 py-1">
+                                <div>
+                                  <img
+                                    src={movie.img_cover}
+                                    className="avatar rounded-5 avatar-sm me-3"
+                                    alt={movie.title}
+                                    style={{ width: '40px', height: '40px' }}
+                                  />
+                                </div>
+                                <div className="d-flex flex-column justify-content-center">
+                                  <h6 className="mb-0 text-sm">{movie.title}</h6>
+                                </div>
+                              </div>
+                            </td>
+                            <td>
+                              <div className="avatar-group mt-2">
+                                {format(new Date(movie.release_date), 'dd/MM/yyyy')}
+                              </div>
+                            </td>
+                            <td className="align-middle text-center text-sm">
+                              <span className="text-xs font-weight-bold">
+                                {format(new Date(movie.created_at), 'dd/MM/yyyy')}
+                              </span>
+                            </td>
+                            <td className="align-middle">
+                              <div className="progress-wrapper w-75 mx-auto">
+                                <div className="progress-info">
+                                  <div className="progress-percentage">
+                                    <span className="text-xs font-weight-bold">
+                                      {(movie.rating * 20).toFixed(0)}%
+                                    </span>
+                                  </div>
+                                </div>
+                                <div className="progress bg-transparent">
+                                  <progress
+                                    value={movie.rating}
+                                    className="h-100"
+                                    max="5"
+                                    role="progressbar"
+                                    aria-valuenow="60"
+                                    aria-valuemin="0"
+                                    aria-valuemax="100"></progress>
+                                </div>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="col-lg-4 col-md-6">
+              <div className="card h-100">
+                <div className="card-header d-flex justify-content-between pb-0">
+                  <h6>Catégories</h6>
+                  <p className="text-dark text-sm">
+                    <i className="fa fa-arrow-up text-success" aria-hidden="true"></i>
+                    <span className="font-weight-bold">{categories.length}</span> Désignations
+                  </p>
+                </div>
+                <div className="card-body p-3">
+                  {categories.slice(0, 12).map((category) => (
+                    <div className="timeline timeline-one-side" key={category.id}>
+                      <div className="timeline-block d-flex align-items-center gap-2 mb-3">
+                        <span className="timeline-step">
+                          <SiInteractiondesignfoundation scale={1.5} />
+                        </span>
+                        <div className="timeline-content">
+                          <h6 className="text-dark text-sm font-weight-bold mb-0">
+                            {category.category_name}
+                          </h6>
+                          <p className="text-secondary font-weight-bold text-xs mt-1 mb-0">
+                            slug : {category.slug}
+                          </p>
                         </div>
                       </div>
-                    ))}
-                    <div className="timeline-block d-flex align-items-center gap-2 mb-3">
-                      <span className="timeline-step">
-                        <SiInteractiondesignfoundation scale={1.5} />
-                      </span>
-                      <div className="timeline-content">
-                        <h6 className="text-dark text-sm font-weight-bold mb-0">
-                          <Link className="text-black" to="/">
-                            ...
-                          </Link>
-                        </h6>
-                      </div>
+                    </div>
+                  ))}
+                  <div className="timeline-block d-flex align-items-center gap-2 mb-3">
+                    <span className="timeline-step">
+                      <SiInteractiondesignfoundation scale={1.5} />
+                    </span>
+                    <div className="timeline-content">
+                      <h6 className="text-dark text-sm font-weight-bold mb-0">
+                        <Link className="text-black" to="/">
+                          ...
+                        </Link>
+                      </h6>
                     </div>
                   </div>
                 </div>

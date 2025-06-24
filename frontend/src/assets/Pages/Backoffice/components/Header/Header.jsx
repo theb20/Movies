@@ -76,13 +76,11 @@ const Header = () => {
         </ul>
       </nav>
 
-      {/* Modal/Menu utilisateur */}
       {visible && (
         <div className="position-fixed start-0 end-0 top-0 bottom-0 bg-black bg-opacity-75 z-3 d-flex align-items-start justify-content-center">
           <div
             className="position-relative bg-light rounded shadow-lg mt-5 mx-3"
             style={{ maxWidth: '400px', width: '100%' }}>
-            {/* Bouton fermer */}
             <Button
               onClick={handleClick}
               className="position-absolute top-0 end-0 border-0 m-3 text-light bg-danger p-1 rounded-circle"
@@ -130,8 +128,10 @@ const Header = () => {
                     className="btn btn-outline-primary btn-sm flex-grow-1">
                     Profil
                   </Button>
-                  <Button className="btn btn-outline-secondary btn-sm flex-grow-1">
-                    Paramètres
+                  <Button
+                    onClick={() => navigate('/catalogue')}
+                    className="btn btn-outline-secondary btn-sm flex-grow-1">
+                    Catalogue
                   </Button>
                 </div>
 

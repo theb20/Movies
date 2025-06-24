@@ -1,26 +1,27 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { format } from 'date-fns';
 import { jwtDecode } from 'jwt-decode';
+
 import movieService from '../../../../../services/movieService.js';
+
 import Button from '../../../../components/Btn-generique/btn.jsx';
 import Input from '../../../../components/Input-Form/Input.jsx';
+
 import { IoMdCloseCircleOutline, IoMdTrash, IoMdCreate } from 'react-icons/io';
+
 import wallpaper from '../../../../images/Background/bg-popup.jpeg';
+
 import './Movies.css';
+
 const Movies = () => {
-  const token = localStorage.getItem('token');
-  const decodedToken = token ? jwtDecode(token) : null;
-  const userRole = decodedToken ? decodedToken.role : null;
+  // --- State Management ---
   const [movies, setMovies] = useState([]);
   const [categories, setCategories] = useState({});
-  const [modified, setModified] = useState(null);
+  const [modified, setModified] = useState(null); // ID of the movie being modified
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  const [showAddMovieModal, setShowAddMovieModal] = useState(false);
-  const [visibleFrom, setVisibleFrom] = useState(false);
+  const [showAddMovieModal, setShowAddMovieModal] = useState(false); // State for the Add/Edit Movie Modal
+  const [visibleFrom, setVisibleFrom] = useState(false); // Used for file inputs visibility during edit
 
-  const toggleVisibleFrom = () => {
-    setVisibleFrom(!visibleFrom);
-  };
   const [formData, setFormData] = useState({
     title: '',
     director: '',
@@ -33,6 +34,15 @@ const Movies = () => {
     id_category: '',
     description: ''
   });
+
+  // --- Authentication / User Role ---
+  const token = localStorage.getItem('token');
+  const decodedToken = token ? jwtDecode(token) : null;
+  const userRole = decodedToken ? decodedToken.role : null;
+
+  // --- Effects ---
+
+  // Effect for handling window resize to determine mobile view
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768);
@@ -42,7 +52,7 @@ const Movies = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Chargement initial des films et catégories
+  // Callback to fetch movies and categories
   const fetchMoviesAndCategories = useCallback(async () => {
     try {
       const [moviesData, categoriesData] = await Promise.all([
@@ -59,20 +69,26 @@ const Movies = () => {
       setCategories(categoryMap);
     } catch (error) {
       console.error('❌ Erreur lors de la récupération des films ou catégories :', error);
-      // Gérer l'affichage de l'erreur à l'utilisateur
+      // TODO: Gérer l'affichage de l'erreur à l'utilisateur (e.g., toast notification)
     }
-  }, []); // Aucune dépendance car ces services ne changent pas
+  }, []); // No dependencies, as services don't change
 
+  // Initial data fetch on component mount
   useEffect(() => {
     fetchMoviesAndCategories();
   }, [fetchMoviesAndCategories]);
 
+  // --- Event Handlers ---
+
+  const toggleVisibleFrom = () => {
+    setVisibleFrom(!visibleFrom);
+  };
+
   const toggleModified = (id) => {
     if (modified === id) {
-      setModified(null); // Annuler la modification
-      // Réinitialiser formData si nécessaire ici, ou le faire à l'entrée du mode modification
+      setModified(null); // Cancel modification
+      // Reset formData to initial empty state when cancelling edit
       setFormData({
-        // Réinitialise formData au film sélectionné
         title: '',
         director: '',
         release_date: '',
@@ -84,9 +100,11 @@ const Movies = () => {
         id_category: '',
         description: ''
       });
+      // Also reset visibleFrom when cancelling edit
+      setVisibleFrom(false);
     } else {
-      setModified(id); // Activer la modification
-      // Pré-remplir formData avec les données du film sélectionné
+      setModified(id); // Activate modification
+      // Pre-fill formData with the selected movie's data
       const movieToEdit = movies.find((movie) => movie.id_movie === id);
       if (movieToEdit) {
         setFormData({
@@ -95,8 +113,8 @@ const Movies = () => {
           release_date: movieToEdit.release_date
             ? format(new Date(movieToEdit.release_date), 'yyyy-MM-dd')
             : '',
-          img_cover: null, // Les inputs de type file ne peuvent pas être pré-remplis
-          img_presentation: null, // Laisser null pour que l'utilisateur re-sélectionne si besoin
+          img_cover: null, // File inputs cannot be pre-filled, set to null
+          img_presentation: null,
           trailer: null,
           video: null,
           rating: movieToEdit.rating || 0,
@@ -104,13 +122,15 @@ const Movies = () => {
           description: movieToEdit.description || ''
         });
       }
+      // Hide file inputs by default when starting an edit
+      setVisibleFrom(false);
     }
   };
 
-  // Bascule la visibilité du formulaire d'ajout de film
+  // Toggles the visibility of the add/edit movie form modal
   const toggleAddMovieModal = () => {
-    setShowAddMovieModal(!showAddMovieModal);
-    // Réinitialiser le formulaire quand on l'ouvre/ferme
+    setShowAddMovieModal((prev) => !prev);
+    // Reset the form when opening/closing
     setFormData({
       title: '',
       director: '',
@@ -123,57 +143,36 @@ const Movies = () => {
       id_category: '',
       description: ''
     });
-    // Réinitialiser les inputs file (méthode DOM directe)
+    // Directly reset file inputs (since their value cannot be controlled by state)
     const fileInputs = document.querySelectorAll('input[type="file"]');
     fileInputs.forEach((input) => {
       input.value = '';
     });
+    // Ensure file inputs are hidden when opening fresh add modal
+    setVisibleFrom(false);
+    setModified(null); // Ensure we are not in edit mode when adding
   };
 
-  // Gère les changements dans les champs du formulaire (texte, nombre, select)
+  // Handles changes in form fields (text, number, select, file)
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: type === 'file' ? files[0] : value // Pour les fichiers, stocke l'objet File
+      [name]: type === 'file' ? files[0] : value
     }));
   };
 
-  // Soumission du formulaire d'ajout/édition
-  const handleSubmit = async () => {
-    // Validation des champs (inchangée)
-    const requiredFields = [
-      'title',
-      'director',
-      'release_date',
-      'img_cover',
-      'img_presentation',
-      'trailer',
-      'video',
-      'rating',
-      'id_category',
-      'description'
-    ];
-
-    for (const field of requiredFields) {
-      if (
-        !formData[field] ||
-        (typeof formData[field] === 'string' && formData[field].trim() === '')
-      ) {
-        alert(`Le champ "${field}" est requis.`);
-        return;
-      }
-    }
-
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     if (formData.rating < 0 || formData.rating > 5) {
       alert('La note doit être comprise entre 0 et 5.');
       return;
     }
 
-    // --- Construction de FormData pour multipart/form-data ---
+    // --- Construct FormData for multipart/form-data ---
     const formDataToSend = new FormData();
 
-    // Ajout des champs texte
+    // Append text fields
     formDataToSend.append('title', formData.title);
     formDataToSend.append('director', formData.director);
     formDataToSend.append('release_date', formData.release_date);
@@ -181,7 +180,7 @@ const Movies = () => {
     formDataToSend.append('id_category', formData.id_category);
     formDataToSend.append('description', formData.description);
 
-    // Ajout des fichiers (exemple, vérifier si ce sont bien des fichiers)
+    // Append files, checking if they are actual File objects
     if (formData.img_cover instanceof File) {
       formDataToSend.append('img_cover', formData.img_cover);
     }
@@ -196,29 +195,33 @@ const Movies = () => {
     }
 
     try {
-      await movieService.putMovie(modified, formDataToSend); // Mettre à jour le film
-      console.log('✅ Film mis à jour avec succès !');
-      alert('Film mis à jour avec succès !');
+      if (modified) {
+        await movieService.putMovie(modified, formDataToSend);
+        console.log('✅ Film mis à jour avec succès !');
+        alert('Film mis à jour avec succès !');
+      } else {
+        console.log('1');
+        await movieService.addMovie(formDataToSend); // Create new movie
+        console.log('2');
 
-      setModified(null); // Quitter le mode modification après sauvegarde
-      toggleAddMovieModal(); // Fermer le modal si c'était un ajout
-      fetchMoviesAndCategories(); // Recharger la liste
-    } catch (error) {
-      console.error("❌ Erreur lors de l'opération sur le film :", error);
-      let errorMessage = "Une erreur est survenue lors de l'opération sur le film.";
-      if (error.response && error.response.data && error.response.data.error) {
-        errorMessage = error.response.data.error;
+        console.log('✅ Film ajouté avec succès !');
+        alert('Film ajouté avec succès !');
       }
-      alert(errorMessage);
+      modified && toggleAddMovieModal();
+      fetchMoviesAndCategories(); // Reload movies after adding/updating
+      setModified(null); // Reset modified state after operation
+      setShowAddMovieModal(false);
+    } catch (error) {
+      console.log("❌ Erreur lors de l'opération sur le film :", error);
+      alert("Une erreur est survenue lors de l'opération sur le film.");
     }
   };
 
-  // Suppression d'un film
   const handleDelete = async (movieId) => {
     if (window.confirm('Êtes-vous sûr de vouloir supprimer ce film ?')) {
       try {
         await movieService.deleteMovie(movieId);
-        fetchMoviesAndCategories(); // Recharger les films après suppression
+        fetchMoviesAndCategories(); // Reload movies after deletion
         console.log('✅ Film supprimé avec succès !');
       } catch (error) {
         console.error('❌ Erreur lors de la suppression du film:', error);
@@ -227,89 +230,22 @@ const Movies = () => {
     }
   };
 
-  // --- Composant d'affichage de carte pour mobile ---
-  const MovieCard = ({ movie }) => (
-    <div className="card mb-3 shadow-sm">
-      <div className="row g-0">
-        <div className="col-4">
-          <img
-            src={movie.img_cover}
-            alt={movie.title}
-            className="img-fluid rounded-start h-100"
-            style={{ objectFit: 'cover', minHeight: '120px' }}
-            onError={(e) => {
-              e.target.src = wallpaper;
-            }}
-          />
-        </div>
-        <div className="col-8">
-          <div className="card-body p-2">
-            <h6 className="card-title mb-1 text-truncate">{movie.title}</h6>
-            <p className="card-text mb-1">
-              <small className="text-muted">ID: {movie.id_movie}</small>
-            </p>
-            <p className="card-text mb-1">
-              <small className="text-muted">
-                Sortie:{' '}
-                {movie.release_date ? format(new Date(movie.release_date), 'dd/MM/yyyy') : 'N/A'}
-              </small>
-            </p>
-            <div className="d-flex align-items-center mb-2">
-              <div className="progress flex-grow-1 me-2" style={{ height: '8px' }}>
-                <div
-                  className="progress-bar bg-warning"
-                  role="progressbar"
-                  style={{ width: `${movie.rating * 20}%` }}
-                  aria-valuenow={movie.rating * 20}
-                  aria-valuemin="0"
-                  aria-valuemax="100"
-                />
-              </div>
-              <small className="text-muted">{(movie.rating * 20).toFixed(0)}%</small>
-            </div>
-            <p className="card-text mb-2">
-              <small className="text-muted">
-                Catégorie: {categories[movie.id_category] || 'N/A'}
-              </small>
-            </p>
-            {userRole === 'admin' && (
-              <div className="d-flex gap-1">
-                <Button
-                  onClick={() => toggleModified(movie.id_movie)} // Correction ici : passer l'ID
-                  className="btn btn-sm btn-outline-primary flex-grow-1">
-                  <IoMdCreate size={14} /> Modifier
-                </Button>
-                {/* visibleAdmin n'est plus un état séparé, mais userRole === 'admin' est suffisant */}
-                <Button
-                  onClick={() => handleDelete(movie.id_movie)}
-                  className="btn btn-sm btn-outline-danger flex-grow-1">
-                  <IoMdTrash size={14} /> Supprimer
-                </Button>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
-  // --- Rendu du composant principal (JSX) ---
   return (
     <div className="movies p-2 p-md-4">
-      {/* En-tête de la page (Titre et bouton Ajouter) */}
+      {/* Page Header (Title and Add Button) */}
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h3 className={`${isMobile ? 'h5' : ''} py-2`}>Films ({movies.length})</h3>
-        {userRole === 'admin' && ( // Afficher le bouton Ajouter seulement pour les admins
+        {userRole === 'admin' && ( // Display Add button only for admins
           <Button
             onClick={toggleAddMovieModal}
-            children={isMobile ? '+' : 'Ajouter un film'} // Texte plus explicite
+            children={isMobile ? '+' : 'Ajouter un film'}
             className="p-btn"
             style={isMobile ? { minWidth: '40px', padding: '8px' } : {}}
           />
         )}
       </div>
 
-      {/* Affichage du tableau pour desktop */}
+      {/* Desktop Table View */}
       {!isMobile && (
         <div className="table-wrapper" style={{ maxHeight: '70vh', overflowY: 'auto' }}>
           <div className="table-responsive">
@@ -342,7 +278,7 @@ const Movies = () => {
                   </th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="overflow-y-scroll">
                 {movies.length === 0 ? (
                   <tr>
                     <td colSpan="8" className="text-center py-5">
@@ -352,83 +288,90 @@ const Movies = () => {
                 ) : (
                   movies.map((movie) => (
                     <tr key={movie.id_movie}>
-                      {/* Colonne ID */}
+                      {/* ID Column */}
                       <td className="text-center text-muted">
                         <small>{movie.id_movie}</small>
                       </td>
 
+                      {/* Cover Column (with edit mode for files) */}
                       <td className="text-center">
                         {modified === movie.id_movie ? (
                           <div className="d-flex flex-column flex-md-row gap-2 align-items-center justify-content-center py-2">
                             {visibleFrom ? (
-                              <div className=" top-0 start-0 end-0 bottom-0 bg-dark bg-opacity-25 z-3 d-flex align-items-center justify-content-center">
+                              <div className="top-0 start-0 end-0 bottom-0 bg-dark w-100 bg-opacity-25 z-3 d-flex align-items-center justify-content-center">
                                 <div className="p-4 bg-white">
                                   <Input
-                                    classinput="form-control form-control-sm"
+                                    classinput="form-control form-control-sm bg-light"
                                     type="file"
                                     label="Présentation"
                                     classlabel="text-muted"
                                     name="img_presentation"
                                     onChange={handleChange}
                                     placeholder="Présentation"
-                                    id={`presentation-file-${movie.id_movie}`} // ID unique pour label si besoin
+                                    id={`presentation-file-${movie.id_movie}`}
                                   />
                                   <Input
-                                    // classinput et classlabel sont remplacés par className.
-                                    classinput="form-control form-control-sm"
+                                    classinput="form-control form-control-sm bg-light"
                                     type="file"
                                     label={'Couverture'}
                                     classlabel="text-muted"
                                     name="img_cover"
                                     onChange={handleChange}
                                     placeholder="Couverture"
-                                    id={`cover-file-${movie.id_movie}`} // ID unique pour label si besoin
+                                    id={`cover-file-${movie.id_movie}`}
                                   />
                                   <Input
-                                    // classinput et classlabel sont remplacés par className.
-                                    classinput="form-control form-control-sm"
+                                    classinput="form-control form-control-sm bg-light"
                                     type="file"
                                     label={'Bande annonce'}
                                     name="trailer"
                                     classlabel="text-muted"
                                     onChange={handleChange}
                                     placeholder="Bande annonce"
-                                    id={`cover-file-${movie.id_movie}`} // ID unique
+                                    id={`trailer-file-${movie.id_movie}`}
                                   />
                                   <Input
-                                    classinput="form-control form-control-sm"
+                                    classinput="form-control form-control-sm bg-light"
                                     type="file"
                                     classlabel="text-muted"
                                     label={'Vidéo'}
                                     name="video"
                                     onChange={handleChange}
                                     placeholder="video"
-                                    id={`cover-file-${movie.id_movie}`} // ID unique pour label si besoin
+                                    id={`video-file-${movie.id_movie}`}
                                   />
+                                  <Button
+                                    onClick={toggleVisibleFrom}
+                                    className="btn btn-sm btn-outline-danger mt-2">
+                                    <IoMdCloseCircleOutline size={14} />
+                                  </Button>
                                 </div>
                               </div>
                             ) : (
                               <Button
                                 className="btn btn-sm btn-outline-primary"
-                                onClick={toggleVisibleFrom} // Assurez-vous que cette fonction est bien définie
-                              >
-                                <IoMdCreate size={14} />
+                                onClick={toggleVisibleFrom}>
+                                <IoMdCreate size={14} /> Fichiers
                               </Button>
                             )}
                           </div>
                         ) : (
                           <div className="position-relative d-flex justify-content-center align-items-center">
-                            {/* Assurez-vous que l'affichage de ces deux images est intentionnel */}
+                            {/* Display both images, adjusted for proper overlap */}
                             <img
                               src={movie.img_cover}
                               alt={movie.title}
                               className="rounded-circle border border-light"
-                              style={{ width: '50px', height: '50px', objectFit: 'cover' }}
+                              style={{
+                                width: '50px',
+                                height: '50px',
+                                objectFit: 'cover',
+                                zIndex: 1
+                              }}
                               onError={(e) => {
                                 e.target.src = wallpaper;
                               }}
                             />
-                            {/* La deuxième image positionnée avec left: '50px' devrait être mieux centrée dans la td */}
                             <img
                               src={movie.img_presentation}
                               alt={movie.title}
@@ -437,7 +380,9 @@ const Movies = () => {
                                 width: '50px',
                                 height: '50px',
                                 objectFit: 'cover',
-                                left: '50px' // Ajusté pour qu'elle soit dans le même td
+                                left: '50%', // Centered relative to its container
+                                transform: 'translateX(-25%)', // Shift left by 25% of its own width
+                                zIndex: 0 // Behind the first image
                               }}
                               onError={(e) => {
                                 e.target.src = wallpaper;
@@ -447,7 +392,6 @@ const Movies = () => {
                         )}
                       </td>
 
-                      {/* Colonne Titre et Description */}
                       <td>
                         {modified === movie.id_movie ? (
                           <div className="d-flex flex-column flex-md-row gap-2 py-2">
@@ -482,11 +426,10 @@ const Movies = () => {
                         )}
                       </td>
 
-                      {/* Colonne Date de sortie */}
                       <td className="text-center">
                         {modified === movie.id_movie ? (
                           <Input
-                            classinput="form-control form-control-sm bg-white"
+                            classinput="form-control form-control-sm bg-light"
                             type="date"
                             classlabel="d-none"
                             value={formData.release_date}
@@ -502,27 +445,16 @@ const Movies = () => {
                         )}
                       </td>
 
-                      {/* Colonne Date de création */}
+                      {/* Creation Date Column */}
                       <td className="text-center">
-                        {modified === movie.id_movie ? (
-                          <Input
-                            classinput="form-control form-control-sm bg-white"
-                            classlabel="d-none"
-                            type="date"
-                            value={formData.created_at || ''}
-                            onChange={handleChange}
-                            name="created_at"
-                          />
-                        ) : (
-                          <p className="text-sm text-muted mb-0">
-                            {movie.created_at
-                              ? format(new Date(movie.created_at), 'dd/MM/yyyy')
-                              : 'N/A'}
-                          </p>
-                        )}
+                        <p className="text-sm text-muted mb-0">
+                          {movie.created_at
+                            ? format(new Date(movie.created_at), 'dd/MM/yyyy')
+                            : 'N/A'}
+                        </p>
                       </td>
 
-                      {/* Colonne Note */}
+                      {/* Rating Column */}
                       <td className="text-center" style={{ minWidth: '100px' }}>
                         {modified === movie.id_movie ? (
                           <Input
@@ -556,6 +488,7 @@ const Movies = () => {
                         )}
                       </td>
 
+                      {/* Category Column */}
                       <td className="text-center ">
                         {modified === movie.id_movie ? (
                           <select
@@ -578,6 +511,7 @@ const Movies = () => {
                         )}
                       </td>
 
+                      {/* Actions Column */}
                       <td className="text-center">
                         {userRole === 'admin' && (
                           <div className="d-flex flex-column flex-md-row align-items-center justify-content-center gap-2">
@@ -585,7 +519,7 @@ const Movies = () => {
                               <Button
                                 onClick={handleSubmit}
                                 className="btn btn-sm btn-outline-success">
-                                <IoMdCreate size={14} /> Enregistrer
+                                <IoMdCreate size={14} />
                               </Button>
                             )}
                             <Button
@@ -595,13 +529,12 @@ const Movies = () => {
                                 <IoMdCloseCircleOutline size={14} />
                               ) : (
                                 <IoMdCreate size={14} />
-                              )}{' '}
-                              {modified === movie.id_movie ? 'Annuler' : 'Modifier'}
+                              )}
                             </Button>
                             <Button
                               onClick={() => handleDelete(movie.id_movie)}
                               className="btn btn-sm btn-outline-danger">
-                              <IoMdTrash size={14} /> Supprimer
+                              <IoMdTrash size={14} />
                             </Button>
                           </div>
                         )}
@@ -615,237 +548,417 @@ const Movies = () => {
         </div>
       )}
 
-      {/* Affichage des cartes pour mobile */}
       {isMobile && (
-        <div style={{ maxHeight: '70vh', overflowY: 'auto' }}>
+        <div className="mobile-movies-list" style={{ maxHeight: '70vh', overflowY: 'auto' }}>
           {movies.length === 0 ? (
-            <div className="text-center py-4">
-              <p className="mb-0 text-muted">Aucun film trouvé</p>
-            </div>
+            <p className="text-center py-5 text-muted fst-italic fs-5">Aucun film trouvé.</p>
           ) : (
-            movies.map((movie) => <MovieCard key={movie.id_movie} movie={movie} />)
+            movies.map((movie) => (
+              <div key={movie.id_movie} className="card shadow-sm border-0 rounded-4 mb-3">
+                {/* Added mb-3 for spacing */}
+                <div className="card-body p-3">
+                  <div className="d-flex align-items-center mb-3">
+                    {/* Cover Images */}
+                    <div className="position-relative me-3">
+                      <img
+                        src={movie.img_cover}
+                        alt={movie.title}
+                        className="rounded-circle border border-light"
+                        style={{ width: '60px', height: '60px', objectFit: 'cover', zIndex: 1 }}
+                        onError={(e) => {
+                          e.target.src = wallpaper;
+                        }}
+                      />
+                      <img
+                        src={movie.img_presentation}
+                        alt={movie.title}
+                        className="rounded-circle position-absolute border border-light"
+                        style={{
+                          width: '60px',
+                          height: '60px',
+                          objectFit: 'cover',
+                          left: '50%',
+                          transform: 'translateX(-25%)',
+                          zIndex: 0
+                        }}
+                        onError={(e) => {
+                          e.target.src = wallpaper;
+                        }}
+                      />
+                    </div>
+
+                    {/* Title and Category */}
+                    <div className="flex-grow-1">
+                      <h5 className="card-title mb-0 text-dark fw-bold">{movie.title}</h5>
+                      <span className="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill">
+                        {categories[movie.id_category]}
+                      </span>
+                    </div>
+
+                    {/* Mobile Actions (Edit/Delete) */}
+                    {userRole === 'admin' && (
+                      <div className="d-flex gap-2 align-items-center">
+                        <Button
+                          onClick={() => toggleModified(movie.id_movie)}
+                          className="btn btn-sm btn-outline-secondary p-2">
+                          {modified === movie.id_movie ? (
+                            <IoMdCloseCircleOutline size={18} />
+                          ) : (
+                            <IoMdCreate size={18} />
+                          )}
+                        </Button>
+                        <Button
+                          onClick={() => handleDelete(movie.id_movie)}
+                          className="btn btn-sm btn-outline-danger p-2">
+                          <IoMdTrash size={18} />
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Mobile Edit Form (collapsed by default, expanded when modified) */}
+                  {modified === movie.id_movie && (
+                    <form onSubmit={handleSubmit} className="mb-3">
+                      <hr className="my-3" />
+                      <div className="row g-2 mb-3">
+                        <div className="col-12">
+                          <Input
+                            classinput="form-control form-control-sm bg-light"
+                            classlabel="text-dark"
+                            placeholder="Titre"
+                            label="Titre"
+                            value={formData.title}
+                            onChange={handleChange}
+                            type="text"
+                            name="title"
+                          />
+                        </div>
+                        <div className="col-12">
+                          <Input
+                            classinput="form-control form-control-sm bg-light"
+                            placeholder="Réalisateur"
+                            classlabel="text-dark"
+                            label="Réalisateur"
+                            value={formData.director}
+                            onChange={handleChange}
+                            type="text"
+                            name="director"
+                          />
+                        </div>
+                        <div className="col-12">
+                          <Input
+                            classinput="form-control form-control-sm bg-light"
+                            type="date"
+                            classlabel="text-dark"
+                            label="Date de sortie"
+                            value={formData.release_date}
+                            onChange={handleChange}
+                            name="release_date"
+                          />
+                        </div>
+                        <div className="col-12">
+                          <label
+                            htmlFor={`rating-mobile-${movie.id_movie}`}
+                            className="form-label text-dark small">
+                            Note (0-5)
+                          </label>
+                          <Input
+                            classinput="form-control form-control-sm bg-light"
+                            type="number"
+                            name="rating"
+                            classlabel="text-dark"
+                            value={formData.rating}
+                            onChange={handleChange}
+                            placeholder="0"
+                            min="0"
+                            max="5"
+                            step="0.1"
+                            id={`rating-mobile-${movie.id_movie}`}
+                          />
+                        </div>
+                        <div className="col-12">
+                          <label
+                            htmlFor={`category-mobile-${movie.id_movie}`}
+                            className="form-label text-dark small">
+                            Catégorie
+                          </label>
+                          <select
+                            name="id_category"
+                            id={`category-mobile-${movie.id_movie}`}
+                            className="form-control form-control-sm bg-primary bg-opacity-10"
+                            value={formData.id_category}
+                            onChange={handleChange}
+                            required>
+                            <option value="">-- Sélectionner une catégorie --</option>
+                            {Object.entries(categories).map(([id, name]) => (
+                              <option key={id} value={id}>
+                                {name}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        <div className="col-12">
+                          <label
+                            htmlFor={`description-mobile-${movie.id_movie}`}
+                            className="form-label text-dark small">
+                            Description
+                          </label>
+                          <textarea
+                            name="description"
+                            id={`description-mobile-${movie.id_movie}`}
+                            value={formData.description}
+                            onChange={handleChange}
+                            rows="3"
+                            className="form-control form-control-sm bg-primary bg-opacity-10"
+                            placeholder="Description du film..."
+                            required
+                          />
+                        </div>
+                        <div className="col-12">
+                          <Button
+                            onClick={toggleVisibleFrom}
+                            className="btn btn-sm btn-outline-primary w-100 mb-2">
+                            <IoMdCreate size={14} /> Modifier les fichiers
+                          </Button>
+                          {visibleFrom && (
+                            <div className="d-flex flex-column gap-2 mt-2">
+                              <Input
+                                classinput="form-control form-control-sm bg-light"
+                                type="file"
+                                label="Couverture (Image)"
+                                classlabel="text-dark"
+                                name="img_cover"
+                                onChange={handleChange}
+                                id={`cover-file-mobile-${movie.id_movie}`}
+                              />
+                              <Input
+                                classinput="form-control form-control-sm bg-light"
+                                type="file"
+                                classlabel="text-dark"
+                                label="Présentation (Image)"
+                                name="img_presentation"
+                                onChange={handleChange}
+                                id={`presentation-file-mobile-${movie.id_movie}`}
+                              />
+                              <Input
+                                classinput="form-control form-control-sm bg-light"
+                                type="file"
+                                classlabel="text-dark"
+                                label="Bande Annonce (Vidéo)"
+                                name="trailer"
+                                onChange={handleChange}
+                                id={`trailer-file-mobile-${movie.id_movie}`}
+                              />
+                              <Input
+                                classinput="form-control form-control-sm bg-light"
+                                type="file"
+                                classlabel="text-dark"
+                                label="Film (Vidéo)"
+                                name="video"
+                                onChange={handleChange}
+                                id={`video-file-mobile-${movie.id_movie}`}
+                              />
+                              <Button
+                                onClick={toggleVisibleFrom}
+                                className="btn btn-sm btn-outline-danger mt-2">
+                                <IoMdCloseCircleOutline size={14} /> Annuler
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+                        <div className="col-12 text-end mt-3">
+                          <Button onClick={handleSubmit} className="btn btn-primary w-100">
+                            Enregistrer les modifications
+                          </Button>
+                        </div>
+                      </div>
+                    </form>
+                  )}
+
+                  {/* General Info for Mobile (always visible unless editing) */}
+                  {modified !== movie.id_movie && (
+                    <>
+                      <hr className="my-3" />
+                      <div className="row g-2 text-muted small">
+                        <div className="col-6">
+                          <strong>Réalisateur:</strong> {movie.director || 'N/A'}
+                        </div>
+                        <div className="col-6 text-end">
+                          <strong>Sortie:</strong>{' '}
+                          {movie.release_date
+                            ? format(new Date(movie.release_date), 'dd/MM/yyyy')
+                            : 'N/A'}
+                        </div>
+                        <div className="col-6">
+                          <strong>Ajouté le:</strong>{' '}
+                          {movie.created_at
+                            ? format(new Date(movie.created_at), 'dd/MM/yyyy')
+                            : 'N/A'}
+                        </div>
+                        <div className="col-6 text-end">
+                          <strong>Note:</strong>{' '}
+                          {movie.rating ? `${(movie.rating * 20).toFixed(0)}%` : 'N/A'}
+                          <div className="progress w-75 float-end" style={{ height: '6px' }}>
+                            <div
+                              className="progress-bar bg-primary"
+                              role="progressbar"
+                              style={{ width: `${movie.rating * 20}%` }}
+                              aria-valuenow={movie.rating}
+                              aria-valuemin="0"
+                              aria-valuemax="5"></div>
+                          </div>
+                        </div>
+                        <div className="col-12 mt-2">
+                          <strong>Description:</strong>{' '}
+                          {movie.description || 'Pas de description disponible.'}
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+            ))
           )}
         </div>
       )}
 
-      {/* Modal/Overlay pour l'ajout/édition de film */}
-      {showAddMovieModal && (
-        <div className="overlay position-fixed d-flex align-items-center justify-content-center bg-dark bg-opacity-50 z-3 top-0 bottom-0 end-0 start-0">
+      {showAddMovieModal && userRole === 'admin' && (
+        <div className="modal-overlay bg-dark bg-opacity-50 d-flex align-items-center justify-content-center position-fixed p-4 overflow-auto z-3 top-0 bottom-0 start-0 end-0">
           <div
-            className="movie-form-container position-relative p-2 p-md-4 rounded"
-            style={{
-              width: isMobile ? '95%' : '80%',
-              maxHeight: '95vh',
-              overflowY: 'auto'
-            }}>
-            <Button
-              onClick={toggleAddMovieModal}
-              className="btn border-0 text-danger text-opacity-75 end-0 position-absolute"
-              style={{ top: isMobile ? '8px' : 'auto', right: isMobile ? '8px' : 'auto' }}>
-              <IoMdCloseCircleOutline size={isMobile ? 20 : 25} />
-            </Button>
-
-            <h2 className={`text-light text-center ${isMobile ? 'fs-4' : 'fs-lg-1'} mb-3 mb-md-4`}>
-              {modified ? 'Modifier le film' : 'Ajouter un film'}
-            </h2>
-
-            <form
-              onSubmit={handleSubmit}
-              className="mx-auto p-2 p-md-4 bg-white rounded-4 shadow-sm">
-              <div className={`d-flex ${isMobile ? 'flex-column' : 'flex-wrap'} gap-3 gap-md-4`}>
-                <div className="flex-grow-1">
-                  <div className={`d-flex ${isMobile ? 'flex-column' : 'gap-3'} mb-3`}>
-                    <div className={`${isMobile ? 'mb-3' : 'w-100'}`}>
-                      <Input
-                        type="text"
-                        label={'Titre'}
-                        name="title"
-                        id="title"
-                        value={formData.title}
-                        onChange={handleChange}
-                        className="form-control bg-primary bg-opacity-10"
-                        placeholder="Ex: Black Panther"
-                        required
-                      />
-                    </div>
-                    <div className="w-100">
-                      <Input
-                        type="text"
-                        label={'Réalisateur'}
-                        name="director"
-                        id="director"
-                        value={formData.director}
-                        onChange={handleChange}
-                        className="form-control bg-primary bg-opacity-10"
-                        placeholder="Ex: John Kennedy"
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div className="mb-3">
-                    <Input
-                      type="date"
-                      label={'Date de sortie'}
-                      name="release_date"
-                      id="release_date"
-                      value={formData.release_date}
-                      onChange={handleChange}
-                      className="form-control bg-primary bg-opacity-10"
-                      required
-                    />
-                  </div>
-
-                  <div className="mb-3">
-                    <Input
-                      type="file"
-                      name="img_cover"
-                      label={'Image de couverture * (Image)'}
-                      id="img_cover_modal"
-                      onChange={handleChange}
-                      accept="image/*"
-                      className="form-control bg-primary bg-opacity-10"
-                      required={!modified}
-                    />
-                    {formData.img_cover && (
-                      <small className="text-muted d-block">
-                        Fichier: {formData.img_cover.name}
-                      </small>
-                    )}
-                  </div>
-
-                  <div className="mb-3">
-                    <Input
-                      type="file"
-                      label={'Image de présentation * (Image)'}
-                      name="img_presentation"
-                      id="img_presentation_modal"
-                      onChange={handleChange}
-                      accept="image/*"
-                      className="form-control bg-primary bg-opacity-10"
-                      required={!modified} // Requis seulement si c'est un nouvel ajout
-                    />
-                    {formData.img_presentation && (
-                      <small className="text-muted d-block">
-                        Fichier: {formData.img_presentation.name}
-                      </small>
-                    )}
-                  </div>
-
-                  <div className="mb-3">
-                    <Input
-                      type="file"
-                      label={'Bande annonce * (Vidéo)'}
-                      name="trailer"
-                      id="trailer_modal"
-                      onChange={handleChange}
-                      accept="video/*"
-                      classinput="form-control bg-primary bg-opacity-10"
-                      required={!modified}
-                    />
-                    {formData.trailer && (
-                      <small className="text-muted d-block">
-                        Fichier: {formData.trailer.name}
-                        {isMobile
-                          ? ''
-                          : ` (${(formData.trailer.size / 1024 / 1024).toFixed(2)} MB)`}
-                      </small>
-                    )}
-                  </div>
-
-                  <div className="mb-3">
-                    <Input
-                      type="file"
-                      label={'Film complet * (Vidéo)'}
-                      name="video"
-                      id="video_modal"
-                      onChange={handleChange}
-                      accept="video/*"
-                      classinput="form-control bg-primary bg-opacity-10"
-                      required={!modified} // Requis seulement si c'est un nouvel ajout
-                    />
-                    {formData.video && (
-                      <small className="text-muted d-block">
-                        Fichier: {formData.video.name}
-                        {isMobile ? '' : ` (${(formData.video.size / 1024 / 1024).toFixed(2)} MB)`}
-                      </small>
-                    )}
-                  </div>
-
-                  <div className={`d-flex ${isMobile ? 'flex-column' : 'gap-3'} mb-3`}>
-                    <div className={`${isMobile ? 'mb-3' : 'w-100'}`}>
-                      <label htmlFor="rating_modal" className="form-label text-dark">
-                        Note * (0-5)
-                      </label>
-                      <Input
-                        type="number"
-                        value={formData.rating}
-                        onChange={handleChange}
-                        id="rating_modal"
-                        name="rating"
-                        classinput="form-control bg-primary bg-opacity-10"
-                        min="0"
-                        max="5"
-                        step="0.1"
-                        required
-                      />
-                    </div>
-                    <div className="w-100">
-                      <label htmlFor="category_modal" className="form-label text-dark">
-                        Catégorie *
-                      </label>
-                      <select
-                        name="id_category"
-                        id="category_modal"
-                        value={formData.id_category}
-                        onChange={handleChange}
-                        className="form-control bg-primary bg-opacity-10"
-                        required>
-                        <option value="">-- Sélectionner une catégorie --</option>
-                        {Object.entries(categories).map(([id, name]) => (
-                          <option key={id} value={id}>
-                            {name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="mb-4">
-                    <label htmlFor="description_modal" className="form-label text-dark">
-                      Description *
-                    </label>
-                    <textarea
-                      name="description"
-                      id="description_modal"
-                      value={formData.description}
-                      onChange={handleChange}
-                      rows={isMobile ? '3' : '5'}
-                      className="form-control bg-primary bg-opacity-10"
-                      placeholder="Description du film..."
-                      required
-                    />
-                  </div>
-                </div>
-
-                {!isMobile && (
-                  <div className="w-100 w-md-50" style={{ maxWidth: '50%' }}>
-                    <img
-                      src={wallpaper}
-                      className="w-100 h-100 rounded-4"
-                      alt="Movie form background"
-                      style={{ objectFit: 'cover', minHeight: '400px' }}
-                    />
-                  </div>
-                )}
+            style={{ height: '80%' }}
+            className="modal-content-movie-add w-75 overflow-auto bg-white rounded-4 p-2 p-lg-4">
+            <div className="modal-header-movie-add d-flex position-relative">
+              <h5 className="modal-title">Ajouter un film</h5>
+              <Button
+                onClick={toggleAddMovieModal}
+                className="close-button text-danger position-absolute end-0">
+                <IoMdCloseCircleOutline size={24} />
+              </Button>
+            </div>
+            <form onSubmit={handleSubmit} className="modal-body-movie-add">
+              <Input
+                label="Titre"
+                classlabel="form-label text-dark"
+                classinput="form-control bg-light"
+                type="text"
+                name="title"
+                value={formData.title}
+                onChange={handleChange}
+                placeholder="Titre du film"
+                required
+              />
+              <Input
+                label="Réalisateur"
+                classlabel="form-label text-dark"
+                classinput="form-control bg-light"
+                type="text"
+                name="director"
+                value={formData.director}
+                onChange={handleChange}
+                placeholder="Nom du réalisateur"
+                required
+              />
+              <Input
+                label="Date de sortie"
+                classlabel="form-label text-dark"
+                classinput="form-control bg-light"
+                type="date"
+                name="release_date"
+                value={formData.release_date}
+                onChange={handleChange}
+                required
+              />
+              <div className="mb-3">
+                <label htmlFor="categorySelect" className="form-label">
+                  Catégorie
+                </label>
+                <select
+                  id="categorySelect"
+                  name="id_category"
+                  className="form-select"
+                  value={formData.id_category}
+                  onChange={handleChange}
+                  required>
+                  <option value="">Sélectionner une catégorie</option>
+                  {Object.entries(categories).map(([id, name]) => (
+                    <option key={id} value={id}>
+                      {name}
+                    </option>
+                  ))}
+                </select>
               </div>
-              <div className="mt-4">
-                <Button
-                  type="submit"
-                  children={modified ? 'Sauvegarder les modifications' : 'Ajouter le film'}
-                  className="p-btn opacity-75 w-100"
+              <Input
+                label="Note (0-5)"
+                classlabel="form-label text-dark"
+                classinput="form-control bg-light"
+                type="number"
+                name="rating"
+                value={formData.rating}
+                onChange={handleChange}
+                placeholder="Note du film (ex: 3.5)"
+                min="0"
+                max="5"
+                step="0.1"
+                required
+              />
+              <div className="mb-3">
+                <label htmlFor="descriptionTextarea" className="form-label">
+                  Description
+                </label>
+                <textarea
+                  id="descriptionTextarea"
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
+                  rows="4"
+                  className="form-control bg-light"
+                  placeholder="Description détaillée du film..."
+                  required
                 />
               </div>
+
+              {/* File Inputs for Add/Edit */}
+              <h6 className="mt-4 mb-3">Fichiers du film</h6>
+              <Input
+                label="Image de couverture"
+                classlabel="form-label text-dark"
+                classinput="form-control bg-light"
+                type="file"
+                name="img_cover"
+                onChange={handleChange}
+                required={!modified}
+              />
+              <Input
+                label="Image de présentation"
+                classlabel="form-label text-dark"
+                classinput="form-control bg-light"
+                type="file"
+                name="img_presentation"
+                onChange={handleChange}
+                required={!modified}
+              />
+              <Input
+                label="Bande annonce (Vidéo)"
+                classlabel="form-label text-dark text-dark bg-light"
+                classinput="form-control bg-light text-dark bg-light"
+                type="file"
+                name="trailer"
+                onChange={handleChange}
+                required={!modified}
+              />
+              <Input
+                label="Fichier vidéo du film"
+                classlabel="form-label text-dark bg-light"
+                classinput="form-control text-dark bg-light"
+                type="file"
+                name="video"
+                onChange={handleChange}
+                required={!modified}
+              />
+
+              <Button type="submit" className="btn btn-primary w-100 mt-4">
+                {modified ? 'Enregistrer les modifications' : 'Ajouter le film'}
+              </Button>
             </form>
           </div>
         </div>

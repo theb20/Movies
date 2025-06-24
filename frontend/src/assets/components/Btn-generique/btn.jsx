@@ -1,17 +1,23 @@
-import './btn.css'
+import './btn.css';
 
-const Button = ({ children, onClick, type = "", className = "", status, ...props }) => {
-  const btncolor = status === 'primary-btn' ? 'p-btn' : status === 'secondary-btn' ? 's-btn' : status === 'tertiary-btn' ? 't-btn' : 'btn';
+const Button = ({ children, onClick, type = '', className = '', status, ...props }) => {
+  const btncolor =
+    status === 'primary-btn'
+      ? 'p-btn'
+      : status === 'secondary-btn'
+        ? 's-btn'
+        : status === 'tertiary-btn'
+          ? 't-btn'
+          : 'btn';
 
   return (
-    <button 
-      type={type} 
-      className={`btn ${btncolor} ${className}`} 
+    <button
+      type={type}
+      className={`btn ${btncolor} ${className}`}
       onClick={() => {
         if (onClick) onClick();
       }}
-      {...props}
-    >
+      {...props}>
       {children}
     </button>
   );

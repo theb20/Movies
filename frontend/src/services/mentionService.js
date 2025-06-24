@@ -38,31 +38,33 @@ const mentionService = {
   },
 
   getAllLikesByMovie: async (id_movie) => {
-    // Récupère tous les likes d'un film donné
     const response = await api.get(`/likes/movie/${id_movie}`);
     return response.data;
   },
 
   addLike: async (likeData) => {
-    // likeData doit contenir { id_movie, id_user }
     const response = await api.post('/likes/add', likeData);
     return response.data;
   },
 
   deleteLike: async (id_movie) => {
-    // Récupère id_user depuis le token stocké en localStorage
     const token = localStorage.getItem('token');
     if (!token) throw new Error('Utilisateur non authentifié');
 
     const payload = JSON.parse(atob(token.split('.')[1]));
     const id_user = payload.id_user;
 
-    const response = await api.delete(`/likes/remove/${id_movie}/${id_user}`);
-    return response.data;
+    try {
+      const response = await api.delete(`/likes/remove/${id_movie}/${id_user}`);
+      console.log('✅ Like supprimé');
+      return response.data;
+    } catch (error) {
+      console.error('❌ Erreur suppression like:', error.message);
+      throw error;
+    }
   },
 
   getAllLikesByUser: async (id_user) => {
-    // Récupère tous les likes d'un utilisateur donné
     const response = await api.get(`/likes/user/${id_user}`);
     return response.data;
   }
